@@ -32,6 +32,8 @@
 #' @name cache_funs
 NULL
 
+#' @export 
+#' 
 #' @rdname cache_funs
 
 registra_credenciais <- function(usuario, senha, tag) {
@@ -41,6 +43,8 @@ registra_credenciais <- function(usuario, senha, tag) {
     saveRDS(out, file.path(cachedir, paste0("user_", tag, ".rds")))
 }
 
+#' @export 
+#' 
 #' @rdname cache_funs
 
 registra_banco <- function(host, port, database, tag) {
@@ -59,6 +63,8 @@ registra_banco <- function(host, port, database, tag) {
 #' @name list_cache_funs
 NULL
 
+#' @export 
+#' 
 #' @rdname list_cache_funs
 
 lista_credenciais <- function() {
@@ -66,6 +72,8 @@ lista_credenciais <- function() {
     list.files(cachedir, pattern = "^user_")
 }
 
+#' @export 
+#' 
 #' @rdname list_cache_funs
 
 lista_bancos <- function() {

@@ -93,6 +93,8 @@
 #' @name get_funs
 NULL
 
+#' @export 
+#' 
 #' @rdname get_funs
 
 getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
@@ -111,6 +113,8 @@ getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
     return(verif)
 }
 
+#' @export 
+#' 
 #' @rdname get_funs
 
 getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_gfs", "vento_ecmwf")) {
@@ -131,6 +135,8 @@ getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_
     return(prev)
 }
 
+#' @export 
+#' 
 #' @rdname get_funs
 
 getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("vento"),
