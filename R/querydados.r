@@ -100,7 +100,7 @@ NULL
 
 getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
 
-    if(campos == "") stop("Argumento 'campos' esta vazio")
+    if((length(campos) == 1) && (campos == "")) stop("Argumento 'campos' esta vazio")
 
     usina <- toupper(usina)
     datahoras <- parsedatas(datahoras, "data_hora")
@@ -120,7 +120,7 @@ getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
 
 getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_gfs", "vento_ecmwf")) {
 
-    if(campos == "") stop("Argumento 'campos' esta vazio")
+    if((length(campos) == 1) && (campos == "")) stop("Argumento 'campos' esta vazio")
 
     usina  <- toupper(usina)
     datahoras <- parsedatas(datahoras, "data_hora_previsao")
@@ -143,8 +143,8 @@ getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_
 getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("vento"),
     campos_prev = c("vento_gfs", "vento_ecmwf")) {
 
-    tem_campos_verif <- campos_verif != ""
-    tem_campos_prev  <- campos_prev != ""
+    tem_campos_verif <- (length(campos_verif) > 1) || (campos_verif != "")
+    tem_campos_prev  <- (length(campos_prev) > 1) || (campos_prev != "")
 
     if(!tem_campos_prev & !tem_campos_verif) {
         stop("Ambos os argumentos 'campos_*' estao vazios")
