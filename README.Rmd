@@ -1,0 +1,91 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/lkhenayfis/dbrenovaveis/workflows/R-CMD-check/badge.svg)](https://github.com/lkhenayfis/dbrenovaveis/actions)
+[![test-coverage](https://github.com/lkhenayfis/dbrenovaveis/workflows/test-coverage/badge.svg)](https://github.com/lkhenayfis/dbrenovaveis/actions)
+<!-- badges: end -->
+
+# dbrenovaveis
+
+Este pacote contem funcoes para facilitacao do acesso aos bancos de dados associados a area de 
+energias renovaveis da PEM. Isto inclui acesso, escrita e resgate de informacoes acerca dos bancos
+disponiveis.
+
+## Instalacao
+
+Este pacote ainda nao se encontra disponibilizado no CRAN, de modo que deve ser instalado 
+diretamente a partir do repositorio utilizando:
+
+```{r intro, eval = FALSE}
+# Caso a biblioteca remotes nao esteja instalada, execute install.packages("remotes") primeiro
+remotes::install_github("lkhenayfis/dbrenovaveis") # instalacao da versao de desenvolvimento
+remotes::install_github("lkhenayfis/dbrenovaveis@*release") # instalacao da ultima versao fechada
+```
+
+## Exemplo de uso
+
+Antes de utilizar as funcoes disponibilizadas pelo pacote, o usuario deve primeiro registrar suas
+credenciais e parametros do banco a ser acessado pelos metodos apropriados.
+
+```{r,echo=FALSE}
+library(dbrenovaveis)
+```
+
+```{r,eval=FALSE}
+library(dbrenovaveis)
+
+# registrando um banco chamado "dados", hospedado num servidor chamado "servidor-de-dados", 
+# acessado pela porta 1111, tageado pelo mnemonico "banco_do_jose"
+registra_banco(host = "servidor-de-dados", 1111, "dados", tag = "banco_do_jose")
+
+# registrando um usuario "jose", cuja senha de acesso ao banco "dados" e "senha_do_jose"
+registra_credenciais("jose", "senha_do_jose", tag = "usuario_jose")
+```
+
+A partir deste ponto, e possivel realizar a conexao com o banco e extracao dos dados. A conexao
+e feita atraves da funcao `conectabanco`, passando mnemonicos do usuario e banco registrados:
+
+```r
+conn <- conectabanco("jose", "banco_do_jose")
+```
+
+```{r,echo=FALSE}
+conn <- conectabanco("lucas", "banco_meta")
+```
+
+Com a conexao feita, podemos utilizar as funcoes de extracao de dados. E possivel acessar apenas os
+verificados...
+
+```{r, results='as.is'}
+verif <- getverificado(conn, "BAEBAU", "2021-01-01")
+head(verif, 10)
+```
+
+previstos ...
+
+```{r, results='as.is'}
+prev <- getprevisto(conn, "BAEBAU", "2021-01-01", "D1")
+head(prev, 10)
+```
+
+ou ambos combinados
+
+```{r, results='as.is'}
+dados <- getdados(conn, "BAEBAU", "2021-01-01", "D1")
+head(dados, 10)
+```
+
+Ate o presente momento nao foram implementadas as funcoes de upload ao banco.
