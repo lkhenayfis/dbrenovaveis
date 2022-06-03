@@ -7,7 +7,7 @@
 expandedatahora(datahora)
 }
 \arguments{
-\item{datahoras}{uma string indicando faixa de tempo simples, isto e, sem uso da contra barra,
+\item{datahora}{uma string indicando faixa de tempo simples, isto e, sem uso da contra barra,
 como descrito em \code{\link{get_funs}}}
 }
 \value{
@@ -41,14 +41,14 @@ Exemplos para mais detalhes.
 }
 \examples{
 
-faixa <- expandedatahora("2021")
 
 \dontrun{
+faixa <- expandedatahora("2021")
 identical(faixa, c("2021-01-01 00:00:00", "2022-01-01 00:00:00"))
 }
 
-faixa <- expandedatahora("2020-05-23 12:30")
 \dontrun{
+faixa <- expandedatahora("2020-05-23 12:30")
 identical(faixa, c("2020-05-23 12:30:00", "2020-05-23 12:30:01"))
 }
 

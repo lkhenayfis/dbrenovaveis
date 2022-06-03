@@ -27,13 +27,13 @@ os padroes de janela podem ser representados da mesma forma, simplificando a fun
 }
 \examples{
 
-cond <- parsedatas("2021", "data_hora")
 \dontrun{
+cond <- parsedatas("2021", "data_hora")
 identical(cond, "data_hora >= '2021-01-01 00:00:00' AND data_hora < '2022-01-01 00:00:00'")
 }
 
-cond <- parsedatas("2020-11-30 12:30", "data_hora")
 \dontrun{
+cond <- parsedatas("2020-11-30 12:30", "data_hora")
 identical(cond, "data_hora >= '2020-11-30 12:30:00' AND data_hora < '2020-11-30 12:30:01'")
 }
 

@@ -35,6 +35,8 @@ getdados(
 
 \item{campos}{vetor de strings indicando quais campos (colunas) devem ser lidos. Ver Detalhes}
 
+\item{horizonte}{inteiro ou string do tipo "DX" indicando o horizonte de previsao}
+
 \item{campos_verif}{vetor de strings indicando quais campos (colunas) devem ser lidos da tabela
 "verificados". Ver Detalhes}
 
@@ -48,7 +50,7 @@ getdados(
 Le informacoes das tabelas "verificados" e "previstos" selecionando por valores especificados
 }
 \details{
-\code{getverificados} le dados da tabela "verificados", \code{getprevistos} da tabela "previstos"
+\code{getverificado} le dados da tabela "verificados", \code{getprevisto} da tabela "previstos"
 e \code{getdados} busca as informacoes nas duas e retorna a informacao combinada em um mesmo
 dado.
 
@@ -104,14 +106,14 @@ getverificado(conn, "RNUEM3", "2020-04-23/2021-07-04", c("vento", "geracao"))
 # PREVISTOS --------------------------------------------
 
 # usina "BAEBAU" em marco de 2020, todos os previstos disponiveis (gfs e ecmwf) horizonte D1
-getprevistos(conn, "BAEBAU", "2020-03")
+getprevisto(conn, "BAEBAU", "2020-03")
 
 # pegando o horizonte D3
-getprevistos(conn, "BAEBAU", "2020-03", horizonte = "D3")
-getprevistos(conn, "BAEBAU", "2020-03", horizonte = 3)
+getprevisto(conn, "BAEBAU", "2020-03", horizonte = "D3")
+getprevisto(conn, "BAEBAU", "2020-03", horizonte = 3)
 
 # retornando apenas o vento gfs (mais a datahora que ja vem por padrao)
-getprevistos(conn, "BAEBAU", "2020-03", campos = "vento_gfs")
+getprevisto(conn, "BAEBAU", "2020-03", campos = "vento_gfs")
 
 # COMBINADO --------------------------------------------
 
@@ -122,6 +124,6 @@ getdados(conn, "RNUEM3", "2021-02", 1)
 
 }
 \seealso{
-\code{\link{getprevistos}} para leitura de valores previstos; \code{\link{getdados}}
+\code{\link{getprevisto}} para leitura de valores previstos; \code{\link{getdados}}
 para leitura e retorno de ambos os valores unificados em um mesmo \code{data.frame}
 }

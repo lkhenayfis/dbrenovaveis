@@ -4,7 +4,7 @@
 #' 
 #' Le informacoes das tabelas "verificados" e "previstos" selecionando por valores especificados
 #' 
-#' \code{getverificados} le dados da tabela "verificados", \code{getprevistos} da tabela "previstos"
+#' \code{getverificado} le dados da tabela "verificados", \code{getprevisto} da tabela "previstos"
 #' e \code{getdados} busca as informacoes nas duas e retorna a informacao combinada em um mesmo
 #' dado.
 #' 
@@ -41,6 +41,7 @@
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
 #' @param usina tag da usina
 #' @param datahoras string indicando faixa de tempo para ler da tabela
+#' @param horizonte inteiro ou string do tipo "DX" indicando o horizonte de previsao
 #' @param campos vetor de strings indicando quais campos (colunas) devem ser lidos. Ver Detalhes
 #' @param campos_verif vetor de strings indicando quais campos (colunas) devem ser lidos da tabela
 #'     "verificados". Ver Detalhes
@@ -69,14 +70,14 @@
 #' # PREVISTOS --------------------------------------------
 #' 
 #' # usina "BAEBAU" em marco de 2020, todos os previstos disponiveis (gfs e ecmwf) horizonte D1
-#' getprevistos(conn, "BAEBAU", "2020-03")
+#' getprevisto(conn, "BAEBAU", "2020-03")
 #' 
 #' # pegando o horizonte D3
-#' getprevistos(conn, "BAEBAU", "2020-03", horizonte = "D3")
-#' getprevistos(conn, "BAEBAU", "2020-03", horizonte = 3)
+#' getprevisto(conn, "BAEBAU", "2020-03", horizonte = "D3")
+#' getprevisto(conn, "BAEBAU", "2020-03", horizonte = 3)
 #' 
 #' # retornando apenas o vento gfs (mais a datahora que ja vem por padrao)
-#' getprevistos(conn, "BAEBAU", "2020-03", campos = "vento_gfs")
+#' getprevisto(conn, "BAEBAU", "2020-03", campos = "vento_gfs")
 #' 
 #' # COMBINADO --------------------------------------------
 #' 
@@ -85,7 +86,7 @@
 #' 
 #' }
 #' 
-#' @seealso \code{\link{getprevistos}} para leitura de valores previstos; \code{\link{getdados}}
+#' @seealso \code{\link{getprevisto}} para leitura de valores previstos; \code{\link{getdados}}
 #'     para leitura e retorno de ambos os valores unificados em um mesmo \code{data.frame}
 #' 
 #' @return \code{data.frame} contendo as informacoes buscadas
@@ -108,7 +109,7 @@ getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
 
     query <- paste0("SELECT data_hora,", campos, " FROM verificados WHERE cod_usina='", usina,
         "' AND ", datahoras)
-    verif <- dbGetQuery(conn, query)
+    verif <- dbGetQuery(conexao, query)
 
     return(verif)
 }
@@ -130,7 +131,7 @@ getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_
 
     query <- paste0("SELECT data_hora_previsao, ", campos, " FROM previstos WHERE cod_usina='",
         usina, "' AND ", datahoras, " AND dia_previsao = ", horizonte)
-    prev  <- dbGetQuery(conn, query)
+    prev  <- dbGetQuery(conexao, query)
 
     return(prev)
 }
@@ -150,7 +151,7 @@ getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("ven
     } else if(tem_campos_prev & !tem_campos_verif) {
         out <- getprevisto(conexao, usina, datahoras, horizonte, campos_prev)
     } else if(!tem_campos_prev & tem_campos_verif) {
-        out <- getverificado(conexao, usina, datahoras, horizonte, campos_verif)
+        out <- getverificado(conexao, usina, datahoras, campos_verif)
     } else {
         verif <- getverificado(conexao, usina, datahoras, campos_verif)
         prev  <- getprevisto(conexao, usina, datahoras, horizonte, campos_prev)
@@ -178,13 +179,13 @@ getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("ven
 #' 
 #' @examples 
 #' 
-#' cond <- parsedatas("2021", "data_hora")
 #' \dontrun{
+#' cond <- parsedatas("2021", "data_hora")
 #' identical(cond, "data_hora >= '2021-01-01 00:00:00' AND data_hora < '2022-01-01 00:00:00'")
 #' }
 #' 
-#' cond <- parsedatas("2020-11-30 12:30", "data_hora")
 #' \dontrun{
+#' cond <- parsedatas("2020-11-30 12:30", "data_hora")
 #' identical(cond, "data_hora >= '2020-11-30 12:30:00' AND data_hora < '2020-11-30 12:30:01'")
 #' }
 #' 
@@ -230,19 +231,19 @@ parsedatas <- function(datahoras, nome) {
 #' posiacao e, na segunda, o mesmo instante somado de um ano, mes ou dia respectivamente. Veja os
 #' Exemplos para mais detalhes.
 #' 
-#' @param datahoras uma string indicando faixa de tempo simples, isto e, sem uso da contra barra,
+#' @param datahora uma string indicando faixa de tempo simples, isto e, sem uso da contra barra,
 #'     como descrito em \code{\link{get_funs}}
 #' 
 #' @examples
 #' 
-#' faixa <- expandedatahora("2021")
 #' 
 #' \dontrun{
+#' faixa <- expandedatahora("2021")
 #' identical(faixa, c("2021-01-01 00:00:00", "2022-01-01 00:00:00"))
 #' }
 #' 
-#' faixa <- expandedatahora("2020-05-23 12:30")
 #' \dontrun{
+#' faixa <- expandedatahora("2020-05-23 12:30")
 #' identical(faixa, c("2020-05-23 12:30:00", "2020-05-23 12:30:01"))
 #' }
 #' 
