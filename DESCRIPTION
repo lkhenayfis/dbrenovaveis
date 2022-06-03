@@ -1,0 +1,18 @@
+Package: dbrenovaveis
+Title: Acesso Aos Bancos De Dados PEM-Renovaveis
+Version: 0.0.0.9000
+Authors@R: 
+    person("Lucas", "Khenayfis", , "lucaskhenayfis@gmail.com", role = c("aut", "cre"))
+Description: Este pacote contem funcoes para facilitacao do acesso aos
+    bancos de dados associados a area de energias renovaveis da PEM. Isto
+    inclui acesso, escrita e resgate de informacoes acerca dos bancos
+    disponiveis.
+License: MIT + file LICENSE
+Depends:
+    R (>= 4.0)
+Imports:
+    DBI (>= 1.0),
+    RPostgreSQL (>= 0.7)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
