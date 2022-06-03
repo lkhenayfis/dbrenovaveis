@@ -29,7 +29,7 @@
 #' 
 #' @return objeto de conexao ao banco. Veja \code{\link[DBI]{dbConnect}} para mais detalhes
 #' 
-#' @import DBI
+#' @import DBI RPostgreSQL
 #' 
 #' @export
 
