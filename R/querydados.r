@@ -22,7 +22,7 @@
 #' A especificacao em valor unico e feita passando uma string de data ou datahora no formato padrao
 #' (\code{"YYYY-mm-dd"} para datas e \code{"YYYY-mm-dd HH:MM"} para datahoras), possivelmente 
 #' pariciais, isto e, sem conter todos os niveis. Desta forma, pode ser pedido um mes de determinado
-#' ano ("YYYY-mm"), ou dia do mes de um ano ("YYYY-mm-dd").
+#' ano (\code{"YYYY-mm"}), ou dia do mes de um ano (\code{"YYYY-mm-dd"}).
 #' 
 #' Serao buscados na tabela todos os registros cujo valor no campo de tempo corresponda ao argumento 
 #' ATE O NIVEL DE DETALHE ESPECIFICADO. Isto significa que, caso \code{datahoras = "2021-01-01"}, 
@@ -32,11 +32,11 @@
 #' 
 #' A segunda forma de uso deste argumento corresponde a especificacao de janelas. Isto pode ser 
 #' feito informando duas datahoras, possivelmente parciais tais quais descrito no paragrafo 
-#' anterior, separadas de uma barra tal qual "YYYY-mm-dd HH:MM/YYYY-mm-dd HH:MM". A expansao de cada
-#' parte da janela sera feita exatamente da mesma forma como descrito para valores singulares, e 
-#' serao retornados todos os registros no intervalo especificado INCLUINDO os limites. Assim, se
-#' \code{datahoras = "2020-05/2021-02-03 03:00"}, serao retornados todos os registros de maio de 
-#' 2020 ate as tres da manha do dia 3 de fevereiro de 2021. Veja os Exemplos.
+#' anterior, separadas de uma barra tal qual \code{"YYYY-mm-dd HH:MM/YYYY-mm-dd HH:MM"}. A expansao 
+#' de cada parte da janela sera feita exatamente da mesma forma como descrito para valores 
+#' singulares, e serao retornados todos os registros no intervalo especificado INCLUINDO os limites.
+#' Assim, se \code{datahoras = "2020-05/2021-02-03 03:00"}, serao retornados todos os registros de 
+#' maio de 2020 ate as tres da manha do dia 3 de fevereiro de 2021. Veja os Exemplos.
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
 #' @param usina tag da usina
@@ -82,6 +82,7 @@
 #' 
 #' # pegando vento "RNUEM3" verificado e previstos gfs e ecmwf em fevereiro de 2021, D1
 #' getdados(conn, "RNUEM3", "2021-02", 1)
+#' 
 #' }
 #' 
 #' @seealso \code{\link{getprevistos}} para leitura de valores previstos; \code{\link{getdados}}
@@ -155,6 +156,34 @@ getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("ven
 
 # HELPERS ------------------------------------------------------------------------------------------
 
+#' Parse Argumento \code{datahoras}
+#' 
+#' Transforma \code{datahoras} passado as funcoes \code{get*} numa string de query
+#' 
+#' Esta funcao e responsavel por traduzir as strings de janela temporal \code{datahora} das funcoes
+#' \code{\link{get_funs}} em condicionais de WHERE para a query.
+#' 
+#' Por padrao, todas as queries serao realizadas no padrao \code{data >= lim_1 AND data < lim_2}, 
+#' isto e, serao sempre buscados intervalos fechados no inicio e abertos no final. Desta forma todos
+#' os padroes de janela podem ser representados da mesma forma, simplificando a funcao.
+#' 
+#' @param datahoras uma string indicando faixa de tempo, como descrito em \code{\link{get_funs}}
+#' @param nome nome do campo para query
+#' 
+#' @examples 
+#' 
+#' cond <- parsedatas("2021", "data_hora")
+#' \dontrun{
+#' identical(cond, "data_hora >= '2021-01-01 00:00:00' AND data_hora < '2022-01-01 00:00:00'")
+#' }
+#' 
+#' cond <- parsedatas("2020-11-30 12:30", "data_hora")
+#' \dontrun{
+#' identical(cond, "data_hora >= '2020-11-30 12:30:00' AND data_hora < '2020-11-30 12:30:01'")
+#' }
+#' 
+#' @return string contendo a condicao de busca associada a datas na query
+
 parsedatas <- function(datahoras, nome) {
 
     if(!grepl("/", datahoras)) datahoras <- paste0(rep(datahoras, 2), collapse = "/")
@@ -169,6 +198,50 @@ parsedatas <- function(datahoras, nome) {
 
     return(querydatas)
 }
+
+#' Interpreta As Datahoras Passadas Em \code{datahora}
+#' 
+#' Transforma as expressoes \code{datahoras} em limites POSIX correspondentes a janela 
+#' 
+#' Como descrito em \code{\link{get_funs}}, existem diversas maneiras de especificar uma janela de
+#' tempo para acesso ao banco de dados. Esta funcao e responsavel por processar as strings de janela
+#' temporal passadas la.
+#' 
+#' Antes de detalhar o processamento, e util apresentar a saida. \code{datahora} pode ser ou um 
+#' unico valor ou dois separados pela barra, mas de qualquer forma isto representa uma janela com 
+#' comeco e fim. \code{expandedatahora} retorna um vetor contendo as datahoras correspondentes a 
+#' estes limites, sendo o limite final exclusivo, isto e, retorna limites para uma busca do tipo
+#' \eqn{x \in [lim_1, lim_2)}.
+#' 
+#' Se \code{datahora} for um valor temporal completo, contendo ate os minutos, entende-se que o 
+#' usuario esta buscando exatamente aquele registro e nao uma janela. Neste caso o vetor sera 
+#' retornado com \code{datahora} na primeira posicao e \code{datahora} mais um segundo na segunda.
+#' Desta forma a busca executada e equivalente a uma busca \eqn{x == datahora}
+#' 
+#' Quando \code{datahora} e um valor simples incompleto, indicando entao uma janela, a expansao 
+#' depende do nivel de detalhe informado. Quando se informa apenas ano, mes ou dia, o vetor 
+#' retornado contera este ano, mes, ou dia no primeiro instante de tempo possivel na primeira 
+#' posiacao e, na segunda, o mesmo instante somado de um ano, mes ou dia respectivamente. Veja os
+#' Exemplos para mais detalhes.
+#' 
+#' @param datahoras uma string indicando faixa de tempo simples, isto e, sem uso da contra barra,
+#'     como descrito em \code{\link{get_funs}}
+#' 
+#' @examples
+#' 
+#' faixa <- expandedatahora("2021")
+#' 
+#' \dontrun{
+#' identical(faixa, c("2021-01-01 00:00:00", "2022-01-01 00:00:00"))
+#' }
+#' 
+#' faixa <- expandedatahora("2020-05-23 12:30")
+#' \dontrun{
+#' identical(faixa, c("2020-05-23 12:30:00", "2020-05-23 12:30:01"))
+#' }
+#' 
+#' @return vetor de duas strings, o inicio e final da janela representada por \code{data} hora com
+#'     intervalos inclusivo e exclusivo, respectivamente
 
 expandedatahora <- function(datahora) {
 

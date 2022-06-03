@@ -66,7 +66,7 @@ duas formas principais de especificacao: valor unico ou uma janela.
 A especificacao em valor unico e feita passando uma string de data ou datahora no formato padrao
 (\code{"YYYY-mm-dd"} para datas e \code{"YYYY-mm-dd HH:MM"} para datahoras), possivelmente
 pariciais, isto e, sem conter todos os niveis. Desta forma, pode ser pedido um mes de determinado
-ano ("YYYY-mm"), ou dia do mes de um ano ("YYYY-mm-dd").
+ano (\code{"YYYY-mm"}), ou dia do mes de um ano (\code{"YYYY-mm-dd"}).
 
 Serao buscados na tabela todos os registros cujo valor no campo de tempo corresponda ao argumento
 ATE O NIVEL DE DETALHE ESPECIFICADO. Isto significa que, caso \code{datahoras = "2021-01-01"},
@@ -76,11 +76,11 @@ todos os registros em abril de 2020.
 
 A segunda forma de uso deste argumento corresponde a especificacao de janelas. Isto pode ser
 feito informando duas datahoras, possivelmente parciais tais quais descrito no paragrafo
-anterior, separadas de uma barra tal qual "YYYY-mm-dd HH:MM/YYYY-mm-dd HH:MM". A expansao de cada
-parte da janela sera feita exatamente da mesma forma como descrito para valores singulares, e
-serao retornados todos os registros no intervalo especificado INCLUINDO os limites. Assim, se
-\code{datahoras = "2020-05/2021-02-03 03:00"}, serao retornados todos os registros de maio de
-2020 ate as tres da manha do dia 3 de fevereiro de 2021. Veja os Exemplos.
+anterior, separadas de uma barra tal qual \code{"YYYY-mm-dd HH:MM/YYYY-mm-dd HH:MM"}. A expansao
+de cada parte da janela sera feita exatamente da mesma forma como descrito para valores
+singulares, e serao retornados todos os registros no intervalo especificado INCLUINDO os limites.
+Assim, se \code{datahoras = "2020-05/2021-02-03 03:00"}, serao retornados todos os registros de
+maio de 2020 ate as tres da manha do dia 3 de fevereiro de 2021. Veja os Exemplos.
 }
 \examples{
 
@@ -117,6 +117,7 @@ getprevistos(conn, "BAEBAU", "2020-03", campos = "vento_gfs")
 
 # pegando vento "RNUEM3" verificado e previstos gfs e ecmwf em fevereiro de 2021, D1
 getdados(conn, "RNUEM3", "2021-02", 1)
+
 }
 
 }
