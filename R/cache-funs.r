@@ -11,7 +11,23 @@
 #' @param database string contendo o nome do banco a ser acessado
 #' @param tag um identificador do conjunto de informacoes sendo registradas
 #' 
+#' @examples 
+#' 
+#' \dontrun{
+#' # registrando o usuario 'jose' sob o mnemonico
+#' registra_credenciais("jose", "senha", tag = "usuario_jose")
+#' 
+#' # registrando banco que "jose" vai acessar
+#' registra_banco("hopedagem", 0000, "nome_do_banco", tag = "banco_do_jose")
+#' 
+#' # com isso, e possivel conectar-se
+#' conn <- conectabanco("usuario_jose", "banco_do_jose")
+#' }
+#' 
 #' @return salva as informacoes como arquivo binario em um diretorio do pacote
+#' 
+#' @seealso \code{\link{lista_credenciais}} \code{\link{lista_bancos}} para buscar quais registros
+#'     existem salvos na maquina
 #' 
 #' @name cache_funs
 NULL
@@ -41,6 +57,7 @@ registra_banco <- function(host, port, database, tag) {
 #' @return vetor de tags de usuarios ou bancos registrados
 #' 
 #' @name list_cache_funs
+NULL
 
 #' @rdname list_cache_funs
 
