@@ -35,18 +35,18 @@ library(dbrenovaveis)
 
 # registrando um banco chamado "dados", hospedado num servidor chamado "servidor-de-dados", 
 # acessado pela porta 1111, tageado pelo mnemonico "banco_do_jose"
-registra_banco(host = "servidor-de-dados", 1111, "dados", tag = "banco_do_jose")
+registra_banco(host = "servidor-de-dados", port = 1111, database = "dados", tag = "banco_do_jose")
 
 # registrando um usuario "jose", cuja senha de acesso ao banco "dados" e "senha_do_jose"
-registra_credenciais("jose", "senha_do_jose", tag = "usuario_jose")
+registra_credenciais(usuario = "jose", senha = "senha_do_jose", tag = "usuario_jose")
 ```
 
 A partir deste ponto, e possivel realizar a conexao com o banco e
 extracao dos dados. A conexao e feita atraves da funcao `conectabanco`,
-passando mnemonicos do usuario e banco registrados:
+passando as `tag`s do usuario e banco registrados:
 
 ``` r
-conn <- conectabanco("jose", "banco_do_jose")
+conn <- conectabanco("usuario_jose", "banco_do_jose")
 ```
 
 Com a conexao feita, podemos utilizar as funcoes de extracao de dados. E
