@@ -3,6 +3,7 @@
 export(conectabanco)
 export(getdados)
 export(getprevisto)
+export(getusinas)
 export(getverificado)
 export(lista_bancos)
 export(lista_credenciais)

@@ -8,7 +8,7 @@ expandedatahora(datahora)
 }
 \arguments{
 \item{datahora}{uma string indicando faixa de tempo simples, isto e, sem uso da contra barra,
-como descrito em \code{\link{get_funs}}}
+como descrito em \code{\link{get_funs_quant}}}
 }
 \value{
 vetor de duas strings, o inicio e final da janela representada por \code{data} hora com
@@ -18,7 +18,7 @@ intervalos inclusivo e exclusivo, respectivamente
 Transforma as expressoes \code{datahoras} em limites POSIX correspondentes a janela
 }
 \details{
-Como descrito em \code{\link{get_funs}}, existem diversas maneiras de especificar uma janela de
+Como descrito em \code{\link{get_funs_quant}}, existem diversas maneiras de especificar uma janela de
 tempo para acesso ao banco de dados. Esta funcao e responsavel por processar as strings de janela
 temporal passadas la.
 

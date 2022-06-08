@@ -49,8 +49,15 @@ passando as `tag`s do usuario e banco registrados:
 conn <- conectabanco("usuario_jose", "banco_do_jose")
 ```
 
-Com a conexao feita, podemos utilizar as funcoes de extracao de dados. E
-possivel acessar apenas os verificados…
+Com a conexao feita, podemos utilizar as funcoes de extracao de dados. A
+tabela informativa de usinas no banco pode ser recuperada com
+
+``` r
+getusinas(conn)
+```
+
+Os quantitativos sao acessados por funcoes especificas. E possivel
+acessar apenas os verificados…
 
 ``` r
 verif <- getverificado(conn, "BAEBAU", "2021-01-01")

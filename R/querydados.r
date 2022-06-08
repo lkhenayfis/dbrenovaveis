@@ -86,16 +86,16 @@
 #' 
 #' }
 #' 
-#' @seealso \code{\link{get_funs_quali}} para funcoes de leitura das tabelas qualitativas
+#' @seealso \code{\link{get_funs_quant_quali}} para funcoes de leitura das tabelas qualitativas
 #' 
 #' @return \code{data.frame} contendo as informacoes buscadas
 #' 
-#' @name get_funs
+#' @name get_funs_quant
 NULL
 
 #' @export 
 #' 
-#' @rdname get_funs
+#' @rdname get_funs_quant
 
 getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
 
@@ -115,7 +115,7 @@ getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
 
 #' @export 
 #' 
-#' @rdname get_funs
+#' @rdname get_funs_quant
 
 getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_gfs", "vento_ecmwf")) {
 
@@ -137,7 +137,7 @@ getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_
 
 #' @export 
 #' 
-#' @rdname get_funs
+#' @rdname get_funs_quant
 
 getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("vento"),
     campos_prev = c("vento_gfs", "vento_ecmwf")) {
@@ -167,13 +167,13 @@ getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("ven
 #' Transforma \code{datahoras} passado as funcoes \code{get*} numa string de query
 #' 
 #' Esta funcao e responsavel por traduzir as strings de janela temporal \code{datahora} das funcoes
-#' \code{\link{get_funs}} em condicionais de WHERE para a query.
+#' \code{\link{get_funs_quant}} em condicionais de WHERE para a query.
 #' 
 #' Por padrao, todas as queries serao realizadas no padrao \code{data >= lim_1 AND data < lim_2}, 
 #' isto e, serao sempre buscados intervalos fechados no inicio e abertos no final. Desta forma todos
 #' os padroes de janela podem ser representados da mesma forma, simplificando a funcao.
 #' 
-#' @param datahoras uma string indicando faixa de tempo, como descrito em \code{\link{get_funs}}
+#' @param datahoras uma string indicando faixa de tempo, como descrito em \code{\link{get_funs_quant}}
 #' @param nome nome do campo para query
 #' @param query booleano indicando se deve ser retornada a query ou apenas a expansao das datas
 #' 
@@ -213,7 +213,7 @@ parsedatas <- function(datahoras, nome, query = TRUE) {
 #' 
 #' Transforma as expressoes \code{datahoras} em limites POSIX correspondentes a janela 
 #' 
-#' Como descrito em \code{\link{get_funs}}, existem diversas maneiras de especificar uma janela de
+#' Como descrito em \code{\link{get_funs_quant}}, existem diversas maneiras de especificar uma janela de
 #' tempo para acesso ao banco de dados. Esta funcao e responsavel por processar as strings de janela
 #' temporal passadas la.
 #' 
@@ -235,7 +235,7 @@ parsedatas <- function(datahoras, nome, query = TRUE) {
 #' Exemplos para mais detalhes.
 #' 
 #' @param datahora uma string indicando faixa de tempo simples, isto e, sem uso da contra barra,
-#'     como descrito em \code{\link{get_funs}}
+#'     como descrito em \code{\link{get_funs_quant}}
 #' 
 #' @examples
 #' 
