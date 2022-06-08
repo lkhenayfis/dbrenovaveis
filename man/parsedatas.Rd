@@ -4,15 +4,18 @@
 \alias{parsedatas}
 \title{Parse Argumento \code{datahoras}}
 \usage{
-parsedatas(datahoras, nome)
+parsedatas(datahoras, nome, query = TRUE)
 }
 \arguments{
 \item{datahoras}{uma string indicando faixa de tempo, como descrito em \code{\link{get_funs}}}
 
 \item{nome}{nome do campo para query}
+
+\item{query}{booleano indicando se deve ser retornada a query ou apenas a expansao das datas}
 }
 \value{
-string contendo a condicao de busca associada a datas na query
+se \code{query = TRUE} string contendo a condicao de busca associada a datas na query, do
+contrario retorna apenas as datas expandidas
 }
 \description{
 Transforma \code{datahoras} passado as funcoes \code{get*} numa string de query

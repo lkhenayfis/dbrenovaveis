@@ -86,8 +86,7 @@
 #' 
 #' }
 #' 
-#' @seealso \code{\link{getprevisto}} para leitura de valores previstos; \code{\link{getdados}}
-#'     para leitura e retorno de ambos os valores unificados em um mesmo \code{data.frame}
+#' @seealso \code{\link{get_funs_quali}} para funcoes de leitura das tabelas qualitativas
 #' 
 #' @return \code{data.frame} contendo as informacoes buscadas
 #' 
@@ -176,6 +175,7 @@ getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("ven
 #' 
 #' @param datahoras uma string indicando faixa de tempo, como descrito em \code{\link{get_funs}}
 #' @param nome nome do campo para query
+#' @param query booleano indicando se deve ser retornada a query ou apenas a expansao das datas
 #' 
 #' @examples 
 #' 
@@ -189,9 +189,10 @@ getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("ven
 #' identical(cond, "data_hora >= '2020-11-30 12:30:00' AND data_hora < '2020-11-30 12:30:01'")
 #' }
 #' 
-#' @return string contendo a condicao de busca associada a datas na query
+#' @return se \code{query = TRUE} string contendo a condicao de busca associada a datas na query, do
+#'    contrario retorna apenas as datas expandidas
 
-parsedatas <- function(datahoras, nome) {
+parsedatas <- function(datahoras, nome, query = TRUE) {
 
     if(!grepl("/", datahoras)) datahoras <- paste0(rep(datahoras, 2), collapse = "/")
     if(grepl("^/", datahoras)) datahoras <- paste0("0001-01-01 00:00:00", datahoras)
@@ -199,6 +200,8 @@ parsedatas <- function(datahoras, nome) {
 
     datahoras <- strsplit(datahoras, "/")[[1]]
     datahoras <- lapply(datahoras, expandedatahora)
+
+    if(!query) return(datahoras)
 
     datahoras  <- sapply(1:2, function(i) datahoras[[i]][i])
     querydatas <- paste0(nome, " >= '", datahoras[1], "' AND ", nome, " < '", datahoras[2], "'")
