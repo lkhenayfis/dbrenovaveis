@@ -3,9 +3,12 @@
 \name{get_funs_quali}
 \alias{get_funs_quali}
 \alias{getusinas}
+\alias{getmodelosprev}
 \title{Leitura De Tabelas Qualitativas}
 \usage{
 getusinas(conexao, campos)
+
+getmodelosprev(conexao, campos)
 }
 \arguments{
 \item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}

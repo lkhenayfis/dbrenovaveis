@@ -29,3 +29,16 @@ getusinas <- function(conexao, campos) {
 
     return(out)
 }
+
+#' @export 
+#' 
+#' @rdname get_funs_quali
+
+getmodelosprev <- function(conexao, campos) {
+
+    if(missing(campos)) campos <- "*"
+    query <- paste0("SELECT ", campos, " FROM modelos_previsao")
+    out <- dbGetQuery(conexao, query)
+
+    return(out)
+}

@@ -2,6 +2,7 @@
 
 export(conectabanco)
 export(getdados)
+export(getmodelosprev)
 export(getprevisto)
 export(getusinas)
 export(getverificado)
