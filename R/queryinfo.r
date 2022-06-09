@@ -8,6 +8,10 @@
 #' especificadas em \code{campos}
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
+#' @param usinas opcional, vetor de strings com codigo das usinas cujas informacoes serao buscadas
+#' @param modelos opcional, vetor strings com nome dos modelos cujas informacoes serao buscadas
+#' @param tipo o tipo de modelo a ser pego: "previsao" para os modelos meteorologicos e "correcao"
+#'     para os modelos de correcao de vento
 #' @param campos vetor de strings indicando quais campos (colunas) devem ser lidos
 #' 
 #' @return tabelas qualitativas lidas
@@ -21,10 +25,22 @@ NULL
 #' 
 #' @rdname get_funs_quali
 
-getusinas <- function(conexao, campos) {
+getusinas <- function(conexao, usinas, campos = "*") {
 
-    if(missing(campos)) campos <- "*"
-    query <- paste0("SELECT ", campos, " FROM usinas")
+    campos <- do.call(paste0, list(toupper(campos), collapse = ","))
+
+    SELECT <- paste0("SELECT ", campos)
+    FROM   <- "FROM usinas"
+
+    if(missing(usinas)) {
+        WHERE <- ""
+    } else {
+        usinas <- do.call(paste0, list(toupper(usinas), collapse = "', '"))
+        usinas <- paste0("('", usinas, "')")
+        WHERE  <- paste0("WHERE codigo IN ", usinas)
+    }
+
+    query <- paste(SELECT, FROM, WHERE)
     out <- dbGetQuery(conexao, query)
 
     return(out)
@@ -34,10 +50,22 @@ getusinas <- function(conexao, campos) {
 #' 
 #' @rdname get_funs_quali
 
-getmodelosprev <- function(conexao, campos) {
+getmodelos <- function(conexao, modelos, tipo = "previsao", campos = "*") {
 
-    if(missing(campos)) campos <- "*"
-    query <- paste0("SELECT ", campos, " FROM modelos_previsao")
+    campos <- do.call(paste0, list(toupper(campos), collapse = ","))
+
+    SELECT <- paste0("SELECT ", campos)
+    FROM   <- paste0("FROM modelos_", tipo)
+
+    if(missing(modelos)) {
+        WHERE <- ""
+    } else {
+        modelos <- do.call(paste0, list(toupper(modelos), collapse = "', '"))
+        modelos <- paste0("('", modelos, "')")
+        WHERE   <- paste0("WHERE nome IN ", modelos)
+    }
+
+    query <- paste(SELECT, FROM, WHERE)
     out <- dbGetQuery(conexao, query)
 
     return(out)
