@@ -1,3 +1,11 @@
+# master
+
+## Bug fixes
+
+* Corrige o erro nas queries em 2017 e 2018. Esse problema se dava na conversao de horarios de 
+  virada de horario de verao, pois meia noite e meia noite e meia "nao existem". Foi introduzida
+  uma funcao para execucao das queries que controla o tz da coluna de datas para evitar o erro.
+
 # dbrenovaveis 0.2
 
 ## New features

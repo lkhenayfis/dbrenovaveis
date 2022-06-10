@@ -112,7 +112,8 @@ getverificado <- function(conexao, usinas = NA, datahoras = NA, campos = "vento"
     ORDER  <- "ORDER BY data_hora"
 
     query <- paste(SELECT, FROM, WHERE, ORDER)
-    verif <- dbGetQuery(conexao, query)
+
+    verif <- roda_query(conexao, query)
 
     return(verif)
 }
@@ -137,7 +138,7 @@ getprevisto <- function(conexao, usinas = NA, datahoras = NA, modelos = NA, hori
     ORDER  <- "ORDER BY data_hora_previsao"
 
     query <- paste(SELECT, FROM, WHERE, ORDER)
-    prev  <- dbGetQuery(conexao, query)
+    prev  <- roda_query(conexao, query)
 
     return(prev)
 }
@@ -168,6 +169,38 @@ getdados <- function(conexao, usinas, datahoras, modelos, horizontes, campos_ver
 }
 
 # HELPERS ------------------------------------------------------------------------------------------
+
+#' Executa Queries
+#' 
+#' Funcao para execucao de queries nas \code{\link{get_funs_quant}}
+#' 
+#' Existe um problema na conversao de datas nas viradas de horario de verao, dando erro na query.
+#' Teoricamente isso pode ser resolvido passando tz = "GMT" para as.POSIXlt, porem o DBI nao da
+#' esse nivel de controle.
+#' 
+#' Para contornar o problema se torna necessario fazer uma maracutaia de trocar o tz do R no momento
+#' da query e retorna-lo ao valor original depois. Ao retornar o valor, o R desloca as datas, entao
+#' e preciso modificar o atributo tzone da coluna de datas de volta para GMT
+#' 
+#' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
+#' @param query string da query
+#' 
+#' @return dado recuperado do banco ou erro caso a query nao possa ser realizada
+
+roda_query <- function(conexao, query) {
+
+    oldtz <- Sys.getenv("TZ")
+    Sys.setenv("TZ" = "UTC")
+
+    out <- try(dbGetQuery(conexao, query), silent = TRUE)
+
+    Sys.setenv("TZ" = oldtz)
+
+    coldt <- sapply(out, function(x) "POSIXct" %in% class(x))
+    attr(out[, coldt], "tzone") <- "GMT"
+
+    if(class(out) == "try-error") stop(out[1]) else return(out)
+}
 
 #' Parse Argumentos Das \code{get_funs_quanti}
 #' 

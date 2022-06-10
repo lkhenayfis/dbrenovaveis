@@ -9,8 +9,8 @@ test_that("Testes de acesso ao banco", {
     expect_equal(colnames(verif), c("data_hora", "vento", "geracao"))
     expect_equal(verif$data_hora,
         seq.POSIXt(
-            as.POSIXct("2020-01-01 00:00:00 -03"),
-            as.POSIXct("2020-01-01 23:30:00 -03"),
+            as.POSIXct("2020-01-01 00:00:00", "GMT"),
+            as.POSIXct("2020-01-01 23:30:00", "GMT"),
             by = "30 min")
     )
     expect_snapshot_value(round(verif$vento, 3), style = "deparse")
@@ -20,8 +20,8 @@ test_that("Testes de acesso ao banco", {
     expect_equal(colnames(prev), c("data_hora_previsao", "vento"))
     expect_equal(prev$data_hora,
         seq.POSIXt(
-            as.POSIXct("2020-01-01 00:00:00 -03"),
-            as.POSIXct("2020-01-01 23:30:00 -03"),
+            as.POSIXct("2020-01-01 00:00:00", "GMT"),
+            as.POSIXct("2020-01-01 23:30:00", "GMT"),
             by = "30 min")
     )
     expect_snapshot_value(round(prev$vento, 3), style = "deparse")
