@@ -162,6 +162,88 @@ getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("ven
 
 # HELPERS ------------------------------------------------------------------------------------------
 
+#' Parse Argumentos Das \code{get_funs_quanti}
+#' 
+#' Interpreta cada argumento, expandindo os vazios para todos os valores possiveis
+#' 
+#' O comportamento padrao desta funcao e expandir todos os argumentos nao fornecidos (iguais a 
+#' \code{NA}) para todas as possibilidades no banco. Por exemplo, se \code{usinas = NA}, este trecho
+#' da query retorna todas as usinas disponiveis. 
+#' 
+#' A exceção desta regra e o argumento \code{horizontes}. Este sera expandido para todos os 
+#' horizontes disponiveis para o modelo mais limitado. Isto significa que se ha tres modelos no 
+#' banco, indo ate D5, D6 e D7, \code{horizontes} sera expandido para \code{1:5}. A razao disso e
+#' que as funcoes \code{get} nao sao feitas para queries de multiplos modelos e horizontes 
+#' simultaneamente, dado que este caso de uso e extremamente raro nas aplicacoes de renovaveis da
+#' PEM.
+#' 
+#' O argumento \code{campos} tambem passa por um tratamento especial. Caso nao seja informado, mas
+#' \code{modelos} ou \code{horizontes} tenham e indiquem apenas um modelo ou um horizonte, sera
+#' removido de \code{campos} as colunas indexadoras dessas informacoes. Caso \code{campos} seja
+#' fornecido sem "id_modelo" ou "dia_previsao", mas o usuario tenha informado \code{modelos} ou 
+#' \code{horizontes} de modo que mais de um seja requisitado, \code{campos} sera modificado para
+#' incluir as colunas indexadoras.
+#' 
+#' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
+#' @param tipo um de "verificados" ou "previstos"
+#' @param usinas vetor de usinas buscadas. \code{NA} busca todas
+#' @param datahoras string de janela de tempo buscada. \code{NA} retorna todas
+#' @param modelos vetor de modelos buscados, so tem uso quando \code{tipo == "previstos"}. \code{NA} 
+#'     retorna todos
+#' @param horizontes vetor de horizontes de previsao buscados, so tem uso quando 
+#'     \code{tipo == "previstos"}. \code{NA} retorna todos
+#' @param campos vetor de campos da tabela buscados
+#' 
+#' @return lista contendo os trechos de query assoiados a cada argumento da funcao
+
+parseargs <- function(conexao, tipo, usinas = NA, datahoras = NA, modelos = NA, horizontes = NA,
+    campos = NA) {
+
+    extra <- ifelse(tipo == "verificados", "data_hora", "data_hora_previsao")
+
+    if(all(is.na(usinas))) {
+        usinas <- getusinas(conexao, campos = "id")[, 1]
+    } else {
+        usinas <- toupper(usinas)
+        usinas <- getusinas(conexao, usinas, campos = "id")[, 1]
+    }
+    q_usinas <- paste0("id_usina IN (", paste0(usinas, collapse = ", "), ")")
+
+    if(all(is.na(datahoras))) datahoras <- "0000/9999"
+    q_datahoras <- parsedatas(datahoras, extra)
+
+    if(all(is.na(modelos))) {
+        modelos <- getmodelos(conexao, campos = "id")[, 1]
+    } else {
+        modelos <- toupper(modelos)
+        modelos <- getmodelos(conexao, modelos, campos = "id")[, 1]
+    }
+    q_modelos <- paste0("id_modelo IN (", paste0(modelos, collapse = ", "), ")")
+
+    if(all(is.na(horizontes))) {
+        horizontes <- getmodelos(conexao, campos = "horizonte_previsao")[, 1]
+        horizontes <- seq_len(min(horizontes))
+    } else {
+        horizontes <- sub("D|d", "", horizontes)
+        horizontes <- as.numeric(ifelse(horizontes == "", "0", horizontes))
+    }
+    q_horizontes <- paste0("dia_previsao IN (", paste0(horizontes, collapse = ", "), ")")
+
+    if(all(is.na(campos))) campos <- DBI::dbListFields(conexao, tipo) else campos <- c(extra, campos)
+    if(tipo == "previstos") {
+        campos <- if(length(modelos) == 1) campos[!grepl("id_modelo", campos)] else c(campos, "id_modelo")
+        campos <- if(length(horizontes) == 1) campos[!grepl("dia_previsao", campos)] else c(campos, "dia_previsao")
+    }
+    campos <- campos[!grepl("^id$", campos)]
+    campos <- campos[!duplicated(campos)]
+    q_campos <- paste0(campos, collapse = ",")
+
+    out <- list(campos = q_campos, usinas = q_usinas, datahoras = q_datahoras,
+        modelos = q_modelos, horizontes = q_horizontes)
+
+    return(out)
+}
+
 #' Parse Argumento \code{datahoras}
 #' 
 #' Transforma \code{datahoras} passado as funcoes \code{get*} numa string de query
