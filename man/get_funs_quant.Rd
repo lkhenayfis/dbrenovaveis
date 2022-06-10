@@ -129,5 +129,5 @@ getdados(conn, "RNUEM3", "2021-02", "gfs", 1)
 
 }
 \seealso{
-\code{\link{get_funs_quant_quali}} para funcoes de leitura das tabelas qualitativas
+\code{\link{get_funs_quali}} para funcoes de leitura das tabelas qualitativas
 }

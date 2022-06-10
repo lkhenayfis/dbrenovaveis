@@ -88,7 +88,7 @@
 #' 
 #' }
 #' 
-#' @seealso \code{\link{get_funs_quant_quali}} para funcoes de leitura das tabelas qualitativas
+#' @seealso \code{\link{get_funs_quali}} para funcoes de leitura das tabelas qualitativas
 #' 
 #' @return \code{data.frame} contendo as informacoes buscadas
 #' 
