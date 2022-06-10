@@ -83,14 +83,14 @@ head(verif, 10)
 previstos ...
 
 ```{r, results='as.is'}
-prev <- getprevisto(conn, "BAEBAU", "2021-01-01", "D1")
+prev <- getprevisto(conn, "BAEBAU", "2021-01-01", "GFS", "D1")
 head(prev, 10)
 ```
 
 ou ambos combinados
 
 ```{r, results='as.is'}
-dados <- getdados(conn, "BAEBAU", "2021-01-01", "D1")
+dados <- getdados(conn, "BAEBAU", "2021-01-01", "ECMWF", "D1")
 head(dados, 10)
 ```
 

@@ -12,7 +12,7 @@
 #' retornada por todas as funcoes. A selecao de todas as colunas na tabela pode ser feita atraves de
 #' \code{campos = "*"}. Caso este argumento seja fornecido \code{""}, \code{getverificado} e
 #' \code{getprevisto} abortam com erro. O mesmo acontece para \code{getdados} se ambos os argumentos
-#' \code{campos_*} forem fornecidos varios, porem nao se apenas um deles o for.
+#' \code{campos_*} forem fornecidos vazios, porem nao se apenas um deles o for.
 #' 
 #' \bold{Argumento \code{datahoras}}:
 #' 
@@ -39,9 +39,11 @@
 #' maio de 2020 ate as tres da manha do dia 3 de fevereiro de 2021. Veja os Exemplos.
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param usina tag da usina
+#' @param usinas opcional, vetor de strings com codigo das usinas cujas informacoes serao buscadas
 #' @param datahoras string indicando faixa de tempo para ler da tabela
-#' @param horizonte inteiro ou string do tipo "DX" indicando o horizonte de previsao
+#' @param modelos opcional, vetor strings com nome dos modelos cujas informacoes serao buscadas
+#' @param horizontes opcional, vetor de inteiros ou strings do tipo "DX" indicando o horizonte de 
+#'     previsao
 #' @param campos vetor de strings indicando quais campos (colunas) devem ser lidos. Ver Detalhes
 #' @param campos_verif vetor de strings indicando quais campos (colunas) devem ser lidos da tabela
 #'     "verificados". Ver Detalhes
@@ -70,19 +72,19 @@
 #' # PREVISTOS --------------------------------------------
 #' 
 #' # usina "BAEBAU" em marco de 2020, todos os previstos disponiveis (gfs e ecmwf) horizonte D1
-#' getprevisto(conn, "BAEBAU", "2020-03")
+#' getprevisto(conn, "BAEBAU", "2020-03", horizontes = "D1")
 #' 
 #' # pegando o horizonte D3
-#' getprevisto(conn, "BAEBAU", "2020-03", horizonte = "D3")
-#' getprevisto(conn, "BAEBAU", "2020-03", horizonte = 3)
+#' getprevisto(conn, "BAEBAU", "2020-03", horizontes = "D3")
+#' getprevisto(conn, "BAEBAU", "2020-03", horizontes = 3)
 #' 
-#' # retornando apenas o vento gfs (mais a datahora que ja vem por padrao)
-#' getprevisto(conn, "BAEBAU", "2020-03", campos = "vento_gfs")
+#' # retornando apenas o vento gfs
+#' getprevisto(conn, "BAEBAU", "2020-03", modelos = "GFS")
 #' 
 #' # COMBINADO --------------------------------------------
 #' 
 #' # pegando vento "RNUEM3" verificado e previstos gfs e ecmwf em fevereiro de 2021, D1
-#' getdados(conn, "RNUEM3", "2021-02", 1)
+#' getdados(conn, "RNUEM3", "2021-02", "gfs", 1)
 #' 
 #' }
 #' 
@@ -97,17 +99,19 @@ NULL
 #' 
 #' @rdname get_funs_quant
 
-getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
+getverificado <- function(conexao, usinas = NA, datahoras = NA, campos = "vento") {
 
-    if((length(campos) == 1) && (campos == "")) stop("Argumento 'campos' esta vazio")
+    args <- parseargs(conexao, "verificados", usinas, datahoras, campos = campos)
+    usinas    <- args$usinas
+    datahoras <- args$datahoras
+    campos    <- args$campos
 
-    usina <- toupper(usina)
-    datahoras <- parsedatas(datahoras, "data_hora")
-    campos    <- campos[campos != "data_hora"] # garantia de que nao vai ter data_hora no argumento
-    if(length(campos) > 1) campos <- paste0(campos, collapse = ",")
+    SELECT <- paste("SELECT", campos)
+    FROM   <- "FROM verificados"
+    WHERE  <- paste("WHERE", usinas, "AND", datahoras)
+    ORDER  <- "ORDER BY data_hora"
 
-    query <- paste0("SELECT data_hora,", campos, " FROM verificados WHERE cod_usina='", usina,
-        "' AND ", datahoras)
+    query <- paste(SELECT, FROM, WHERE, ORDER)
     verif <- dbGetQuery(conexao, query)
 
     return(verif)
@@ -117,19 +121,22 @@ getverificado <- function(conexao, usina, datahoras, campos = c("vento")) {
 #' 
 #' @rdname get_funs_quant
 
-getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_gfs", "vento_ecmwf")) {
+getprevisto <- function(conexao, usinas = NA, datahoras = NA, modelos = NA, horizontes = NA,
+    campos = "vento") {
 
-    if((length(campos) == 1) && (campos == "")) stop("Argumento 'campos' esta vazio")
+    args <- parseargs(conexao, "previstos", usinas, datahoras, modelos, horizontes, campos)
+    usinas     <- args$usinas
+    datahoras  <- args$datahoras
+    modelos    <- args$modelos
+    horizontes <- args$horizontes
+    campos     <- args$campos
 
-    usina  <- toupper(usina)
-    datahoras <- parsedatas(datahoras, "data_hora_previsao")
-    horizonte <- sub("D|d", "", horizonte)
-    horizonte <- ifelse(horizonte == "", "0", horizonte)
-    campos    <- campos[campos != "data_hora_previsao"] # garantia de que nao vai ter data_hora_previsao
-    if(length(campos) > 1) campos <- paste0(campos, collapse = ",")
+    SELECT <- paste("SELECT", campos)
+    FROM   <- "FROM previstos"
+    WHERE  <- paste("WHERE", paste(list(usinas, datahoras, modelos, horizontes), collapse = " AND "))
+    ORDER  <- "ORDER BY data_hora_previsao"
 
-    query <- paste0("SELECT data_hora_previsao, ", campos, " FROM previstos WHERE cod_usina='",
-        usina, "' AND ", datahoras, " AND dia_previsao = ", horizonte)
+    query <- paste(SELECT, FROM, WHERE, ORDER)
     prev  <- dbGetQuery(conexao, query)
 
     return(prev)
@@ -139,8 +146,8 @@ getprevisto <- function(conexao, usina, datahoras, horizonte, campos = c("vento_
 #' 
 #' @rdname get_funs_quant
 
-getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("vento"),
-    campos_prev = c("vento_gfs", "vento_ecmwf")) {
+getdados <- function(conexao, usinas, datahoras, modelos, horizontes, campos_verif = c("vento"),
+    campos_prev = c("vento")) {
 
     tem_campos_verif <- (length(campos_verif) > 1) || (campos_verif != "")
     tem_campos_prev  <- (length(campos_prev) > 1) || (campos_prev != "")
@@ -148,13 +155,13 @@ getdados <- function(conexao, usina, datahoras, horizonte, campos_verif = c("ven
     if(!tem_campos_prev & !tem_campos_verif) {
         stop("Ambos os argumentos 'campos_*' estao vazios")
     } else if(tem_campos_prev & !tem_campos_verif) {
-        out <- getprevisto(conexao, usina, datahoras, horizonte, campos_prev)
+        out <- getprevisto(conexao, usinas, datahoras, modelos, horizontes, campos_prev)
     } else if(!tem_campos_prev & tem_campos_verif) {
-        out <- getverificado(conexao, usina, datahoras, campos_verif)
+        out <- getverificado(conexao, usinas, datahoras, campos_verif)
     } else {
-        verif <- getverificado(conexao, usina, datahoras, campos_verif)
-        prev  <- getprevisto(conexao, usina, datahoras, horizonte, campos_prev)
-        out   <- merge(verif, prev, by.x = "data_hora", by.y = "data_hora_previsao")
+        verif <- getverificado(conexao, usinas, datahoras, campos_verif)
+        prev  <- getprevisto(conexao, usinas, datahoras, modelos, horizontes, campos_prev)
+        out   <- merge(verif, prev, by = 1, suffixes = c("_verif", "_prev"))
     }
 
     return(out)

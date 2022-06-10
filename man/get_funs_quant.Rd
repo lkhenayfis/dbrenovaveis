@@ -7,35 +7,40 @@
 \alias{getdados}
 \title{Leitura De Dados No Banco}
 \usage{
-getverificado(conexao, usina, datahoras, campos = c("vento"))
+getverificado(conexao, usinas = NA, datahoras = NA, campos = "vento")
 
 getprevisto(
   conexao,
-  usina,
-  datahoras,
-  horizonte,
-  campos = c("vento_gfs", "vento_ecmwf")
+  usinas = NA,
+  datahoras = NA,
+  modelos = NA,
+  horizontes = NA,
+  campos = "vento"
 )
 
 getdados(
   conexao,
-  usina,
+  usinas,
   datahoras,
-  horizonte,
+  modelos,
+  horizontes,
   campos_verif = c("vento"),
-  campos_prev = c("vento_gfs", "vento_ecmwf")
+  campos_prev = c("vento")
 )
 }
 \arguments{
 \item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}
 
-\item{usina}{tag da usina}
+\item{usinas}{opcional, vetor de strings com codigo das usinas cujas informacoes serao buscadas}
 
 \item{datahoras}{string indicando faixa de tempo para ler da tabela}
 
 \item{campos}{vetor de strings indicando quais campos (colunas) devem ser lidos. Ver Detalhes}
 
-\item{horizonte}{inteiro ou string do tipo "DX" indicando o horizonte de previsao}
+\item{modelos}{opcional, vetor strings com nome dos modelos cujas informacoes serao buscadas}
+
+\item{horizontes}{opcional, vetor de inteiros ou strings do tipo "DX" indicando o horizonte de
+previsao}
 
 \item{campos_verif}{vetor de strings indicando quais campos (colunas) devem ser lidos da tabela
 "verificados". Ver Detalhes}
@@ -58,7 +63,7 @@ Os argumentos \code{campos} nao devem incluir a coluna de data/hora, pois esta s
 retornada por todas as funcoes. A selecao de todas as colunas na tabela pode ser feita atraves de
 \code{campos = "*"}. Caso este argumento seja fornecido \code{""}, \code{getverificado} e
 \code{getprevisto} abortam com erro. O mesmo acontece para \code{getdados} se ambos os argumentos
-\code{campos_*} forem fornecidos varios, porem nao se apenas um deles o for.
+\code{campos_*} forem fornecidos vazios, porem nao se apenas um deles o for.
 
 \bold{Argumento \code{datahoras}}:
 
@@ -106,19 +111,19 @@ getverificado(conn, "RNUEM3", "2020-04-23/2021-07-04", c("vento", "geracao"))
 # PREVISTOS --------------------------------------------
 
 # usina "BAEBAU" em marco de 2020, todos os previstos disponiveis (gfs e ecmwf) horizonte D1
-getprevisto(conn, "BAEBAU", "2020-03")
+getprevisto(conn, "BAEBAU", "2020-03", horizontes = "D1")
 
 # pegando o horizonte D3
-getprevisto(conn, "BAEBAU", "2020-03", horizonte = "D3")
-getprevisto(conn, "BAEBAU", "2020-03", horizonte = 3)
+getprevisto(conn, "BAEBAU", "2020-03", horizontes = "D3")
+getprevisto(conn, "BAEBAU", "2020-03", horizontes = 3)
 
-# retornando apenas o vento gfs (mais a datahora que ja vem por padrao)
-getprevisto(conn, "BAEBAU", "2020-03", campos = "vento_gfs")
+# retornando apenas o vento gfs
+getprevisto(conn, "BAEBAU", "2020-03", modelos = "GFS")
 
 # COMBINADO --------------------------------------------
 
 # pegando vento "RNUEM3" verificado e previstos gfs e ecmwf em fevereiro de 2021, D1
-getdados(conn, "RNUEM3", "2021-02", 1)
+getdados(conn, "RNUEM3", "2021-02", "gfs", 1)
 
 }
 
