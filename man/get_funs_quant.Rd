@@ -7,14 +7,14 @@
 \alias{getdados}
 \title{Leitura De Dados No Banco}
 \usage{
-getverificado(conexao, usinas = NA, datahoras = NA, campos = "vento")
+getverificado(conexao, usinas = "*", datahoras = "*", campos = "vento")
 
 getprevisto(
   conexao,
-  usinas = NA,
-  datahoras = NA,
-  modelos = NA,
-  horizontes = NA,
+  usinas = "*",
+  datahoras = "*",
+  modelos = "*",
+  horizontes = "*",
   campos = "vento"
 )
 
