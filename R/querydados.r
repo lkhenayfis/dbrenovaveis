@@ -99,20 +99,9 @@ NULL
 #' 
 #' @rdname get_funs_quant
 
-getverificado <- function(conexao, usinas = NA, datahoras = NA, campos = "vento") {
+getverificado <- function(conexao, usinas = "*", datahoras = "*", campos = "vento") {
 
-    args <- parseargs(conexao, "verificados", usinas, datahoras, campos = campos)
-    usinas    <- args$usinas
-    datahoras <- args$datahoras
-    campos    <- args$campos
-
-    SELECT <- paste("SELECT", campos)
-    FROM   <- "FROM verificados"
-    WHERE  <- paste("WHERE", usinas, "AND", datahoras)
-    ORDER  <- "ORDER BY data_hora"
-
-    query <- paste(SELECT, FROM, WHERE, ORDER)
-
+    query <- parseargs(conexao, "verificados", usinas, datahoras, NA, NA, campos)
     verif <- roda_query(conexao, query)
 
     return(verif)
@@ -122,22 +111,10 @@ getverificado <- function(conexao, usinas = NA, datahoras = NA, campos = "vento"
 #' 
 #' @rdname get_funs_quant
 
-getprevisto <- function(conexao, usinas = NA, datahoras = NA, modelos = NA, horizontes = NA,
+getprevisto <- function(conexao, usinas = "*", datahoras = "*", modelos = "*", horizontes = "*",
     campos = "vento") {
 
-    args <- parseargs(conexao, "previstos", usinas, datahoras, modelos, horizontes, campos)
-    usinas     <- args$usinas
-    datahoras  <- args$datahoras
-    modelos    <- args$modelos
-    horizontes <- args$horizontes
-    campos     <- args$campos
-
-    SELECT <- paste("SELECT", campos)
-    FROM   <- "FROM previstos"
-    WHERE  <- paste("WHERE", paste(list(usinas, datahoras, modelos, horizontes), collapse = " AND "))
-    ORDER  <- "ORDER BY data_hora_previsao"
-
-    query <- paste(SELECT, FROM, WHERE, ORDER)
+    query <- parseargs(conexao, "previstos", usinas, datahoras, modelos, horizontes, campos)
     prev  <- roda_query(conexao, query)
 
     return(prev)

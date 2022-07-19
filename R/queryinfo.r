@@ -27,21 +27,22 @@ NULL
 
 getusinas <- function(conexao, usinas, campos = "*") {
 
-    campos <- do.call(paste0, list(toupper(campos), collapse = ","))
+    campos <- do.call(paste0, list(campos, collapse = ","))
 
-    SELECT <- paste0("SELECT ", campos)
-    FROM   <- "FROM usinas"
+    SELECT <- campos
+    FROM   <- "usinas"
 
     if(missing(usinas)) {
-        WHERE <- ""
+        WHERE <- NULL
     } else {
         usinas <- do.call(paste0, list(toupper(usinas), collapse = "', '"))
         usinas <- paste0("('", usinas, "')")
-        WHERE  <- paste0("WHERE codigo IN ", usinas)
+        WHERE  <- paste0("codigo IN ", usinas)
     }
 
-    query <- paste(SELECT, FROM, WHERE)
-    out <- dbGetQuery(conexao, query)
+    query <- list(SELECT = SELECT, FROM = FROM, WHERE = WHERE)
+    query <- query[!sapply(query, is.null)]
+    out <- roda_query(conexao, query)
 
     return(out)
 }
@@ -54,19 +55,20 @@ getmodelos <- function(conexao, modelos, tipo = "previsao", campos = "*") {
 
     campos <- do.call(paste0, list(toupper(campos), collapse = ","))
 
-    SELECT <- paste0("SELECT ", campos)
-    FROM   <- paste0("FROM modelos_", tipo)
+    SELECT <- campos
+    FROM   <- paste0("modelos_", tipo)
 
     if(missing(modelos)) {
-        WHERE <- ""
+        WHERE <- NULL
     } else {
         modelos <- do.call(paste0, list(toupper(modelos), collapse = "', '"))
         modelos <- paste0("('", modelos, "')")
-        WHERE   <- paste0("WHERE nome IN ", modelos)
+        WHERE   <- paste0("nome IN ", modelos)
     }
 
-    query <- paste(SELECT, FROM, WHERE)
-    out <- dbGetQuery(conexao, query)
+    query <- list(SELECT = SELECT, FROM = FROM, WHERE = WHERE)
+    query <- query[!sapply(query, is.null)]
+    out <- roda_query(conexao, query)
 
     return(out)
 }
