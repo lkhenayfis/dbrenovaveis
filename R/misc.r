@@ -45,3 +45,37 @@ conectabanco <- function(usuario, banco) {
 
     return(conn)
 }
+
+#' Conexao Com Arquivos Locais
+#' 
+#' Gera a conexao com um mock banco, correspondente a um diretorio local com arquivos a ler
+#' 
+#' Os arquivamentos locais suportados por \code{dbrenovaveis} correspondem a diretorios contendo
+#' uma serie de arquivos csv correspondentes as tabelas do banco (algo como um dump de um banco
+#' relacional comum). Os arquivos devem ser nomeados tal qual os nomes de tabelas esperados no banco
+#' assim como os nomes e tipos de dado nas colunas de cada um.
+#' 
+#' E possivel incluir particionamento nestes dados, de uma certa forma. Ao inves de uma tabela unica
+#' de verificados, por exemplo, podem ser criadas n tabelas nomeadas \code{verificados_partI}, onde 
+#' I corresponde a um indice numerico da particao. Nestes casos, deve existir uma nova tabela 
+#' chamada \code{partitions_verificados} indicando o indice da particao na primeira coluna e valor
+#' das colunas de particionamento nas restantes. Atualmente apenas particionamentos categoricos
+#' sao suportados, isto e, uma faixa de datas por exemplo nao funciona como particionamento.
+#' 
+#' @param dir diretorio contendo os arquivos csv representando o banco
+#' 
+#' @return objeto de conexao com o arquivamento local
+
+conectalocal <- function(diretorio) {
+
+    parts <- list.files(diretorio, pattern = "^partition_", full.names = TRUE)
+    if(length(parts) > 0) {
+        tem_particao <- sub(".*partition_", "", sub(".csv", "", parts))
+    }
+
+    out <- diretorio
+    class(out) <- "local"
+    attr(out, "tem_part") <- tem_particao
+
+    return(out)
+}
