@@ -10,5 +10,5 @@
 #' @name dbrenovaveis
 #' @docType package
 #' 
-#' @import DBI
+#' @import DBI data.table
 NULL
