@@ -13,7 +13,7 @@
 #' e preciso modificar o atributo tzone da coluna de datas de volta para GMT
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param query string da query
+#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
 #' 
 #' @return dado recuperado do banco ou erro caso a query nao possa ser realizada
 
@@ -28,19 +28,51 @@ roda_query.default <- function(conexao, query) {
     oldtz <- Sys.getenv("TZ")
     Sys.setenv("TZ" = "GMT")
 
-    out <- try(dbGetQuery(conexao, query), silent = TRUE)
-    coldt <- sapply(out, function(x) "POSIXct" %in% class(x))
-
-    out[, coldt] <- lapply(out[, coldt, drop = FALSE], as.numeric)
-    out[, coldt] <- lapply(out[, coldt, drop = FALSE], as.POSIXct, origin = "1970-01-01", tz = "GMT")
+    out <- as.data.table(try(dbGetQuery(conexao, query), silent = TRUE))
+    out <- corrigeposix(out)
 
     Sys.setenv("TZ" = oldtz)
 
-    if(class(out) == "try-error") stop(out[1]) else return(out)
+    if(class(out)[1] == "try-error") stop(out[1]) else return(out)
 }
 
 roda_query.local <- function(conexao, query) {
-    NA
+
+    query$SELECT <- strsplit(query$SELECT, ",")[[1]]
+    query$WHERE  <- lapply(query$WHERE, function(q) {
+        q <- sub("IN", "%in%", q)
+        q <- sub("\\(", "c\\(", q)
+        if(grepl("AND", q)) paste0("(", sub(" AND ", ") & (", q), ")") else q
+    })
+    if(!is.null(query[["ORDER BY"]])) query[["ORDER BY"]] <- strsplit(query[["ORDER BY"]], ",")[[1]]
+
+    oldtz <- Sys.getenv("TZ")
+    Sys.setenv("TZ" = "GMT")
+
+    out <- fread(file.path(conexao, paste0(query$FROM, ".csv")))
+    out <- corrigeposix(out)
+
+    Sys.setenv("TZ" = oldtz)
+
+    out <- try(proc_query_local(out, query))
+
+    if(class(out)[1] == "try-error") stop(out[1]) else return(out)
+}
+
+proc_query_local <- function(dat, query) {
+    for(q in query$WHERE) {
+        vsubset <- eval(str2lang(q), envir = dat)
+        dat <- dat[vsubset, ]
+    }
+
+    cols <- query$SELECT
+    dat <- dat[, ..cols]
+
+    cc_order <- list(quote(setorder), quote(dat))
+    for(i in query[["ORDER BY"]]) cc_order <- c(cc_order, list(str2lang(i)))
+    eval(as.call(cc_order))
+
+    return(dat)
 }
 
 #' Parse Argumentos Das \code{get_funs_quanti}
@@ -67,13 +99,13 @@ roda_query.local <- function(conexao, query) {
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
 #' @param tabela um de "verificados" ou "previstos"
-#' @param usinas vetor de usinas buscadas. \code{NA} busca todas
-#' @param datahoras string de janela de tempo buscada. \code{NA} retorna todas
+#' @param usinas vetor de usinas buscadas. \code{"*"} busca todas; \code{NA} nenhuma
+#' @param datahoras string de janela de tempo buscada. \code{"*"} ou \code{NA} retorna todas
 #' @param modelos vetor de modelos buscados, so tem uso quando \code{tabela == "previstos"}.
-#'     \code{NA} retorna todos
+#'     \code{"*"} retorna todos; \code{NA} nenhum
 #' @param horizontes vetor de horizontes de previsao buscados, so tem uso quando 
-#'     \code{tabela == "previstos"}. \code{NA} retorna todos
-#' @param campos vetor de campos da tabela buscados
+#'     \code{tabela == "previstos"}. \code{"*"} retorna todos; \code{NA} nenhum
+#' @param campos vetor de campos da tabela buscados. \code{"*"} ou \code{NA} traz todos
 #' 
 #' @return lista contendo os trechos de query assoiados a cada argumento da funcao
 
@@ -88,17 +120,17 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
         q_usinas <- NULL
     } else {
         if(usinas[1] == "*") {
-            usinas <- getusinas(conexao, campos = "id")[, 1]
+            usinas <- getusinas(conexao, campos = "id")[[1]]
         } else {
             usinas <- toupper(usinas)
-            usinas <- getusinas(conexao, usinas, campos = "id")[, 1]
+            usinas <- getusinas(conexao, usinas, campos = "id")[[1]]
         }
         q_usinas <- paste0("id_usina IN (", paste0(usinas, collapse = ", "), ")")
     }
 
     # Parse escolha de datas ---------------------------------------------
 
-    if((datahoras[1] == "*") || is.na(datahoras[1])) datahoras <- "0001/9999"
+    if((datahoras[1] == "*") || is.na(datahoras[1])) datahoras <- "0001/3999"
     q_datahoras <- parsedatas(datahoras, extra)
 
     # Parse escolha de modelos -------------------------------------------
@@ -107,10 +139,10 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
         q_modelos <- NULL
     } else {
         if(modelos[1] == "*") {
-            modelos <- getmodelos(conexao, campos = "id")[, 1]
+            modelos <- getmodelos(conexao, campos = "id")[[1]]
         } else {
             modelos <- toupper(modelos)
-            modelos <- getmodelos(conexao, modelos, campos = "id")[, 1]
+            modelos <- getmodelos(conexao, modelos, campos = "id")[[1]]
         }
         q_modelos <- paste0("id_modelo IN (", paste0(modelos, collapse = ", "), ")")
     }
@@ -121,7 +153,7 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
         q_horizontes <- NULL
     } else {
         if(horizontes[1] == "*") {
-                horizontes <- getmodelos(conexao, campos = "horizonte_previsao")[, 1]
+                horizontes <- getmodelos(conexao, campos = "horizonte_previsao")[[1]]
                 horizontes <- seq_len(min(horizontes))
         } else {
             horizontes <- sub("D|d", "", horizontes)
@@ -135,7 +167,7 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
     orderby <- c("id_usina", "id_modelo", "dia_previsao", extra)
 
     if((campos[1] == "*") || is.na(campos[1])) {
-        campos <- DBI::dbListFields(conexao, tabela)
+        campos <- listacampos(conexao, tabela)
     } else {
         campos <- c(extra, campos)
     }
@@ -156,9 +188,27 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
         modelos = q_modelos, horizontes = q_horizontes)
     WHERE <- WHERE[!sapply(WHERE, is.null)]
     ORDERBY <- orderby[!sapply(list(q_usinas, q_modelos, q_horizontes, q_datahoras), is.null)]
+    ORDERBY <- ORDERBY[ORDERBY %in% campos]
     ORDERBY <- paste0(ORDERBY, collapse = ",")
 
     out <- list(SELECT = SELECT, FROM = FROM, WHERE = WHERE, "ORDER BY" = ORDERBY)
 
     return(out)
+}
+
+# HELPERS ------------------------------------------------------------------------------------------
+
+corrigeposix <- function(dat) {
+    coldt <- sapply(dat, function(x) "POSIXct" %in% class(x))
+    if(sum(coldt) == 0) return(dat)
+    coldt <- names(coldt)[coldt]
+    dat[, (coldt) := lapply(.SD, as.numeric), .SDcols = coldt]
+    dat[, (coldt) := lapply(.SD, as.POSIXct, origin = "1970-01-01", tz = "GMT"), .SDcols = coldt]
+    return(dat)
+}
+
+listacampos <- function(conexao, tabela) UseMethod("listacampos")
+listacampos.default <- function(conexao, tabela) DBI::dbListFields(conexao, tabela)
+listacampos.local   <- function(conexao, tabela) {
+    colnames(fread(file.path(conexao, paste0(tabela, ".csv")), nrows = 1))
 }
