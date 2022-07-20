@@ -151,15 +151,14 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
     return(out)
 }
 
-parseargs_usinas <- function(conexao, usinas) {
-    if(is.na(usinas[1])) return(structure(NULL, "n" = 0))
+# HELPERS ------------------------------------------------------------------------------------------
 
-    if(usinas[1] == "*") {
-        usinas <- getusinas(conexao, campos = "id")[[1]]
-    } else {
-        usinas <- toupper(usinas)
-        usinas <- getusinas(conexao, usinas, campos = "id")[[1]]
-    }
+parseargs_usinas <- function(conexao, usinas) {
+    if(is.na(usinas[1]) || usinas[1] == "*") return(structure(NA, "n" = 0))
+
+    usinas <- toupper(usinas)
+    usinas <- getusinas(conexao, usinas, campos = "id")[[1]]
+
     q_usinas <- paste0("id_usina IN (", paste0(usinas, collapse = ", "), ")")
     attr(q_usinas, "n") <- length(usinas)
 
@@ -173,14 +172,11 @@ parseargs_datahoras <- function(datahoras, extra) {
 }
 
 parseargs_modelos <- function(conexao, modelos) {
-    if(is.na(modelos[1])) return(structure(NA, "n" = 0))
+    if(is.na(modelos[1]) || modelos[1] == "*") return(structure(NA, "n" = 0))
 
-    if(modelos[1] == "*") {
-        modelos <- getmodelos(conexao, campos = "id")[[1]]
-    } else {
-        modelos <- toupper(modelos)
-        modelos <- getmodelos(conexao, modelos, campos = "id")[[1]]
-    }
+    modelos <- toupper(modelos)
+    modelos <- getmodelos(conexao, modelos, campos = "id")[[1]]
+
     q_modelos <- paste0("id_modelo IN (", paste0(modelos, collapse = ", "), ")")
     attr(q_modelos, "n") <- length(modelos)
 
@@ -188,15 +184,11 @@ parseargs_modelos <- function(conexao, modelos) {
 }
 
 parseargs_horizontes <- function(conexao, horizontes) {
-    if(is.na(horizontes[1])) return(structure(NA, "n" = 0))
+    if(is.na(horizontes[1]) || horizontes[1] == "*") return(structure(NA, "n" = 0))
 
-    if(horizontes[1] == "*") {
-            horizontes <- getmodelos(conexao, campos = "horizonte_previsao")[[1]]
-            horizontes <- seq_len(min(horizontes))
-    } else {
-        horizontes <- sub("D|d", "", horizontes)
-        horizontes <- as.numeric(ifelse(horizontes == "", "0", horizontes))
-    }
+    horizontes <- sub("D|d", "", horizontes)
+    horizontes <- as.numeric(ifelse(horizontes == "", "0", horizontes))
+
     q_horizontes <- paste0("dia_previsao IN (", paste0(horizontes, collapse = ", "), ")")
     attr(q_horizontes, "n") <- length(horizontes)
 
