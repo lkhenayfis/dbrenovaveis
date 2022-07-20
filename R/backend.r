@@ -111,7 +111,7 @@ proc_query_local <- function(dat, query) {
 parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA, horizontes = NA,
     campos = NA) {
 
-    extra <- ifelse(tabela == "verificados", "data_hora", "data_hora_previsao")
+    extra <- ifelse(tabela == "previstos", "data_hora_previsao", "data_hora")
 
     q_usinas     <- parseargs_usinas(conexao, usinas)
     q_datahoras  <- parseargs_datahoras(datahoras, extra)
@@ -127,11 +127,11 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
     }
 
     if(tabela == "previstos") {
-        campos <- if(attr(q_modelos, "n") == 1)  campos[!grepl("id_modelo", campos)] else c(campos, "id_modelo")
-        campos <- if(attr(q_horizontes, "n") == 1) campos[!grepl("dia_previsao", campos)] else c(campos, "dia_previsao")
+        campos <- if(attr(q_modelos, "n") == 1)  campos[!grepl("id_modelo", campos)] else campos
+        campos <- if(attr(q_horizontes, "n") == 1) campos[!grepl("dia_previsao", campos)] else campos
     }
 
-    campos <- if(attr(q_usinas, "n") == 1) campos[!grepl("id_usina", campos)] else c(campos, "id_usina")
+    campos <- if(attr(q_usinas, "n") == 1) campos[!grepl("id_usina", campos)] else campos
     campos <- campos[!grepl("^id$", campos)]
     campos <- campos[!duplicated(campos)]
     q_campos <- paste0(campos, collapse = ",")
