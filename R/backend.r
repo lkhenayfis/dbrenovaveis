@@ -50,11 +50,10 @@ roda_query.local <- function(conexao, query) {
     Sys.setenv("TZ" = "GMT")
 
     out <- fread(file.path(conexao, paste0(query$FROM, ".csv")))
-    out <- corrigeposix(out)
+    out <- try(proc_query_local(out, query))
+    out <- try(corrigeposix(out))
 
     Sys.setenv("TZ" = oldtz)
-
-    out <- try(proc_query_local(out, query))
 
     if(class(out)[1] == "try-error") stop(out[1]) else return(out)
 }
@@ -114,55 +113,10 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
 
     extra <- ifelse(tabela == "verificados", "data_hora", "data_hora_previsao")
 
-    # Parse escolha de usinas --------------------------------------------
-
-    if(is.na(usinas[1])) {
-        q_usinas <- NULL
-    } else {
-        if(usinas[1] == "*") {
-            usinas <- getusinas(conexao, campos = "id")[[1]]
-        } else {
-            usinas <- toupper(usinas)
-            usinas <- getusinas(conexao, usinas, campos = "id")[[1]]
-        }
-        q_usinas <- paste0("id_usina IN (", paste0(usinas, collapse = ", "), ")")
-    }
-
-    # Parse escolha de datas ---------------------------------------------
-
-    if((datahoras[1] == "*") || is.na(datahoras[1])) datahoras <- "0001/3999"
-    q_datahoras <- parsedatas(datahoras, extra)
-
-    # Parse escolha de modelos -------------------------------------------
-
-    if(is.na(modelos[1])) {
-        q_modelos <- NULL
-    } else {
-        if(modelos[1] == "*") {
-            modelos <- getmodelos(conexao, campos = "id")[[1]]
-        } else {
-            modelos <- toupper(modelos)
-            modelos <- getmodelos(conexao, modelos, campos = "id")[[1]]
-        }
-        q_modelos <- paste0("id_modelo IN (", paste0(modelos, collapse = ", "), ")")
-    }
-
-    # Parse escolha de horizontes ----------------------------------------
-
-    if(is.na(horizontes[1])) {
-        q_horizontes <- NULL
-    } else {
-        if(horizontes[1] == "*") {
-                horizontes <- getmodelos(conexao, campos = "horizonte_previsao")[[1]]
-                horizontes <- seq_len(min(horizontes))
-        } else {
-            horizontes <- sub("D|d", "", horizontes)
-            horizontes <- as.numeric(ifelse(horizontes == "", "0", horizontes))
-        }
-        q_horizontes <- paste0("dia_previsao IN (", paste0(horizontes, collapse = ", "), ")")
-    }
-
-    # Montagem final -----------------------------------------------------
+    q_usinas     <- parseargs_usinas(conexao, usinas)
+    q_datahoras  <- parseargs_datahoras(datahoras, extra)
+    q_modelos    <- parseargs_modelos(conexao, modelos)
+    q_horizontes <- parseargs_horizontes(conexao, horizontes)
 
     orderby <- c("id_usina", "id_modelo", "dia_previsao", extra)
 
@@ -173,27 +127,80 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
     }
 
     if(tabela == "previstos") {
-        campos  <- if(length(modelos) == 1)  campos[!grepl("id_modelo", campos)] else c(campos, "id_modelo")
-        campos  <- if(length(horizontes) == 1) campos[!grepl("dia_previsao", campos)] else c(campos, "dia_previsao")
+        campos <- if(attr(q_modelos, "n") == 1)  campos[!grepl("id_modelo", campos)] else c(campos, "id_modelo")
+        campos <- if(attr(q_horizontes, "n") == 1) campos[!grepl("dia_previsao", campos)] else c(campos, "dia_previsao")
     }
 
-    campos <- if(length(usinas) == 1) campos[!grepl("id_usina", campos)] else c(campos, "id_usina")
+    campos <- if(attr(q_usinas, "n") == 1) campos[!grepl("id_usina", campos)] else c(campos, "id_usina")
     campos <- campos[!grepl("^id$", campos)]
     campos <- campos[!duplicated(campos)]
     q_campos <- paste0(campos, collapse = ",")
 
     SELECT <- q_campos
     FROM   <- tabela
-    WHERE  <- list(usinas = q_usinas, datahoras = q_datahoras,
-        modelos = q_modelos, horizontes = q_horizontes)
-    WHERE <- WHERE[!sapply(WHERE, is.null)]
-    ORDERBY <- orderby[!sapply(list(q_usinas, q_modelos, q_horizontes, q_datahoras), is.null)]
+    WHERE  <- list(usinas = q_usinas, modelos = q_modelos,
+        horizontes = q_horizontes, datahoras = q_datahoras)
+    vazios <- sapply(WHERE, is.na)
+    WHERE  <- WHERE[!vazios]
+    ORDERBY <- orderby[!vazios]
     ORDERBY <- ORDERBY[ORDERBY %in% campos]
     ORDERBY <- paste0(ORDERBY, collapse = ",")
 
     out <- list(SELECT = SELECT, FROM = FROM, WHERE = WHERE, "ORDER BY" = ORDERBY)
 
     return(out)
+}
+
+parseargs_usinas <- function(conexao, usinas) {
+    if(is.na(usinas[1])) return(structure(NULL, "n" = 0))
+
+    if(usinas[1] == "*") {
+        usinas <- getusinas(conexao, campos = "id")[[1]]
+    } else {
+        usinas <- toupper(usinas)
+        usinas <- getusinas(conexao, usinas, campos = "id")[[1]]
+    }
+    q_usinas <- paste0("id_usina IN (", paste0(usinas, collapse = ", "), ")")
+    attr(q_usinas, "n") <- length(usinas)
+
+    return(q_usinas)
+}
+
+parseargs_datahoras <- function(datahoras, extra) {
+    if((datahoras[1] == "*") || is.na(datahoras[1])) datahoras <- "0001/3999"
+    q_datahoras <- parsedatas(datahoras, extra)
+    return(q_datahoras)
+}
+
+parseargs_modelos <- function(conexao, modelos) {
+    if(is.na(modelos[1])) return(structure(NA, "n" = 0))
+
+    if(modelos[1] == "*") {
+        modelos <- getmodelos(conexao, campos = "id")[[1]]
+    } else {
+        modelos <- toupper(modelos)
+        modelos <- getmodelos(conexao, modelos, campos = "id")[[1]]
+    }
+    q_modelos <- paste0("id_modelo IN (", paste0(modelos, collapse = ", "), ")")
+    attr(q_modelos, "n") <- length(modelos)
+
+    return(q_modelos)
+}
+
+parseargs_horizontes <- function(conexao, horizontes) {
+    if(is.na(horizontes[1])) return(structure(NA, "n" = 0))
+
+    if(horizontes[1] == "*") {
+            horizontes <- getmodelos(conexao, campos = "horizonte_previsao")[[1]]
+            horizontes <- seq_len(min(horizontes))
+    } else {
+        horizontes <- sub("D|d", "", horizontes)
+        horizontes <- as.numeric(ifelse(horizontes == "", "0", horizontes))
+    }
+    q_horizontes <- paste0("dia_previsao IN (", paste0(horizontes, collapse = ", "), ")")
+    attr(q_horizontes, "n") <- length(horizontes)
+
+    return(q_horizontes)
 }
 
 # HELPERS ------------------------------------------------------------------------------------------
