@@ -1,3 +1,10 @@
+# local_archive
+
+## New features
+
+* Adiciona suporte a "archives" locais, isto e, um diretorio com estrutura similar a de um banco,
+  porem cujas tabelas sao arquivos csv
+
 # master
 
 ## Bug fixes
