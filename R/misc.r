@@ -63,7 +63,7 @@ conectabanco <- function(usuario, banco) {
 #' das colunas de particionamento nas restantes. Atualmente apenas particionamentos categoricos
 #' sao suportados, isto e, uma faixa de datas por exemplo nao funciona como particionamento.
 #' 
-#' @param dir diretorio contendo os arquivos csv representando o banco
+#' @param diretorio diretorio contendo os arquivos csv representando o banco
 #' 
 #' @return objeto de conexao com o arquivamento local
 
