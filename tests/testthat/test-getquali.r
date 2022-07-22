@@ -43,6 +43,17 @@ test_that(paste0(tipo, ": Leitura de tabelas qualitativas"), {
     expect_equal(colnames(datmodp1), colnames(datmodp))
     expect_equal(datmodp1[, nome], "GFS")
     expect_equal(datmodp1[, horizonte_previsao], 5)
+
+    # Tabela de vertices da reanalise -------------------------------
+
+    # tabelas de reanalise ainda nao estado no banco 'renovaveis'
+    if(tipo == "LOCAL") {
+        datvert <- getvertices(conn)
+        expect_equal(colnames(datvert), lf(conn, "vertices"))
+        expect_equal(datvert$id, c(1, 21, 41, 163, 183, 203, 325, 345, 365))
+        expect_equal(datvert$lon, rep(c(-50, -45, -40), 3))
+        expect_equal(datvert$lat, rep(c(5, 4.5, 4), each = 3))
+    }
 })
 
 }

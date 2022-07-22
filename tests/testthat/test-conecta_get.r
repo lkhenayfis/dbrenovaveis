@@ -30,6 +30,14 @@ test_that(paste0(tipo, ": Testes de acesso ao banco"), {
             by = "30 min")
     )
     expect_snapshot_value(round(prev$vento, 3), style = "deparse")
+
+    if(tipo == "LOCAL") {
+        rean <- getreanalise(conn, longitudes = c(-50, -45), latitudes = c(5, 4))
+        expect_equal(colnames(rean), c("id_vertice", "data_hora", "vento"))
+        expect_equal(rean$id_vertice, rep(c(1, 345), each = 24))
+        expect_equal(as.Date(rean$data_hora),
+            rep(seq(as.Date("1979-01-01"), as.Date("1980-12-01"), by = "month"), 2))
+    }
 })
 
 }

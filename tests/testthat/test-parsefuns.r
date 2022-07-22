@@ -80,6 +80,28 @@ test_that(paste0(tipo, ": Interpretacao de arugmentos - USINAS"), {
     expect_true(identical(arg, arg2))
 })
 
+if(tipo == "LOCAL") {
+test_that(paste0(tipo, ": Interpretacao de arugmentos - VERTICES"), {
+
+    expect_error(parseargs_vertices(conn))
+
+    arg <- parseargs_vertices(conn, -50, 5)
+    expect_equal(attr(arg, "n"), 1)
+    expect_equal(arg[1], "id_vertice IN (1)")
+
+    arg <- parseargs_vertices(conn, c(-50, -40), c(5, 4))
+    expect_equal(attr(arg, "n"), 2)
+    expect_equal(arg[1], "id_vertice IN (1, 365)")
+
+    arg <- parseargs_vertices(conn, "*", "*")
+    expect_equal(attr(arg, "n"), 0)
+    expect_true(is.na(arg[1]))
+
+    arg2 <- parseargs_vertices(conn, NA, NA)
+    expect_true(identical(arg, arg2))
+})
+}
+
 test_that(paste0(tipo, ": Interpretacao de arugmentos - DATAHORAS"), {
 
     expect_error(parseargs_datahoras(conn))
@@ -210,6 +232,19 @@ test_that(paste0(tipo, ": Interpretacao de argumentos - CAMPOS/ORDERBY"), {
         modelos = c("gfs", "ecmwf"), horizontes = seq(3))
     expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
     expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
+
+    # Reanalise ----------------------------------------------------------
+
+    if(tipo == "LOCAL") {
+
+        query <- parseargs(conn, "reanalise_grade", longitudes = -50, latitudes = 4)
+        expect_equal(query$SELECT, "data_hora,vento")
+        expect_equal(query[["ORDER BY"]], "data_hora")
+
+        query <- parseargs(conn, "reanalise_grade", longitudes = c(-50, -40), latitudes = c(5, 4))
+        expect_equal(query$SELECT, "id_vertice,data_hora,vento")
+        expect_equal(query[["ORDER BY"]], "id_vertice,data_hora")
+    }
 })
 
 }
