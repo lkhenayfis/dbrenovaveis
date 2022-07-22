@@ -50,10 +50,17 @@ test_that("Interpretacao de janelas", {
     expect_true(identical(cond, "data >= '2020-01-01 10:00:00' AND data < '2020-06-05 03:30:01'"))
 })
 
-if(Sys.getenv("RUNTEST")) {
+conexoes <- list("LOCAL" = conectalocal(system.file("extdata/sempart", package = "dbrenovaveis")))
 
-test_that("Interpretacao de arugmentos - USINAS", {
-    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
+if(Sys.getenv("RUN_BANCO", FALSE)) {
+    conexoes <- c(conexoes, list("BANCO" = conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))))
+}
+
+for(tipo in names(conexoes)) {
+
+conn <- conexoes[[tipo]]
+
+test_that(paste0(tipo, ": Interpretacao de arugmentos - USINAS"), {
 
     expect_error(parseargs_usinas(conn))
 
@@ -73,8 +80,7 @@ test_that("Interpretacao de arugmentos - USINAS", {
     expect_true(identical(arg, arg2))
 })
 
-test_that("Interpretacao de arugmentos - DATAHORAS", {
-    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
+test_that(paste0(tipo, ": Interpretacao de arugmentos - DATAHORAS"), {
 
     expect_error(parseargs_datahoras(conn))
 
@@ -88,8 +94,7 @@ test_that("Interpretacao de arugmentos - DATAHORAS", {
     expect_true(identical(arg, arg2))
 })
 
-test_that("Interpretacao de arugmentos - MODELOS", {
-    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
+test_that(paste0(tipo, ": Interpretacao de arugmentos - MODELOS"), {
 
     expect_error(parseargs_modelos(conn))
 
@@ -109,8 +114,7 @@ test_that("Interpretacao de arugmentos - MODELOS", {
     expect_true(identical(arg, arg2))
 })
 
-test_that("Interpretacao de arugmentos - HORIZONTES", {
-    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
+test_that(paste0(tipo, ": Interpretacao de arugmentos - HORIZONTES"), {
 
     expect_error(parseargs_horizontes(conn))
 
@@ -133,8 +137,7 @@ test_that("Interpretacao de arugmentos - HORIZONTES", {
     expect_true(identical(arg, arg2))
 })
 
-test_that("Interpretacao de argumentos - CAMPOS/ORDERBY", {
-    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
+test_that(paste0(tipo, ": Interpretacao de argumentos - CAMPOS/ORDERBY"), {
 
     expect_error(parseargs(conn))
 

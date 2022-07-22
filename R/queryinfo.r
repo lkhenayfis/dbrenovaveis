@@ -27,6 +27,7 @@ NULL
 
 getusinas <- function(conexao, usinas, campos = "*") {
 
+    if(campos[1] == "*") campos <- listacampos(conexao, "usinas")
     campos <- do.call(paste0, list(campos, collapse = ","))
 
     SELECT <- campos
@@ -53,7 +54,8 @@ getusinas <- function(conexao, usinas, campos = "*") {
 
 getmodelos <- function(conexao, modelos, tipo = "previsao", campos = "*") {
 
-    campos <- do.call(paste0, list(toupper(campos), collapse = ","))
+    if(campos[1] == "*") campos <- listacampos(conexao, paste0("modelos_", tipo))
+    campos <- do.call(paste0, list(campos, collapse = ","))
 
     SELECT <- campos
     FROM   <- paste0("modelos_", tipo)

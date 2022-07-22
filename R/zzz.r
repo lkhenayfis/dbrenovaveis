@@ -1,7 +1,6 @@
 .onLoad <- function(libname, pkgname) {
     cachedir <- file.path(Sys.getenv("HOME"), ".dbrenovaveis")
     Sys.setenv("dbrenovaveis-cachedir" = cachedir)
-    if(Sys.getenv("RUNTEST") == "") Sys.setenv("RUNTEST" = FALSE)
 
     if(!dir.exists(cachedir)) dir.create(cachedir)
 }
