@@ -59,6 +59,9 @@ roda_query.local <- function(conexao, query) {
 }
 
 proc_query_local <- function(dat, query) {
+
+    ..cols <- NULL
+
     for(q in query$WHERE) {
         vsubset <- eval(str2lang(q), envir = dat)
         dat <- dat[vsubset, ]

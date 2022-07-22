@@ -7,7 +7,7 @@
 conectalocal(diretorio)
 }
 \arguments{
-\item{dir}{diretorio contendo os arquivos csv representando o banco}
+\item{diretorio}{diretorio contendo os arquivos csv representando o banco}
 }
 \value{
 objeto de conexao com o arquivamento local
