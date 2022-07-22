@@ -40,8 +40,8 @@ roda_query.local <- function(conexao, query) {
 
     query$SELECT <- strsplit(query$SELECT, ",")[[1]]
     query$WHERE  <- lapply(query$WHERE, function(q) {
-        q <- sub("IN", "%in%", q)
-        q <- sub("\\(", "c\\(", q)
+        q <- gsub("IN", "%in%", q)
+        q <- gsub("\\(", "c\\(", q)
         if(grepl("AND", q)) paste0("(", sub(" AND ", ") & (", q), ")") else q
     })
     if(!is.null(query[["ORDER BY"]])) query[["ORDER BY"]] <- strsplit(query[["ORDER BY"]], ",")[[1]]
@@ -108,18 +108,19 @@ proc_query_local <- function(dat, query) {
 #' 
 #' @return lista contendo os trechos de query assoiados a cada argumento da funcao
 
-parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA, horizontes = NA,
-    campos = NA) {
+parseargs <- function(conexao, tabela, usinas = NA, longitudes = NA, latitudes = NA, datahoras = NA,
+    modelos = NA, horizontes = NA, campos = NA) {
 
     extra <- ifelse(tabela == "previstos", "data_hora_previsao", "data_hora")
     if((campos[1] == "*") || is.na(campos[1])) campos <- listacampos(conexao, tabela)
 
     q_usinas     <- parseargs_usinas(conexao, usinas)
+    q_vertices   <- parseargs_vertices(conexao, longitudes, latitudes)
     q_datahoras  <- parseargs_datahoras(datahoras, extra)
     q_modelos    <- parseargs_modelos(conexao, modelos)
     q_horizontes <- parseargs_horizontes(conexao, horizontes)
 
-    ORDERBY <- c("id_usina", "id_modelo", "dia_previsao", extra)
+    ORDERBY <- c("id_usina", "id_vertice", "id_modelo", "dia_previsao", extra)
 
     campos_full <- listacampos(conexao, tabela)
     mantem <- c(extra, campos)
@@ -130,13 +131,14 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
     }
 
     mantem <- if(attr(q_usinas, "n") == 1) mantem[!(mantem %in% "id_usina")] else c(mantem, "id_usina")
+    mantem <- if(attr(q_vertices, "n") == 1) mantem[!(mantem %in% "id_vertice")] else c(mantem, "id_vertice")
     mantem <- mantem[!grepl("^id$", mantem)]
     campos <- campos_full[campos_full %in% mantem]
     q_campos <- paste0(campos, collapse = ",")
 
     SELECT <- q_campos
     FROM   <- tabela
-    WHERE  <- list(usinas = q_usinas, modelos = q_modelos,
+    WHERE  <- list(usinas = q_usinas, vertices = q_vertices, modelos = q_modelos,
         horizontes = q_horizontes, datahoras = q_datahoras)
     WHERE  <- WHERE[!sapply(WHERE, is.na)]
     ORDERBY <- ORDERBY[ORDERBY %in% campos]
@@ -191,7 +193,21 @@ parseargs_horizontes <- function(conexao, horizontes) {
     return(q_horizontes)
 }
 
-# HELPERS ------------------------------------------------------------------------------------------
+parseargs_vertices <- function(conexao, longitudes, latitudes) {
+
+    temlon <- !(is.na(longitudes[1]) || (longitudes[1] == "*"))
+    temlat <- !(is.na(latitudes[1])  || (latitudes[1] == "*"))
+
+    if(!temlon & !temlat) return(structure(NA, "n" = 0))
+
+    vertices <- getvertices(conexao, longitudes, latitudes, campos = "id")[[1]]
+
+    q_vertices <- paste0("id_vertice IN (", paste0(vertices, collapse = ", "), ")")
+    attr(q_vertices, "n") <- length(vertices)
+
+    return(q_vertices)
+}
+
 
 corrigeposix <- function(dat) {
     coldt <- sapply(dat, function(x) "POSIXct" %in% class(x))

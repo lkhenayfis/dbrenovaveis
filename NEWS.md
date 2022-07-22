@@ -1,3 +1,9 @@
+# reanalise
+
+## New features
+
+* Adiciona suporte ao pacote para leitura da tabela de ventos de reanalise
+
 # local_archive
 
 ## New features

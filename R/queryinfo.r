@@ -72,3 +72,42 @@ getmodelos <- function(conexao, modelos, tipo = "previsao", campos = "*") {
 
     return(out)
 }
+
+#' @export 
+#' 
+#' @rdname get_funs_quali
+
+getvertices <- function(conexao, longitudes = "*", latitudes = "*", campos = "*") {
+
+    if(campos[1] == "*") campos <- listacampos(conexao, "vertices")
+    campos <- do.call(paste0, list(campos, collapse = ","))
+
+    SELECT <- campos
+    FROM   <- "vertices"
+
+    temlong <- longitudes[1] != "*"
+    temlat  <- latitudes[1] != "*"
+
+    if(temlong & !temlat) {
+        longitudes <- paste0(longitudes, collapse = ",")
+        WHERE <- list(paste0("longitude IN (", longitudes, ")"))
+    } else if(!temlong & temlat) {
+        latitudes <- paste0(latitudes, collapse = ",")
+        WHERE <- list(paste0("latitude IN (", latitudes, ")"))
+    } else if(temlong & temlat) {
+        WHERE <- mapply(longitudes, latitudes, FUN = function(lon, lat) {
+            paste0("longitude IN (", lon, ") AND latitude IN (", lat, ")")
+        })
+    } else {
+        WHERE <- list(NULL)
+    }
+
+    out <- lapply(WHERE, function(w) {
+        query <- list(SELECT = SELECT, FROM = FROM, WHERE = w)
+        query <- query[!sapply(query, is.null)]
+        roda_query(conexao, query)
+    })
+    out <- rbindlist(out)
+
+    return(out)
+}
