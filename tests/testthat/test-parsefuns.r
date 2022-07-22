@@ -52,68 +52,161 @@ test_that("Interpretacao de janelas", {
 
 if(Sys.getenv("RUNTEST")) {
 
-test_that("Interpretacao de argumentos", {
+test_that("Interpretacao de arugmentos - USINAS", {
     conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
 
-    # Nao serao feitos testes a respeito da parte de datas, pois isso tem sua propria regiao
+    expect_error(parseargs_usinas(conn))
+
+    arg <- parseargs_usinas(conn, "baebau")
+    expect_equal(attr(arg, "n"), 1)
+    expect_equal(arg[1], "id_usina IN (1)")
+
+    arg <- parseargs_usinas(conn, c("baebau", "sceamo"))
+    expect_equal(attr(arg, "n"), 2)
+    expect_equal(arg[1], "id_usina IN (1, 14)")
+
+    arg <- parseargs_usinas(conn, "*")
+    expect_equal(attr(arg, "n"), 0)
+    expect_true(is.na(arg[1]))
+
+    arg2 <- parseargs_usinas(conn, NA)
+    expect_true(identical(arg, arg2))
+})
+
+test_that("Interpretacao de arugmentos - DATAHORAS", {
+    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
+
+    expect_error(parseargs_datahoras(conn))
+
+    arg <- parseargs_datahoras("2021-01-01", "teste")
+    expect_equal(arg[1], "teste >= '2021-01-01 00:00:00' AND teste < '2021-01-02 00:00:00'")
+
+    arg <- parseargs_datahoras(NA, "teste")
+    expect_equal(arg[1], "teste >= '0001-01-01 00:00:00' AND teste < '4000-01-01 00:00:00'")
+
+    arg2 <- parseargs_datahoras("*", "teste")
+    expect_true(identical(arg, arg2))
+})
+
+test_that("Interpretacao de arugmentos - MODELOS", {
+    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
+
+    expect_error(parseargs_modelos(conn))
+
+    arg <- parseargs_modelos(conn, "gfs")
+    expect_equal(attr(arg, "n"), 1)
+    expect_equal(arg[1], "id_modelo IN (1)")
+
+    arg <- parseargs_modelos(conn, c("gfs", "ECMWF"))
+    expect_equal(attr(arg, "n"), 2)
+    expect_equal(arg[1], "id_modelo IN (1, 2)")
+
+    arg <- parseargs_modelos(conn, "*")
+    expect_equal(attr(arg, "n"), 0)
+    expect_true(is.na(arg[1]))
+
+    arg2 <- parseargs_modelos(conn, NA)
+    expect_true(identical(arg, arg2))
+})
+
+test_that("Interpretacao de arugmentos - HORIZONTES", {
+    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
+
+    expect_error(parseargs_horizontes(conn))
+
+    arg <- parseargs_horizontes(conn, 1)
+    expect_equal(attr(arg, "n"), 1)
+    expect_equal(arg[1], "dia_previsao IN (1)")
+
+    arg <- parseargs_horizontes(conn, seq(2))
+    expect_equal(attr(arg, "n"), 2)
+    expect_equal(arg[1], "dia_previsao IN (1, 2)")
+
+    arg2 <- parseargs_horizontes(conn, c(1, "D2"))
+    expect_true(identical(arg, arg2))
+
+    arg <- parseargs_horizontes(conn, "*")
+    expect_equal(attr(arg, "n"), 0)
+    expect_true(is.na(arg[1]))
+
+    arg2 <- parseargs_horizontes(conn, NA)
+    expect_true(identical(arg, arg2))
+})
+
+test_that("Interpretacao de argumentos - CAMPOS/ORDERBY", {
+    conn <- conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))
 
     expect_error(parseargs(conn))
 
-    # execucoes limpas
+    # Verificados --------------------------------------------------------
 
-    args_v0 <- parseargs(conn, "verificados", "*", "*", "*", "*", "*")
-    expect_equal(args_v0$SELECT, "data_hora,vento,geracao,id_usina")
-    expect_equal(args_v0$WHERE$usinas, "id_usina IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)")
-    expect_equal(args_v0$WHERE$datahoras, "data_hora >= '0001-01-01 00:00:00' AND data_hora < '10000-01-01 00:00:00'")
-    expect_equal(args_v0$WHERE$modelos, "id_modelo IN (1, 2)")
-    expect_equal(args_v0$WHERE$horizontes, "dia_previsao IN (1, 2, 3, 4, 5)")
+    query <- parseargs(conn, "verificados", "baebau")
+    expect_equal(query$SELECT, "data_hora,vento,geracao")
+    expect_equal(query[["ORDER BY"]], "data_hora")
 
-    args_p0 <- parseargs(conn, "previstos", "*", "*", "*", "*", "*")
-    expect_equal(args_p0$SELECT, "data_hora_previsao,dia_previsao,vento,id_usina,id_modelo")
-    expect_equal(args_p0$WHERE$usinas, args_v0$WHERE$usinas)
-    expect_equal(args_p0$WHERE$datahoras,
-        "data_hora_previsao >= '0001-01-01 00:00:00' AND data_hora_previsao < '10000-01-01 00:00:00'")
-    expect_equal(args_p0$WHERE$modelos, args_v0$WHERE$modelos)
-    expect_equal(args_p0$WHERE$horizontes, args_v0$WHERE$horizontes)
+    query <- parseargs(conn, "verificados", "baebau", datahoras = "2021-01-01")
+    expect_equal(query$SELECT, "data_hora,vento,geracao")
+    expect_equal(query[["ORDER BY"]], "data_hora")
 
-    # Execucoes com um parametro de cada vez
+    query <- parseargs(conn, "verificados", c("baebau", "rnuem3"), datahoras = "2021-01-01")
+    expect_equal(query$SELECT, "data_hora,vento,geracao,id_usina")
+    expect_equal(query[["ORDER BY"]], "id_usina,data_hora")
 
-    args <- parseargs(conn, "verificados", c("baebau", "rnuem3"), "*", "*", "*", "*")
-    expect_equal(args$SELECT, args_v0$SELECT)
-    expect_equal(args$WHERE$usinas, "id_usina IN (1, 10)")
-    expect_equal(args$WHERE$datahoras, args_v0$WHERE$datahoras)
-    expect_equal(args$WHERE$modelos, args_v0$WHERE$modelos)
-    expect_equal(args$WHERE$horizontes, args_v0$WHERE$horizontes)
+    query <- parseargs(conn, "verificados", "baebau", datahoras = "2021-01-01", campos = "vento")
+    expect_equal(query$SELECT, "data_hora,vento")
+    expect_equal(query[["ORDER BY"]], "data_hora")
 
-    args <- parseargs(conn, "verificados", "*", datahoras = "2021-01-02", "*", "*", "*")
-    expect_equal(args$SELECT, args_v0$SELECT)
-    expect_equal(args$WHERE$usinas, args_v0$WHERE$usinas)
-    expect_equal(args$WHERE$datahoras,
-        "data_hora >= '2021-01-02 00:00:00' AND data_hora < '2021-01-03 00:00:00'")
-    expect_equal(args$WHERE$modelos, args_v0$WHERE$modelos)
-    expect_equal(args$WHERE$horizontes, args_v0$WHERE$horizontes)
+    query <- parseargs(conn, "verificados", c("baebau", "rnuem3"), datahoras = "2021-01-01",
+        campos = "vento")
+    expect_equal(query$SELECT, "data_hora,vento,id_usina")
+    expect_equal(query[["ORDER BY"]], "id_usina,data_hora")
 
-    args <- parseargs(conn, "verificados", "*", "*", modelos = "ecmwf", "*", "*")
-    expect_equal(args$SELECT, args_v0$SELECT)
-    expect_equal(args$WHERE$usinas, args_v0$WHERE$usinas)
-    expect_equal(args$WHERE$datahoras, args_v0$WHERE$datahoras)
-    expect_equal(args$WHERE$modelos, "id_modelo IN (2)")
-    expect_equal(args$WHERE$horizontes, args_v0$WHERE$horizontes)
+    # Previstos ----------------------------------------------------------
 
-    args <- parseargs(conn, "verificados", "*", "*", "*", horizontes = c("d2", "d5"), "*")
-    expect_equal(args$SELECT, args_v0$SELECT)
-    expect_equal(args$WHERE$usinas, args_v0$WHERE$usinas)
-    expect_equal(args$WHERE$datahoras, args_v0$WHERE$datahoras)
-    expect_equal(args$WHERE$modelos, args_v0$WHERE$modelos)
-    expect_equal(args$WHERE$horizontes, "dia_previsao IN (2, 5)")
+    # Selecionando usinas
 
-    # decisao de quais campos trazer em previstos
+    query <- parseargs(conn, "previstos", "baebau")
+    expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
+    expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
 
-    args <- parseargs(conn, "previstos", "*", "*", modelos = "gfs", "*", "*")
-    expect_equal(args$SELECT, "data_hora_previsao,dia_previsao,vento,id_usina")
+    query <- parseargs(conn, "previstos", "baebau", datahoras = "2021-01-01")
+    expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
+    expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
 
-    args <- parseargs(conn, "previstos", "*", "*", "*", horizontes = "d2", "*")
-    expect_equal(args$SELECT, "data_hora_previsao,vento,id_usina,id_modelo")
+    query <- parseargs(conn, "previstos", c("baebau", "sceamo"), datahoras = "2021-01-01")
+    expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_usina,id_modelo")
+    expect_equal(query[["ORDER BY"]], "id_usina,id_modelo,dia_previsao,data_hora_previsao")
+
+    # Selecionando modelos
+
+    query <- parseargs(conn, "previstos", "baebau", datahoras = "2021-01-01", modelos = "gfs")
+    expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento")
+    expect_equal(query[["ORDER BY"]], "dia_previsao,data_hora_previsao")
+
+    query <- parseargs(conn, "previstos", "baebau", datahoras = "2021-01-01", modelos = c("gfs", "ecmwf"))
+    expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
+    expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
+
+    # Selecionando horizontes
+
+    query <- parseargs(conn, "previstos", "baebau", datahoras = "2021-01-01", horizontes = 1)
+    expect_equal(query$SELECT, "data_hora_previsao,vento,id_modelo")
+    expect_equal(query[["ORDER BY"]], "id_modelo,data_hora_previsao")
+
+    query <- parseargs(conn, "previstos", "baebau", datahoras = "2021-01-01", horizontes = seq(2))
+    expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
+    expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
+
+    # Selecionando modelos e horizontes
+
+    query <- parseargs(conn, "previstos", "baebau", datahoras = "2021-01-01", modelos = "gfs", horizontes = 1)
+    expect_equal(query$SELECT, "data_hora_previsao,vento")
+    expect_equal(query[["ORDER BY"]], "data_hora_previsao")
+
+    query <- parseargs(conn, "previstos", "baebau", datahoras = "2021-01-01",
+        modelos = c("gfs", "ecmwf"), horizontes = seq(3))
+    expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
+    expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
 })
 
 }

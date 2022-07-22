@@ -112,37 +112,33 @@ parseargs <- function(conexao, tabela, usinas = NA, datahoras = NA, modelos = NA
     campos = NA) {
 
     extra <- ifelse(tabela == "previstos", "data_hora_previsao", "data_hora")
+    if((campos[1] == "*") || is.na(campos[1])) campos <- listacampos(conexao, tabela)
 
     q_usinas     <- parseargs_usinas(conexao, usinas)
     q_datahoras  <- parseargs_datahoras(datahoras, extra)
     q_modelos    <- parseargs_modelos(conexao, modelos)
     q_horizontes <- parseargs_horizontes(conexao, horizontes)
 
-    orderby <- c("id_usina", "id_modelo", "dia_previsao", extra)
+    ORDERBY <- c("id_usina", "id_modelo", "dia_previsao", extra)
 
-    if((campos[1] == "*") || is.na(campos[1])) {
-        campos <- listacampos(conexao, tabela)
-    } else {
-        campos <- c(extra, campos)
-    }
+    campos_full <- listacampos(conexao, tabela)
+    mantem <- c(extra, campos)
 
     if(tabela == "previstos") {
-        campos <- if(attr(q_modelos, "n") == 1)  campos[!grepl("id_modelo", campos)] else campos
-        campos <- if(attr(q_horizontes, "n") == 1) campos[!grepl("dia_previsao", campos)] else campos
+        mantem <- if(attr(q_modelos, "n") == 1) mantem[!(mantem %in% "id_modelo")] else c(mantem, "id_modelo")
+        mantem <- if(attr(q_horizontes, "n") == 1) mantem[!(mantem %in% "dia_previsao")] else c(mantem, "dia_previsao")
     }
 
-    campos <- if(attr(q_usinas, "n") == 1) campos[!grepl("id_usina", campos)] else campos
-    campos <- campos[!grepl("^id$", campos)]
-    campos <- campos[!duplicated(campos)]
+    mantem <- if(attr(q_usinas, "n") == 1) mantem[!(mantem %in% "id_usina")] else c(mantem, "id_usina")
+    mantem <- mantem[!grepl("^id$", mantem)]
+    campos <- campos_full[campos_full %in% mantem]
     q_campos <- paste0(campos, collapse = ",")
 
     SELECT <- q_campos
     FROM   <- tabela
     WHERE  <- list(usinas = q_usinas, modelos = q_modelos,
         horizontes = q_horizontes, datahoras = q_datahoras)
-    vazios <- sapply(WHERE, is.na)
-    WHERE  <- WHERE[!vazios]
-    ORDERBY <- orderby[!vazios]
+    WHERE  <- WHERE[!sapply(WHERE, is.na)]
     ORDERBY <- ORDERBY[ORDERBY %in% campos]
     ORDERBY <- paste0(ORDERBY, collapse = ",")
 
