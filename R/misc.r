@@ -55,6 +55,7 @@ conectabanco <- function(usuario, banco) {
 #' relacional comum). Os arquivos devem ser nomeados tal qual os nomes de tabelas esperados no banco
 #' assim como os nomes e tipos de dado nas colunas de cada um.
 #' 
+#' AINDA NAO IMPLEMENTADO
 #' E possivel incluir particionamento nestes dados, de uma certa forma. Ao inves de uma tabela unica
 #' de verificados, por exemplo, podem ser criadas n tabelas nomeadas \code{verificados_partI}, onde 
 #' I corresponde a um indice numerico da particao. Nestes casos, deve existir uma nova tabela 
@@ -68,14 +69,8 @@ conectabanco <- function(usuario, banco) {
 
 conectalocal <- function(diretorio) {
 
-    parts <- list.files(diretorio, pattern = "^partition_", full.names = TRUE)
-    if(length(parts) > 0) {
-        tem_particao <- sub(".*partition_", "", sub(".csv", "", parts))
-    }
-
     out <- diretorio
     class(out) <- "local"
-    attr(out, "tem_part") <- tem_particao
 
     return(out)
 }

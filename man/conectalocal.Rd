@@ -21,6 +21,7 @@ uma serie de arquivos csv correspondentes as tabelas do banco (algo como um dump
 relacional comum). Os arquivos devem ser nomeados tal qual os nomes de tabelas esperados no banco
 assim como os nomes e tipos de dado nas colunas de cada um.
 
+AINDA NAO IMPLEMENTADO
 E possivel incluir particionamento nestes dados, de uma certa forma. Ao inves de uma tabela unica
 de verificados, por exemplo, podem ser criadas n tabelas nomeadas \code{verificados_partI}, onde
 I corresponde a um indice numerico da particao. Nestes casos, deve existir uma nova tabela
