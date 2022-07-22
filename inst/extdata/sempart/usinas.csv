@@ -1,0 +1,4 @@
+id ,codigo ,nome          ,capacidade_instalada ,latitude ,longitude ,data_inicio_operacao ,data_inicio_simulacao ,simulada ,subsistema_geografico ,subsistema_eletrico
+ 1 ,BAEBAU ,BARAÚNAS_I    ,                32.9 ,-9.89    ,-41.12    ,2015-11-20T00:00:00Z ,2015-11-20T00:00:00Z  ,TRUE     ,NE                    ,NE
+10 ,RNUEM3 ,MANGUE_SECO_3 ,                26   ,-5.19    ,-36.36    ,2011-08-26T00:00:00Z ,2011-08-26T00:00:00Z  ,TRUE     ,NE                    ,NE
+14 ,SCEAMO ,AMPARO        ,                22.5 ,-26.62   ,-51.57    ,2011-12-24T00:00:00Z ,2011-12-24T00:00:00Z  ,TRUE     ,S                     ,S
