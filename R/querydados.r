@@ -200,8 +200,8 @@ getdados <- function(conexao, usinas, datahoras, modelos, horizontes, campos_ver
 parsedatas <- function(datahoras, nome, query = TRUE) {
 
     if(!grepl("/", datahoras)) datahoras <- paste0(rep(datahoras, 2), collapse = "/")
-    if(grepl("^/", datahoras)) datahoras <- paste0("0001-01-01 00:00:00", datahoras)
-    if(grepl("/$", datahoras)) datahoras <- paste0(datahoras, "9999-01-01 00:00:00")
+    if(grepl("^/", datahoras)) datahoras <- paste0("1000-01-01 00:00:00", datahoras)
+    if(grepl("/$", datahoras)) datahoras <- paste0(datahoras, "3999-01-01 00:00:00")
 
     datahoras <- strsplit(datahoras, "/")[[1]]
     datahoras <- lapply(datahoras, expandedatahora)

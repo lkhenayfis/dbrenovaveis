@@ -167,7 +167,7 @@ parseargs_usinas <- function(conexao, usinas) {
 }
 
 parseargs_datahoras <- function(datahoras, extra) {
-    if((datahoras[1] == "*") || is.na(datahoras[1])) datahoras <- "0001/3999"
+    if((datahoras[1] == "*") || is.na(datahoras[1])) datahoras <- "1000/3999"
     q_datahoras <- parsedatas(datahoras, extra)
     return(q_datahoras)
 }
@@ -201,7 +201,7 @@ parseargs_vertices <- function(conexao, longitudes, latitudes) {
     temlon <- !(is.na(longitudes[1]) || (longitudes[1] == "*"))
     temlat <- !(is.na(latitudes[1])  || (latitudes[1] == "*"))
 
-    if(!temlon & !temlat) return(structure(NA, "n" = 0))
+    if(!temlon && !temlat) return(structure(NA, "n" = 0))
 
     vertices <- getvertices(conexao, longitudes, latitudes, campos = "id")[[1]]
 

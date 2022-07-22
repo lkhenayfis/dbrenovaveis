@@ -1,3 +1,9 @@
+# master
+
+## Bug fixes
+
+* Corrige problema no teste de `parsedatas` em sistemas operacionais linux
+
 # dbrenovaveis 0.3
 
 ## New features

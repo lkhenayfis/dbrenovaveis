@@ -110,7 +110,7 @@ test_that(paste0(tipo, ": Interpretacao de arugmentos - DATAHORAS"), {
     expect_equal(arg[1], "teste >= '2021-01-01 00:00:00' AND teste < '2021-01-02 00:00:00'")
 
     arg <- parseargs_datahoras(NA, "teste")
-    expect_equal(arg[1], "teste >= '0001-01-01 00:00:00' AND teste < '4000-01-01 00:00:00'")
+    expect_equal(arg[1], "teste >= '1000-01-01 00:00:00' AND teste < '4000-01-01 00:00:00'")
 
     arg2 <- parseargs_datahoras("*", "teste")
     expect_true(identical(arg, arg2))
