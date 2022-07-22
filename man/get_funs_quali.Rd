@@ -4,11 +4,14 @@
 \alias{get_funs_quali}
 \alias{getusinas}
 \alias{getmodelos}
+\alias{getvertices}
 \title{Leitura De Tabelas Qualitativas}
 \usage{
 getusinas(conexao, usinas, campos = "*")
 
 getmodelos(conexao, modelos, tipo = "previsao", campos = "*")
+
+getvertices(conexao, longitudes = "*", latitudes = "*", campos = "*")
 }
 \arguments{
 \item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}
@@ -21,6 +24,10 @@ getmodelos(conexao, modelos, tipo = "previsao", campos = "*")
 
 \item{tipo}{o tipo de modelo a ser pego: "previsao" para os modelos meteorologicos e "correcao"
 para os modelos de correcao de vento}
+
+\item{longitudes}{opcional, vetor de strings com longitudes cujas informacoes serao buscadas}
+
+\item{latitudes}{opcional, vetor de strings com latitudes cujas informacoes serao buscadas}
 }
 \value{
 tabelas qualitativas lidas

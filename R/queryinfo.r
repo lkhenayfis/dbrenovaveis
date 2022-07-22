@@ -9,6 +9,8 @@
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
 #' @param usinas opcional, vetor de strings com codigo das usinas cujas informacoes serao buscadas
+#' @param longitudes opcional, vetor de strings com longitudes cujas informacoes serao buscadas
+#' @param latitudes opcional, vetor de strings com latitudes cujas informacoes serao buscadas
 #' @param modelos opcional, vetor strings com nome dos modelos cujas informacoes serao buscadas
 #' @param tipo o tipo de modelo a ser pego: "previsao" para os modelos meteorologicos e "correcao"
 #'     para os modelos de correcao de vento

@@ -4,6 +4,7 @@
 \alias{get_funs_quant}
 \alias{getverificado}
 \alias{getprevisto}
+\alias{getreanalise}
 \alias{getdados}
 \title{Leitura De Dados No Banco}
 \usage{
@@ -16,6 +17,16 @@ getprevisto(
   modelos = "*",
   horizontes = "*",
   campos = "vento"
+)
+
+getreanalise(
+  conexao,
+  usinas = "*",
+  longitudes = "*",
+  latitudes = "*",
+  datahoras = "*",
+  campos = "vento",
+  modo = c("grade", "interpolado")
 )
 
 getdados(
@@ -41,6 +52,13 @@ getdados(
 
 \item{horizontes}{opcional, vetor de inteiros ou strings do tipo "DX" indicando o horizonte de
 previsao}
+
+\item{longitudes}{opcional, vetor de strings com longitudes cujas informacoes serao buscadas}
+
+\item{latitudes}{opcional, vetor de strings com latitudes cujas informacoes serao buscadas}
+
+\item{modo}{tipo de reanalise a ser buscada; \code{"grade"} corresponde ao dado bruto em grade e
+\code{"interpolado"} aos dados ja interpolados e indexados por \code{id_usina}}
 
 \item{campos_verif}{vetor de strings indicando quais campos (colunas) devem ser lidos da tabela
 "verificados". Ver Detalhes}

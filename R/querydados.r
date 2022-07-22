@@ -40,6 +40,8 @@
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
 #' @param usinas opcional, vetor de strings com codigo das usinas cujas informacoes serao buscadas
+#' @param longitudes opcional, vetor de strings com longitudes cujas informacoes serao buscadas
+#' @param latitudes opcional, vetor de strings com latitudes cujas informacoes serao buscadas
 #' @param datahoras string indicando faixa de tempo para ler da tabela
 #' @param modelos opcional, vetor strings com nome dos modelos cujas informacoes serao buscadas
 #' @param horizontes opcional, vetor de inteiros ou strings do tipo "DX" indicando o horizonte de 
@@ -49,6 +51,8 @@
 #'     "verificados". Ver Detalhes
 #' @param campos_prev vetor de strings indicando quais campos (colunas) devem ser lidos da tabela
 #'     "previstos". Ver Detalhes
+#' @param modo tipo de reanalise a ser buscada; \code{"grade"} corresponde ao dado bruto em grade e
+#'     \code{"interpolado"} aos dados ja interpolados e indexados por \code{id_usina}
 #' 
 #' @examples 
 #' 

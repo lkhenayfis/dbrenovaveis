@@ -60,8 +60,6 @@ roda_query.local <- function(conexao, query) {
 
 proc_query_local <- function(dat, query) {
 
-    ..cols <- NULL
-
     for(q in query$WHERE) {
         vsubset <- eval(str2lang(q), envir = dat)
         dat <- dat[vsubset, ]
@@ -102,6 +100,8 @@ proc_query_local <- function(dat, query) {
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
 #' @param tabela um de "verificados" ou "previstos"
 #' @param usinas vetor de usinas buscadas. \code{"*"} busca todas; \code{NA} nenhuma
+#' @param longitudes vetor de longitudes buscadas. \code{"*"} busca todas; \code{NA} nenhuma
+#' @param latitudes vetor de latitudes buscadas. \code{"*"} busca todas; \code{NA} nenhuma
 #' @param datahoras string de janela de tempo buscada. \code{"*"} ou \code{NA} retorna todas
 #' @param modelos vetor de modelos buscados, so tem uso quando \code{tabela == "previstos"}.
 #'     \code{"*"} retorna todos; \code{NA} nenhum

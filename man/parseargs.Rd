@@ -8,6 +8,8 @@ parseargs(
   conexao,
   tabela,
   usinas = NA,
+  longitudes = NA,
+  latitudes = NA,
   datahoras = NA,
   modelos = NA,
   horizontes = NA,
@@ -20,6 +22,10 @@ parseargs(
 \item{tabela}{um de "verificados" ou "previstos"}
 
 \item{usinas}{vetor de usinas buscadas. \code{"*"} busca todas; \code{NA} nenhuma}
+
+\item{longitudes}{vetor de longitudes buscadas. \code{"*"} busca todas; \code{NA} nenhuma}
+
+\item{latitudes}{vetor de latitudes buscadas. \code{"*"} busca todas; \code{NA} nenhuma}
 
 \item{datahoras}{string de janela de tempo buscada. \code{"*"} ou \code{NA} retorna todas}
 
