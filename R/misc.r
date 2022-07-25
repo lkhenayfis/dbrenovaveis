@@ -66,6 +66,8 @@ conectabanco <- function(usuario, banco) {
 #' @param diretorio diretorio contendo os arquivos csv representando o banco
 #' 
 #' @return objeto de conexao com o arquivamento local
+#' 
+#' @export
 
 conectalocal <- function(diretorio) {
 

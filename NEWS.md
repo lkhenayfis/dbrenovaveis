@@ -3,6 +3,7 @@
 ## Bug fixes
 
 * Corrige problema no teste de `parsedatas` em sistemas operacionais linux
+* Passa a exportar `conectalocal`
 
 # dbrenovaveis 0.3
 
