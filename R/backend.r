@@ -40,7 +40,7 @@ roda_query.local <- function(conexao, query) {
 
     query$SELECT <- strsplit(query$SELECT, ",")[[1]]
     query$WHERE  <- lapply(query$WHERE, function(q) {
-        q <- gsub("IN", "%in%", q)
+        q <- gsub(" IN ", " %in% ", q)
         q <- gsub("\\(", "c\\(", q)
         if(grepl("AND", q)) paste0("(", sub(" AND ", ") & (", q), ")") else q
     })
