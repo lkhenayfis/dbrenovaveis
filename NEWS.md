@@ -1,3 +1,10 @@
+# dbrenovaveis 0.3.2
+
+## Bug fixes
+
+* Corrige bug de query de usinas quando o codigo continha a string "IN". Dentro da adequacao para
+  query em dados locais isto estava sendo substituido para "%in%" e retornando resultados errados
+
 # dbrenovaveis 0.3.1
 
 ## Bug fixes
