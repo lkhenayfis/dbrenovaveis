@@ -10,7 +10,7 @@ conn <- conexoes[[tipo]]
 
 test_that(paste0(tipo, ": Testes de acesso ao banco"), {
 
-    verif <- getverificado(conn, "baebau", "2021-01-01", campos = c("vento", "geracao"))
+    verif <- getverificado(conn, "BAEBAU", "2021-01-01", campos = c("vento", "geracao"))
     expect_equal(colnames(verif), c("data_hora", "vento", "geracao"))
     expect_equal(verif$data_hora,
         seq.POSIXt(
@@ -21,7 +21,7 @@ test_that(paste0(tipo, ": Testes de acesso ao banco"), {
     expect_snapshot_value(round(verif$vento, 3), style = "deparse")
     expect_snapshot_value(round(verif$geracao, 3), style = "deparse")
 
-    prev <- getprevisto(conn, "baebau", "2021-01-01 00:00:00/2021-01-01 12:00:00", "GFS", "D1")
+    prev <- getprevisto(conn, "BAEBAU", "2021-01-01 00:00:00/2021-01-01 12:00:00", "GFS", "D1")
     expect_equal(colnames(prev), c("data_hora_previsao", "vento"))
     expect_equal(prev$data_hora,
         seq.POSIXt(

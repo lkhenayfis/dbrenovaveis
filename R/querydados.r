@@ -75,20 +75,20 @@
 #' 
 #' # PREVISTOS --------------------------------------------
 #' 
-#' # usina "BAEBAU" em marco de 2020, todos os previstos disponiveis (gfs e ecmwf) horizonte D1
+#' # usina "BAEBAU" em marco de 2020, todos os previstos disponiveis (GFS e ECMWF) horizonte D1
 #' getprevisto(conn, "BAEBAU", "2020-03", horizontes = "D1")
 #' 
 #' # pegando o horizonte D3
 #' getprevisto(conn, "BAEBAU", "2020-03", horizontes = "D3")
 #' getprevisto(conn, "BAEBAU", "2020-03", horizontes = 3)
 #' 
-#' # retornando apenas o vento gfs
+#' # retornando apenas o vento GFS
 #' getprevisto(conn, "BAEBAU", "2020-03", modelos = "GFS")
 #' 
 #' # COMBINADO --------------------------------------------
 #' 
-#' # pegando vento "RNUEM3" verificado e previstos gfs e ecmwf em fevereiro de 2021, D1
-#' getdados(conn, "RNUEM3", "2021-02", "gfs", 1)
+#' # pegando vento "RNUEM3" verificado e previstos GFS e ECMWF em fevereiro de 2021, D1
+#' getdados(conn, "RNUEM3", "2021-02", "GFS", 1)
 #' 
 #' }
 #' 

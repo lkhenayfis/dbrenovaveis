@@ -22,12 +22,12 @@ test_that(paste0(tipo, ": Leitura de tabelas qualitativas"), {
     expect_equal(as.numeric(datusi[id == 10, "longitude"]), -36.36)
     expect_equal(datusi[id == 14, data_inicio_operacao], as.POSIXct("2011-12-24", "GMT"))
 
-    datusi1 <- getusinas(conn, "baebau")
+    datusi1 <- getusinas(conn, "BAEBAU")
     expect_equal(colnames(datusi), colnames(datusi1))
     expect_equal(nrow(datusi1), 1)
     expect_equal(datusi1[1, codigo], "BAEBAU")
 
-    datusi2 <- getusinas(conn, c("baebau", "RNUEM3"))
+    datusi2 <- getusinas(conn, c("BAEBAU", "RNUEM3"))
     expect_equal(colnames(datusi), colnames(datusi2))
     expect_equal(nrow(datusi2), 2)
     expect_equal(datusi2[, codigo], c("BAEBAU", "RNUEM3"))
@@ -39,7 +39,7 @@ test_that(paste0(tipo, ": Leitura de tabelas qualitativas"), {
     expect_equal(datmodp[1, nome], "GFS")
     expect_equal(datmodp[1, horizonte_previsao], 5)
 
-    datmodp1 <- getmodelos(conn, "gfs")
+    datmodp1 <- getmodelos(conn, "GFS")
     expect_equal(colnames(datmodp1), colnames(datmodp))
     expect_equal(datmodp1[, nome], "GFS")
     expect_equal(datmodp1[, horizonte_previsao], 5)
