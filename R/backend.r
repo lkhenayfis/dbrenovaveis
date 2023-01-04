@@ -83,6 +83,26 @@ proc_query_local <- function(dat, query) {
     return(dat)
 }
 
+proc_query_local_cpart <- function(conexao, query) {
+
+    master <- fread(file.path(conexao, paste0(query$FROM, ".csv")))
+    colspart <- colnames(master)
+    colspart <- colspart[colspart != "tabela"]
+
+    querymaster <- query[c("SELECT", "FROM", "WHERE")]
+    querymaster$SELECT <- "tabela"
+    querymaster$WHERE <- querymaster$WHERE[colspart]
+
+    tabela <- proc_query_local_spart(conexao, querymaster)$tabela[1]
+
+    querytabela <- query
+    querytabela$FROM <- tabela
+
+    dat <- proc_query_local_spart(conexao, querytabela)
+
+    return(dat)
+}
+
 #' Parse Argumentos Das \code{get_funs_quanti}
 #' 
 #' Interpreta cada argumento, expandindo os vazios para todos os valores possiveis
@@ -149,8 +169,8 @@ parseargs <- function(conexao, tabela, usinas = NA, longitudes = NA, latitudes =
 
     SELECT <- q_campos
     FROM   <- tabela
-    WHERE  <- list(usinas = q_usinas, vertices = q_vertices, modelos = q_modelos,
-        horizontes = q_horizontes, datahoras = q_datahoras)
+    WHERE  <- list(id_usina = q_usinas, id_vertice = q_vertices, id_modelo = q_modelos,
+        dia_previsao = q_horizontes, data_hora = q_datahoras)
     WHERE  <- WHERE[!sapply(WHERE, is.na)]
     ORDERBY <- ORDERBY[ORDERBY %in% campos]
     ORDERBY <- paste0(ORDERBY, collapse = ",")
