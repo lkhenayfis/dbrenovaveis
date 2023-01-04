@@ -100,12 +100,15 @@ proc_query_local_cpart <- function(conexao, query) {
     querymaster$SELECT <- "tabela"
     querymaster$WHERE <- querymaster$WHERE[colspart]
 
-    tabela <- proc_query_local_spart(conexao, querymaster)$tabela[1]
+    tabelas <- proc_query_local_spart(conexao, querymaster)$tabela
 
-    querytabela <- query
-    querytabela$FROM <- tabela
+    dat <- lapply(tabelas, function(tabela) {
+        querytabela <- query
+        querytabela$FROM <- tabela
 
-    dat <- proc_query_local_spart(conexao, querytabela)
+        proc_query_local_spart(conexao, querytabela)
+    })
+    dat <- rbindlist(dat)
 
     return(dat)
 }
