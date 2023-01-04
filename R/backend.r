@@ -49,8 +49,13 @@ roda_query.local <- function(conexao, query) {
     oldtz <- Sys.getenv("TZ")
     Sys.setenv("TZ" = "GMT")
 
-    out <- fread(file.path(conexao, paste0(query$FROM, ".csv")))
-    out <- try(proc_query_local(out, query))
+    tempart <- checa_particao(conexao, query)
+
+    if(!tempart) {
+        out <- try(proc_query_local_spart(conexao, query))
+    } else {
+        out <- try(proc_query_local_cpart(conexao, query))
+    }
     out <- try(corrigeposix(out))
 
     Sys.setenv("TZ" = oldtz)
@@ -66,7 +71,9 @@ checa_particao <- function(conexao, query) {
     return(tempart)
 }
 
-proc_query_local <- function(dat, query) {
+proc_query_local_spart <- function(conexao, query) {
+
+    dat <- fread(file.path(conexao, paste0(query$FROM, ".csv")))
 
     for(q in query$WHERE) {
         vsubset <- eval(str2lang(q), envir = dat)
