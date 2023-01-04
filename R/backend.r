@@ -232,5 +232,11 @@ corrigeposix <- function(dat) {
 listacampos <- function(conexao, tabela) UseMethod("listacampos")
 listacampos.default <- function(conexao, tabela) DBI::dbListFields(conexao, tabela)
 listacampos.local   <- function(conexao, tabela) {
-    colnames(fread(file.path(conexao, paste0(tabela, ".csv")), nrows = 1))
+    tempart <- checa_particao(conexao, list(FROM = tabela))
+    if(!tempart) {
+        colnames(fread(file.path(conexao, paste0(tabela, ".csv")), nrows = 1))
+    } else {
+        tabela <- list.files(conexao, pattern = paste0(tabela))[2]
+        colnames(fread(file.path(conexao, tabela), nrows = 1))
+    }
 }
