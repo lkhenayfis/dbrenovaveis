@@ -55,13 +55,30 @@ conectabanco <- function(usuario, banco) {
 #' relacional comum). Os arquivos devem ser nomeados tal qual os nomes de tabelas esperados no banco
 #' assim como os nomes e tipos de dado nas colunas de cada um.
 #' 
-#' AINDA NAO IMPLEMENTADO
-#' E possivel incluir particionamento nestes dados, de uma certa forma. Ao inves de uma tabela unica
-#' de verificados, por exemplo, podem ser criadas n tabelas nomeadas \code{verificados_partI}, onde 
-#' I corresponde a um indice numerico da particao. Nestes casos, deve existir uma nova tabela 
-#' chamada \code{partitions_verificados} indicando o indice da particao na primeira coluna e valor
-#' das colunas de particionamento nas restantes. Atualmente apenas particionamentos categoricos
-#' sao suportados, isto e, uma faixa de datas por exemplo nao funciona como particionamento.
+#' E possivel incluir particionamento nestes dados, de uma certa forma. Particoes de uma determinada
+#' tabela devem ser nomeadas \code{tabela_partA_partB_...} em que \code{partX} sao indices numericos
+#' apontando os multiplos niveis de particionamento. Por exemplo, particionando-se a tabela de 
+#' previstos por usina e modelo, teria-se: previstos_1_1, previstos_2_1, ... previstos_N_1, 
+#' previstos_1_2, ..., previstos_N_M, onde N e o numero de usinas e M o de modelos.
+#' 
+#' Nestes casos, a tabela original (previstos, no exemplo acima) deve ser uma tabela mestra contendo
+#' a associacao entre subtabelas e a particao a que correspondem. As tabelas mestras devem conter um
+#' coluna chamada \code{tabela}, e as demais devem ser as colunas pelas quais suas particoes sao
+#' separadas. Voltando ao exemplo de previstos
+#' 
+#' | tabela | id_usina | id_modelo |
+#' | ---- | ---- | ---- |
+#' | previstos_1_1 | 1 | 1 |
+#' | previstos_2_1 | 2 | 1 |
+#' | previstos_1_2 | 1 | 2 |
+#' 
+#' A ordem das colunas nao importa, bem como o numero de particoes e colunas pelas quais se 
+#' particiona nao precisam necessariamente ser estas do exemplo. As tabelas de particao devem ter
+#' \bold{EXATAMENTE A MESMA ESTRUTURA} da equivalente sem particao, isto e, devem manter as colunas
+#' pelas quais foram originalmente particionadas.
+#' 
+#' Atualmente apenas particionamentos categoricos sao suportados, isto e, uma faixa de datas
+#' funciona como particionamento.
 #' 
 #' @param diretorio diretorio contendo os arquivos csv representando o banco
 #' 
