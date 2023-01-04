@@ -1,3 +1,17 @@
+# particaolocal
+
+## New features
+
+* Conexao local agora suporta arquivamentos com particao. A implementacao de particionamento em 
+  diretorios e similar aquela de bancos, porem com algumas especificicidades. Ver `?conectalocal`
+  para mais detalhes
+
+## Misc
+
+* A capitalizacao automatica de `usinas` e `modelos` foi retirada, sendo agora necessario que o 
+  usuario informe codigos de usinas e nomes de modelos em letras maiusculas, tal qual estes nomes
+  estao salvos no banco
+
 # dbrenovaveis 0.3.2
 
 ## Bug fixes
