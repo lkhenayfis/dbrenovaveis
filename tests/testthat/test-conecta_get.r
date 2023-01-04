@@ -1,4 +1,7 @@
-conexoes <- list("LOCAL" = conectalocal(system.file("extdata/sempart", package = "dbrenovaveis")))
+conexoes <- list(
+    "LOCAL" = conectalocal(system.file("extdata/sempart", package = "dbrenovaveis")),
+    "LOCAL_CP" = conectalocal(system.file("extdata/compart", package = "dbrenovaveis"))
+)
 
 if(Sys.getenv("RUN_BANCO", FALSE)) {
     conexoes <- c(conexoes, list("BANCO" = conectabanco(Sys.getenv("TEST_USER"), Sys.getenv("TEST_DB"))))
@@ -31,7 +34,7 @@ test_that(paste0(tipo, ": Testes de acesso ao banco"), {
     )
     expect_snapshot_value(round(prev$vento, 3), style = "deparse")
 
-    if(tipo == "LOCAL") {
+    if(tipo != "BANCO") {
         rean <- getreanalise(conn, longitudes = c(-50, -45), latitudes = c(5, 4))
         expect_equal(colnames(rean), c("id_vertice", "data_hora", "vento"))
         expect_equal(rean$id_vertice, rep(c(1, 345), each = 24))
