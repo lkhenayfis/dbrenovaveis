@@ -192,7 +192,6 @@ parseargs <- function(conexao, tabela, usinas = NA, longitudes = NA, latitudes =
 parseargs_usinas <- function(conexao, usinas) {
     if(is.na(usinas[1]) || usinas[1] == "*") return(structure(NA, "n" = 0))
 
-    usinas <- toupper(usinas)
     usinas <- getusinas(conexao, usinas, campos = "id")[[1]]
 
     q_usinas <- paste0("id_usina IN (", paste0(usinas, collapse = ", "), ")")
@@ -210,7 +209,6 @@ parseargs_datahoras <- function(datahoras, extra) {
 parseargs_modelos <- function(conexao, modelos) {
     if(is.na(modelos[1]) || modelos[1] == "*") return(structure(NA, "n" = 0))
 
-    modelos <- toupper(modelos)
     modelos <- getmodelos(conexao, modelos, campos = "id")[[1]]
 
     q_modelos <- paste0("id_modelo IN (", paste0(modelos, collapse = ", "), ")")
@@ -245,7 +243,6 @@ parseargs_vertices <- function(conexao, longitudes, latitudes) {
 
     return(q_vertices)
 }
-
 
 corrigeposix <- function(dat) {
     coldt <- sapply(dat, function(x) "POSIXct" %in% class(x))

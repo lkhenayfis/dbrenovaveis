@@ -38,7 +38,7 @@ getusinas <- function(conexao, usinas, campos = "*") {
     if(missing(usinas)) {
         WHERE <- NULL
     } else {
-        usinas <- do.call(paste0, list(toupper(usinas), collapse = "', '"))
+        usinas <- do.call(paste0, list(usinas, collapse = "', '"))
         usinas <- paste0("('", usinas, "')")
         WHERE  <- paste0("codigo IN ", usinas)
     }
@@ -65,7 +65,7 @@ getmodelos <- function(conexao, modelos, tipo = "previsao", campos = "*") {
     if(missing(modelos)) {
         WHERE <- NULL
     } else {
-        modelos <- do.call(paste0, list(toupper(modelos), collapse = "', '"))
+        modelos <- do.call(paste0, list(modelos, collapse = "', '"))
         modelos <- paste0("('", modelos, "')")
         WHERE   <- paste0("nome IN ", modelos)
     }
