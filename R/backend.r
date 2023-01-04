@@ -58,6 +58,14 @@ roda_query.local <- function(conexao, query) {
     if(class(out)[1] == "try-error") stop(out[1]) else return(out)
 }
 
+checa_particao <- function(conexao, query) {
+
+    arqs    <- list.files(conexao, pattern = query$FROM)
+    tempart <- ifelse(length(arqs) > 1, TRUE, FALSE)
+
+    return(tempart)
+}
+
 proc_query_local <- function(dat, query) {
 
     for(q in query$WHERE) {
