@@ -1,5 +1,7 @@
 ########################## FUNCOES BACKEND PARA QUERIES EM BANCO E LOCAIS ##########################
 
+# EXECUCAO DE QUERIES ------------------------------------------------------------------------------
+
 #' Executa Queries
 #' 
 #' Funcao para execucao de queries nas \code{\link{get_funs_quant}}
@@ -63,6 +65,15 @@ roda_query.local <- function(conexao, query) {
     if(class(out)[1] == "try-error") stop(out[1]) else return(out)
 }
 
+#' Checa Existencia De Particoes Locais
+#' 
+#' Avalia se uma tabela local corresponde a conjunto de particoes ou nao
+#' 
+#' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
+#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
+#' 
+#' @return booleano indicando se a tabela e particionada ou nao
+
 checa_particao <- function(conexao, query) {
 
     arqs    <- list.files(conexao, pattern = query$FROM)
@@ -70,6 +81,19 @@ checa_particao <- function(conexao, query) {
 
     return(tempart)
 }
+
+#' Executores Internos De Query Local
+#' 
+#' Realizam queries em bancos de dados locais, com ou sem particao
+#' 
+#' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
+#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
+#' 
+#' @return dado recuperado do banco ou erro caso a query nao possa ser realizada
+#' 
+#' @name query_local
+
+#' @rdname query_local
 
 proc_query_local_spart <- function(conexao, query) {
 
@@ -89,6 +113,8 @@ proc_query_local_spart <- function(conexao, query) {
 
     return(dat)
 }
+
+#' @rdname query_local
 
 proc_query_local_cpart <- function(conexao, query) {
 
@@ -112,6 +138,8 @@ proc_query_local_cpart <- function(conexao, query) {
 
     return(dat)
 }
+
+# INTERPRETACAO DE ARGUMENTOS ----------------------------------------------------------------------
 
 #' Parse Argumentos Das \code{get_funs_quanti}
 #' 
