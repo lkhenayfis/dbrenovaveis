@@ -15,7 +15,8 @@ Imports:
     RPostgreSQL (>= 0.7),
     data.table (>= 1.14)
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    arrow (>= 11.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

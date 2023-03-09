@@ -82,6 +82,30 @@ checa_particao <- function(conexao, query) {
     return(tempart)
 }
 
+#' Leitor De Arquivo Local
+#' 
+#' Abstracao para leitura de arquivos csv ou parquet
+#' 
+#' @param arq arquivo a ser lido, em formato csv ou parquet. Deve sempre ser uma tabela regular
+#' 
+#' @return data.table contendo o arquivo lido
+
+le_arquivo_local <- function(arq) {
+    extensao <- tools::file_ext(arq)
+
+    if(extensao == "csv") readerfun <- fread
+    if(extensao == "parquet") {
+        if(!requireNamespace("arrow", quietly = TRUE)) {
+            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
+        }
+        readerfun <- read_parquet
+    }
+
+    dat <- readerfun(arq)
+
+    return(dat)
+}
+
 #' Executores Internos De Query Local
 #' 
 #' Realizam queries em bancos de dados locais, com ou sem particao
@@ -97,7 +121,7 @@ checa_particao <- function(conexao, query) {
 
 proc_query_local_spart <- function(conexao, query) {
 
-    dat <- fread(file.path(conexao, paste0(query$FROM, ".csv")))
+    dat <- le_arquivo_local(file.path(conexao, paste0(query$FROM, ".csv")))
 
     for(q in query$WHERE) {
         vsubset <- eval(str2lang(q), envir = dat)
@@ -118,7 +142,7 @@ proc_query_local_spart <- function(conexao, query) {
 
 proc_query_local_cpart <- function(conexao, query) {
 
-    master <- fread(file.path(conexao, paste0(query$FROM, ".csv")))
+    master <- le_arquivo_local(file.path(conexao, paste0(query$FROM, ".csv")))
     colspart <- colnames(master)
     colspart <- colspart[colspart != "tabela"]
 
