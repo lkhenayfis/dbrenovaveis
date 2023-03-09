@@ -89,6 +89,7 @@ conectabanco <- function(usuario, banco) {
 conectalocal <- function(diretorio) {
 
     out <- diretorio
+    attr(out, "extensao") <- paste0(".", tools::file_ext(list.files(diretorio)[1]))
     class(out) <- "local"
 
     return(out)

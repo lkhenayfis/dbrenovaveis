@@ -90,7 +90,7 @@ checa_particao <- function(conexao, query) {
 #' 
 #' @return data.table contendo o arquivo lido
 
-le_arquivo_local <- function(arq) {
+le_arquivo_local <- function(arq, ...) {
     extensao <- tools::file_ext(arq)
 
     if(extensao == "csv") readerfun <- fread
@@ -101,7 +101,7 @@ le_arquivo_local <- function(arq) {
         readerfun <- read_parquet
     }
 
-    dat <- readerfun(arq)
+    dat <- readerfun(arq, ...)
 
     return(dat)
 }
@@ -121,7 +121,7 @@ le_arquivo_local <- function(arq) {
 
 proc_query_local_spart <- function(conexao, query) {
 
-    dat <- le_arquivo_local(file.path(conexao, paste0(query$FROM, ".csv")))
+    dat <- le_arquivo_local(file.path(conexao, paste0(query$FROM, attr(conexao, "extensao"))))
 
     for(q in query$WHERE) {
         vsubset <- eval(str2lang(q), envir = dat)
@@ -142,7 +142,7 @@ proc_query_local_spart <- function(conexao, query) {
 
 proc_query_local_cpart <- function(conexao, query) {
 
-    master <- le_arquivo_local(file.path(conexao, paste0(query$FROM, ".csv")))
+    master <- le_arquivo_local(file.path(conexao, paste0(query$FROM, attr(conexao, "extensao"))))
     colspart <- colnames(master)
     colspart <- colspart[colspart != "tabela"]
 
@@ -313,9 +313,9 @@ listacampos.default <- function(conexao, tabela) DBI::dbListFields(conexao, tabe
 listacampos.local   <- function(conexao, tabela) {
     tempart <- checa_particao(conexao, list(FROM = tabela))
     if(!tempart) {
-        colnames(fread(file.path(conexao, paste0(tabela, ".csv")), nrows = 1))
+        colnames(le_arquivo_local(file.path(conexao, paste0(tabela, attr(conexao, "extensao"))), nrows = 1))
     } else {
         tabela <- list.files(conexao, pattern = paste0(tabela))[2]
-        colnames(fread(file.path(conexao, tabela), nrows = 1))
+        colnames(le_arquivo_local(file.path(conexao, tabela), nrows = 1))
     }
 }
