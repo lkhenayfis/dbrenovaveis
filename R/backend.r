@@ -98,7 +98,7 @@ le_arquivo_local <- function(arq, ...) {
         if(!requireNamespace("arrow", quietly = TRUE)) {
             stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
         }
-        readerfun <- read_parquet
+        readerfun <- arrow::read_parquet
     }
 
     dat <- readerfun(arq, ...)
