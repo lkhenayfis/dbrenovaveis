@@ -76,8 +76,7 @@ roda_query.local <- function(conexao, query) {
 
 checa_particao <- function(conexao, query) {
 
-    arqs    <- list.files(conexao, pattern = query$FROM)
-    tempart <- ifelse(length(arqs) > 1, TRUE, FALSE)
+    tempart <- attr(conexao, "particoes")[[query$FROM]]
 
     return(tempart)
 }

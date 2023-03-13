@@ -13,7 +13,8 @@ Depends:
 Imports:
     DBI (>= 1.0),
     RPostgreSQL (>= 0.7),
-    data.table (>= 1.14)
+    data.table (>= 1.14),
+    jsonlite (>= 1.7)
 Suggests: 
     testthat (>= 3.0.0),
     arrow (>= 11.0.0)

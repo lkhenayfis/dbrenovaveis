@@ -4,7 +4,7 @@
 \alias{le_arquivo_local}
 \title{Leitor De Arquivo Local}
 \usage{
-le_arquivo_local(arq)
+le_arquivo_local(arq, ...)
 }
 \arguments{
 \item{arq}{arquivo a ser lido, em formato csv ou parquet. Deve sempre ser uma tabela regular}

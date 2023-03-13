@@ -55,11 +55,16 @@ conectabanco <- function(usuario, banco) {
 #' relacional comum). Os arquivos devem ser nomeados tal qual os nomes de tabelas esperados no banco
 #' assim como os nomes e tipos de dado nas colunas de cada um.
 #' 
-#' E possivel incluir particionamento nestes dados, de uma certa forma. Particoes de uma determinada
-#' tabela devem ser nomeadas \code{tabela_partA_partB_...} em que \code{partX} sao indices numericos
-#' apontando os multiplos niveis de particionamento. Por exemplo, particionando-se a tabela de 
-#' previstos por usina e modelo, teria-se: previstos_1_1, previstos_2_1, ... previstos_N_1, 
-#' previstos_1_2, ..., previstos_N_M, onde N e o numero de usinas e M o de modelos.
+#' Particionamento de tabelas e suportado, de forma restrita. Inicialmente, para bancos locais 
+#' contendo uma ou mais tabelas particionadas, deve existir um arquivo .PARTICAO.json indicando 
+#' quais tabelas sao particionadas. Este arquivo tem estrutura muito simples, uma lista de apenas um
+#' nivel com valores booleanos (ver o exemplo em \code{extdata/compart}).
+#' 
+#' Os dados particionados devem seguir uma estrutura predefinida. Particoes de uma determinada
+#' tabela devem ser nomeadas \code{tabela_partA_partB_...} em que \code{partX} sao chaves 
+#' indicadoras apontando os multiplos niveis de particionamento. Por exemplo, particionando-se a 
+#' tabela de previstos por usina e modelo, teria-se: previstos_1_1, previstos_2_1, ... previstos_N_1, 
+#' previstos_1_2, ..., previstos_N_M, onde N e o maximo id de usinas e M o de modelos.
 #' 
 #' Nestes casos, a tabela original (previstos, no exemplo acima) deve ser uma tabela mestra contendo
 #' a associacao entre subtabelas e a particao a que correspondem. As tabelas mestras devem conter um
@@ -77,7 +82,7 @@ conectabanco <- function(usuario, banco) {
 #' \bold{EXATAMENTE A MESMA ESTRUTURA} da equivalente sem particao, isto e, devem manter as colunas
 #' pelas quais foram originalmente particionadas.
 #' 
-#' Atualmente apenas particionamentos categoricos sao suportados, isto e, uma faixa de datas
+#' Atualmente apenas particionamentos categoricos sao suportados, isto e, uma faixa de datas nao
 #' funciona como particionamento.
 #' 
 #' @param diretorio diretorio contendo os arquivos csv representando o banco
@@ -88,8 +93,20 @@ conectabanco <- function(usuario, banco) {
 
 conectalocal <- function(diretorio) {
 
+    partfile   <- file.path(diretorio, ".PARTICAO.json")
+    tempartdict <- file.exists(partfile)
+
+    if(tempartdict) {
+        particoes <- unlist(jsonlite::read_json(partfile))
+    } else {
+        particoes <- list.files(diretorio)
+        particoes <- sapply(particoes, function(s) sub(paste0(".", tools::file_ext(s)), "", s))
+        particoes <- structure(rep(FALSE, length(particoes)), names = particoes)
+    }
+
     out <- diretorio
     attr(out, "extensao") <- paste0(".", tools::file_ext(list.files(diretorio)[1]))
+    attr(out, "particoes") <- particoes
     class(out) <- "local"
 
     return(out)
