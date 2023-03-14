@@ -85,13 +85,14 @@ conectabanco <- function(usuario, banco) {
 #' Atualmente apenas particionamentos categoricos sao suportados, isto e, uma faixa de datas nao
 #' funciona como particionamento.
 #' 
-#' @param diretorio diretorio contendo os arquivos csv representando o banco
+#' @param diretorio diretorio contendo os arquivos representando o banco
+#' @param extensao extensao dos arquivos contidos no banco. Se omitido, sera lido do banco
 #' 
 #' @return objeto de conexao com o arquivamento local
 #' 
 #' @export
 
-conectalocal <- function(diretorio) {
+conectalocal <- function(diretorio, extensao) {
 
     partfile   <- file.path(diretorio, ".PARTICAO.json")
     tempartdict <- file.exists(partfile)
@@ -102,7 +103,8 @@ conectalocal <- function(diretorio) {
         particoes <- NULL
     }
 
-    extensao <- tools::file_ext(list.files(diretorio)[1])
+    if(missing("extensao")) extensao <- tools::file_ext(list.files(diretorio)[1])
+
     if(extensao == "csv") {
         inner_reader <- fread
     } else if(extensao == "parquet") {
@@ -136,12 +138,13 @@ conectalocal <- function(diretorio) {
 #' 
 #' @param bucket bucket de onde ler os dados
 #' @param prefixo opcional, prefixo dos arquivos a serem lidos
+#' @param extensao extensao dos arquivos contidos no banco. Se omitido, sera lido do banco
 #' 
 #' @return objeto de conexao com o arquivamento em bucket S3
 #' 
 #' @export
 
-conectabucket <- function(bucket, prefixo) {
+conectabucket <- function(bucket, prefixo, extensao) {
 
     if(!requireNamespace("aws.s3", quietly = TRUE)) {
         stop("Conexao com buckets demanda pacote 'aws.s3'")
@@ -156,8 +159,10 @@ conectabucket <- function(bucket, prefixo) {
         particoes <- NULL
     }
 
-    extensao <- aws.s3::get_bucket(bucket, prefixo)[[1]]$Key
-    extensao <- tools::file_ext(extensao)
+    if(missing("extensao")) {
+        extensao <- aws.s3::get_bucket(bucket, prefixo)[[1]]$Key
+        extensao <- tools::file_ext(extensao)
+    }
 
     if(extensao == "csv") {
         inner_reader <- fread

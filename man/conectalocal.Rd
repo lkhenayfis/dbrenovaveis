@@ -4,10 +4,12 @@
 \alias{conectalocal}
 \title{Conexao Com Arquivos Locais}
 \usage{
-conectalocal(diretorio)
+conectalocal(diretorio, extensao)
 }
 \arguments{
-\item{diretorio}{diretorio contendo os arquivos csv representando o banco}
+\item{diretorio}{diretorio contendo os arquivos representando o banco}
+
+\item{extensao}{extensao dos arquivos contidos no banco. Se omitido, sera lido do banco}
 }
 \value{
 objeto de conexao com o arquivamento local

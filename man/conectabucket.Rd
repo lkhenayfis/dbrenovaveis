@@ -4,12 +4,14 @@
 \alias{conectabucket}
 \title{Conexao Com Buckets S3}
 \usage{
-conectabucket(bucket, prefixo)
+conectabucket(bucket, prefixo, extensao)
 }
 \arguments{
 \item{bucket}{bucket de onde ler os dados}
 
 \item{prefixo}{opcional, prefixo dos arquivos a serem lidos}
+
+\item{extensao}{extensao dos arquivos contidos no banco. Se omitido, sera lido do banco}
 }
 \value{
 objeto de conexao com o arquivamento em bucket S3
