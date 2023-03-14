@@ -110,3 +110,44 @@ conectalocal <- function(diretorio) {
 
     return(out)
 }
+
+#' Conexao Com Buckets S3
+#' 
+#' Gera a conexao com um mock banco, correspondente a um bucket S3 com arquivos a ler
+#' 
+#' A implementacao de bancos mock hospedados em buckets funciona exatamente como a de diretorios
+#' locais, descrita em \code{\link{conectalocal}}, incluindo questoes de particionamento.
+#' 
+#' Este tipo de conexao existe somente para lidar com os casos em que arquivos estao em buckets e 
+#' nao no Athena. Neste caso, a conexao deve ser feita como se fosse a um banco relacional comum.
+#' 
+#' @param bucket bucket de onde ler os dados
+#' @param prefixo opcional, prefixo dos arquivos a serem lidos
+#' 
+#' @return objeto de conexao com o arquivamento em bucket S3
+#' 
+#' @export
+
+conectabucket <- function(bucket, prefixo) {
+
+    if(!requireNamespace("aws.s3", quietly = TRUE)) {
+        stop("Conexao com buckets demanda pacote 'aws.s3'")
+    }
+
+    partfile    <- file.path(bucket, prefixo, ".PARTICAO.json")
+    tempartdict <- aws.s3::object_exists(partfile)
+
+    if(tempartdict) {
+        particoes <- unlist(aws.s3::s3read_using(FUN = jsonlite::read_json, object = partfile))
+    } else {
+        particoes <- NULL
+    }
+
+    out <- diretorio
+    attr(out, "extensao") <- paste0(".", tools::file_ext(list.files(diretorio)[1]))
+    attr(out, "tempart")   <- tempartdict
+    attr(out, "particoes") <- particoes
+    class(out) <- "bucketS3"
+
+    return(out)
+}
