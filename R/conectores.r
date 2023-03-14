@@ -102,10 +102,23 @@ conectalocal <- function(diretorio) {
         particoes <- NULL
     }
 
+    extensao <- tools::file_ext(list.files(diretorio)[1])
+    if(extensao == "csv") {
+        inner_reader <- fread
+    } else if(extensao == "parquet") {
+        if(!requireNamespace("arrow", quietly = TRUE)) {
+            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
+        }
+        inner_reader <- arrow::read_parquet
+    } else {
+        stop("arquivos locais de tipo nao suportado")
+    }
+
     out <- diretorio
-    attr(out, "extensao") <- paste0(".", tools::file_ext(list.files(diretorio)[1]))
-    attr(out, "tempart")   <- tempartdict
-    attr(out, "particoes") <- particoes
+    attr(out, "extensao")   <- extensao
+    attr(out, "reader_fun") <- inner_reader
+    attr(out, "tempart")    <- tempartdict
+    attr(out, "particoes")  <- particoes
     class(out) <- "local"
 
     return(out)
@@ -143,10 +156,27 @@ conectabucket <- function(bucket, prefixo) {
         particoes <- NULL
     }
 
-    out <- diretorio
-    attr(out, "extensao") <- paste0(".", tools::file_ext(list.files(diretorio)[1]))
-    attr(out, "tempart")   <- tempartdict
-    attr(out, "particoes") <- particoes
+    extensao <- aws.s3::get_bucket(bucket, prefixo)[[1]]$Key
+    extensao <- tools::file_ext(extensao)
+
+    if(extensao == "csv") {
+        inner_reader <- fread
+    } else if(extensao == "parquet") {
+        if(!requireNamespace("arrow", quietly = TRUE)) {
+            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
+        }
+        inner_reader <- arrow::read_parquet
+    } else {
+        stop("arquivos locais de tipo nao suportado")
+    }
+
+    reader_fun <- function(x, ...) aws.s3::s3read_using(FUN = inner_reader, object = x, ...)
+
+    out <- file.path(bucket, prefixo)
+    attr(out, "extensao")   <- extensao
+    attr(out, "reader_fun") <- inner_reader
+    attr(out, "tempart")    <- tempartdict
+    attr(out, "particoes")  <- particoes
     class(out) <- "bucketS3"
 
     return(out)
