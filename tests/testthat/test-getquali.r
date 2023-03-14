@@ -8,7 +8,7 @@ for(tipo in names(conexoes)) {
 
 conn <- conexoes[[tipo]]
 lf <- switch(tipo,
-    "LOCAL" = dbrenovaveis:::listacampos.local,
+    "LOCAL" = dbrenovaveis:::listacampos.mock,
     "BANCO" = dbrenovaveis:::listacampos.default
 )
 

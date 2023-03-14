@@ -38,7 +38,7 @@ roda_query.default <- function(conexao, query) {
     if(class(out)[1] == "try-error") stop(out[1]) else return(out)
 }
 
-roda_query.local <- function(conexao, query) {
+roda_query.mock <- function(conexao, query) {
 
     query$SELECT <- strsplit(query$SELECT, ",")[[1]]
     query$WHERE  <- lapply(query$WHERE, function(q) {
@@ -300,7 +300,7 @@ corrigeposix <- function(dat) {
 
 listacampos <- function(conexao, tabela) UseMethod("listacampos")
 listacampos.default <- function(conexao, tabela) DBI::dbListFields(conexao, tabela)
-listacampos.local   <- function(conexao, tabela) {
+listacampos.mock   <- function(conexao, tabela) {
     tempart <- checa_particao(conexao, list(FROM = tabela))
     if(!tempart) {
         dat <- le_tabela_mock(conexao, tabela, nrow = 1)

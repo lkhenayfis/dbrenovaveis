@@ -121,7 +121,7 @@ conectalocal <- function(diretorio, extensao) {
     attr(out, "reader_fun") <- inner_reader
     attr(out, "tempart")    <- tempartdict
     attr(out, "particoes")  <- particoes
-    class(out) <- "local"
+    class(out) <- c("local", "mock")
 
     return(out)
 }
@@ -182,7 +182,7 @@ conectabucket <- function(bucket, prefixo, extensao) {
     attr(out, "reader_fun") <- reader_fun
     attr(out, "tempart")    <- tempartdict
     attr(out, "particoes")  <- particoes
-    class(out) <- "bucketS3"
+    class(out) <- c("bucketS3", "mock")
 
     return(out)
 }
