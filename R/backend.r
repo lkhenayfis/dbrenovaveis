@@ -111,7 +111,7 @@ le_tabela_mock <- function(conexao, tabela, ...) {
 
 proc_query_local_spart <- function(conexao, query) {
 
-    dat <- le_arquivo_local(file.path(conexao, paste0(query$FROM, attr(conexao, "extensao"))))
+    dat <- le_tabela_mock(conexao, query$FROM)
 
     for(q in query$WHERE) {
         vsubset <- eval(str2lang(q), envir = dat)
@@ -132,7 +132,7 @@ proc_query_local_spart <- function(conexao, query) {
 
 proc_query_local_cpart <- function(conexao, query) {
 
-    master <- le_arquivo_local(file.path(conexao, paste0(query$FROM, attr(conexao, "extensao"))))
+    master <- le_tabela_mock(conexao, query$FROM)
     colspart <- colnames(master)
     colspart <- colspart[colspart != "tabela"]
 
@@ -303,9 +303,12 @@ listacampos.default <- function(conexao, tabela) DBI::dbListFields(conexao, tabe
 listacampos.local   <- function(conexao, tabela) {
     tempart <- checa_particao(conexao, list(FROM = tabela))
     if(!tempart) {
-        colnames(le_arquivo_local(file.path(conexao, paste0(tabela, attr(conexao, "extensao"))), nrows = 1))
+        dat <- le_tabela_mock(conexao, tabela, nrow = 1)
+        colnames(dat)
     } else {
-        tabela <- list.files(conexao, pattern = paste0(tabela))[2]
-        colnames(le_arquivo_local(file.path(conexao, tabela), nrows = 1))
+        mestre <- le_tabela_mock(conexao, tabela, nrow = 1)
+        tabela <- mestre$tabela[1]
+        dat    <- le_tabela_mock(conexao, tabela, nrow = 1)
+        colnames(dat)
     }
 }
