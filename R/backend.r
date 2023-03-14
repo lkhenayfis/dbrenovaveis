@@ -81,27 +81,18 @@ checa_particao <- function(conexao, query) {
     return(tempart)
 }
 
-#' Leitor De Arquivo Local
+#' Leitor De Tabelas Em Mock Bancos
 #' 
 #' Abstracao para leitura de arquivos csv ou parquet
 #' 
-#' @param arq arquivo a ser lido, em formato csv ou parquet. Deve sempre ser uma tabela regular
+#' @param tabela tabela a ser lida, em formato csv ou parquet. Deve sempre ser uma tabela regular
 #' 
-#' @return data.table contendo o arquivo lido
+#' @return data.table contendo a tabela lida
 
-le_arquivo_local <- function(arq, ...) {
-    extensao <- tools::file_ext(arq)
-
-    if(extensao == "csv") readerfun <- fread
-    if(extensao == "parquet") {
-        if(!requireNamespace("arrow", quietly = TRUE)) {
-            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
-        }
-        readerfun <- arrow::read_parquet
-    }
-
-    dat <- readerfun(arq, ...)
-
+le_tabela_mock <- function(conexao, tabela, ...) {
+    rf  <- attr(conexao, "reader_fun")
+    arq <- file.path(conexao, paste0(tabela, ".", attr(conexao, "extensao")))
+    dat <- rf(arq, ...)
     return(dat)
 }
 
