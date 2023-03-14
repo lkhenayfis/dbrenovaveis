@@ -76,7 +76,7 @@ roda_query.local <- function(conexao, query) {
 
 checa_particao <- function(conexao, query) {
 
-    tempart <- attr(conexao, "particoes")[[query$FROM]]
+    tempart <- attr(conexao, "tempart") && attr(conexao, "particoes")[[query$FROM]]
 
     return(tempart)
 }

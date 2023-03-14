@@ -99,13 +99,12 @@ conectalocal <- function(diretorio) {
     if(tempartdict) {
         particoes <- unlist(jsonlite::read_json(partfile))
     } else {
-        particoes <- list.files(diretorio)
-        particoes <- sapply(particoes, function(s) sub(paste0(".", tools::file_ext(s)), "", s))
-        particoes <- structure(rep(FALSE, length(particoes)), names = particoes)
+        particoes <- NULL
     }
 
     out <- diretorio
     attr(out, "extensao") <- paste0(".", tools::file_ext(list.files(diretorio)[1]))
+    attr(out, "tempart")   <- tempartdict
     attr(out, "particoes") <- particoes
     class(out) <- "local"
 
