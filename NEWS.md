@@ -1,3 +1,37 @@
+# buckets3
+
+## New features
+
+* Adicionado conector a buckets S3 na AWS. Esta funcionalidade e essencialmente igual a conexao com 
+  bancos mock locais, apenas lendo arquivos do bucket ao inves de um diretorio local
+* Conectores a bancos mock (local ou bucket S3) passam a ter mais um atributo:
+  * `reader_fun`: funcao dedicada de leitura, pois varia dependendo do tipo de arquivo e fonte
+    (local ou bucket)
+* Conectores a bancos mock passaram a receber mais um argumento `extensao`. Isto permite que as
+  extensoes de arquivos em banco mock ja sejam informadas a priori, sem perder tempo identificando
+  na hora
+
+## Misc
+
+* Muda conectores para um arquivo proprio `R/misc.r -> R/conectores.r`
+
+# particaolocal
+
+## New features
+
+* Bancos mock locais passam a demandar a presenca de um arquivo `.PARTICAO.json` detalhando quais
+  tabelas do banco sao particionadas. A identificacao de particao passa a ser feita usando este
+  diretorio ao inves de listar os arquivos na pasta, que pode ser muito lento. Dois novos atributos
+  foram adicionados aos objetos `local`:
+  * `tempart`: booleano indicando se pelo menos uma das tabelas possui particao
+  * `particoes`: vetor logico indicando quais tabelas sao particionadas
+
+# parquet
+
+## New features
+
+* Adiciona suporte a leitura de arquivos parquet em bancos mock locais
+
 # dbrenovaveis 0.4
 
 ## New features
