@@ -179,7 +179,7 @@ conectabucket <- function(bucket, prefixo, extensao) {
 
     out <- file.path(bucket, prefixo)
     attr(out, "extensao")   <- extensao
-    attr(out, "reader_fun") <- inner_reader
+    attr(out, "reader_fun") <- reader_fun
     attr(out, "tempart")    <- tempartdict
     attr(out, "particoes")  <- particoes
     class(out) <- "bucketS3"
