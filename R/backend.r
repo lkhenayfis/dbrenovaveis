@@ -85,7 +85,9 @@ checa_particao <- function(conexao, query) {
 #' 
 #' Abstracao para leitura de arquivos csv ou parquet
 #' 
+#' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
 #' @param tabela tabela a ser lida, em formato csv ou parquet. Deve sempre ser uma tabela regular
+#' @param ... demais argumentos que possam ser passados para o leitor interno
 #' 
 #' @return data.table contendo a tabela lida
 

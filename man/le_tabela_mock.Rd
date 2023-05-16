@@ -7,7 +7,11 @@
 le_tabela_mock(conexao, tabela, ...)
 }
 \arguments{
+\item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}
+
 \item{tabela}{tabela a ser lida, em formato csv ou parquet. Deve sempre ser uma tabela regular}
+
+\item{...}{demais argumentos que possam ser passados para o leitor interno}
 }
 \value{
 data.table contendo a tabela lida
