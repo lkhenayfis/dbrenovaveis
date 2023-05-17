@@ -31,20 +31,25 @@ new_tabela <- function(nome, campos, conexao) {
 
 # CAMPOS -------------------------------------------------------------------------------------------
 
-new_campo <- function(nome, tipo, foreignkey = list(has = FALSE, ref = NULL, campo = NULL, proxy = NULL)) {
+new_campo <- function(nome, tipo, foreignkey = FALSE, ref = NULL, campo = NULL, proxy = NULL) {
 
-    campo <- list(nome = nome)
+    tipo <- switch(tipo,
+        "inteiro" = "discreto",
+        "string" = "discreto",
+        "float" = "continuo",
+        "data" = "data")
 
-    hasforeignkey <- foreignkey$has
-    if(hasforeignkey) {
-        if(is.null(foreignkey$ref)) stop("foreignkey nao possui elemento 'ref' indicando tabela referencia")
-        if(is.null(foreignkey$campo)) stop("foreignkey nao possui elemento 'campo' indicando campo na 'ref'")
-        if(is.null(foreignkey$proxy)) stop("foreignkey nao possui elemento 'ref' indicando proxy na 'ref'")
-        campo <- c(campo, foreignkey)
+    if(is.null(tipo)) stop("'tipo' nao esta dentro dos valores permitidos -- Veja '?new_campo'")
+
+    if(foreignkey) {
+        if(is.null(ref)) stop("nao foi passado argumento 'ref' indicando tabela referencia")
+        if(is.null(campo)) stop("nao foi passado argumento 'campo' indicando campo na 'ref'")
+        if(is.null(proxy)) stop("nao foi passado argumento 'ref' indicando proxy na 'ref'")
     }
 
-    attr(campo, "hasforeignkey") <- hasforeignkey
-    class(campo) <- c("campo", paste0("campo_", tipo))
+    out <- list(nome = nome)
+    attr(out, "foreignkey") <- list(has = foreignkey, ref = ref, campo = campo, proxy = proxy)
+    class(out) <- c("campo", paste0("campo_", tipo))
 
-    return(campo)
+    return(out)
 }
