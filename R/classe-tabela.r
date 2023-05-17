@@ -2,14 +2,46 @@
 
 #' Construtor Da Classe \code{tabela}
 #' 
-#' Construtor interno da classe, nao deve ser usado diretamente pelo usuario
+#' Funcao para geracao de objetos representativos das tabelas em um determinado banco de dados
+#' 
+#' Esta funcao faz parte do backend do pacote \code{dbrenovaveis}. Atraves dela e possivel 
+#' especeficar a estrutura de qualquer tabela regular, definindo seus campos, tipo de dado por campo
+#' e uma conexao com o banco de dados onde ela se encontra.
 #' 
 #' @param nome string indicando o nome da tabela
-#' @param campos lista de objetos \code{campos}
+#' @param campos lista de objetos \code{campo}. Veja \code{\link{new_campos}} para mais detalhes
 #' @param conexao objeto de conexao ao banco em que esta a tabela retornado por 
 #'     \code{\link{conectabanco}}
 #' 
+#' @examples 
+#' 
+#' # Para o banco local incluso como exemplo no pacote
+#' 
+#' dirloc <- system.file("extdata/sempart", package = "dbrenovaveis")
+#' conect <- conectalocal(dirloc)
+#' 
+#' # versao simplificada da tabela de usinas
+#' tabusi <- new_tabela(
+#'     nome = "usinas",
+#'     campos = list(
+#'         new_campo("id", "inteiro", FALSE),
+#'         new_campo("codigo", "string", FALSE)),
+#'     conexao = conect)
+#' 
+#' # representacao da tabela de verificados
+#' tabverif <- new_tabela(
+#'     nome = "verificados",
+#'     campos = list(
+#'         new_campo("id_usina", "inteiro", TRUE, tabusi, "id", "codigo"),
+#'         new_campo("data_hora", "data", FALSE),
+#'         new_campo("vento", "float", FALSE),
+#'         new_campo("geracao", "float", FALSE)
+#'     ),
+#'     conexao = conect)
+#' 
 #' @return objeto descritivo de uma tabela
+#' 
+#' @export
 
 new_tabela <- function(nome, campos, conexao) {
 
