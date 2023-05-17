@@ -13,6 +13,14 @@
 
 new_tabela <- function(nome, campos, conexao) {
 
+    if(length(names(campos)) == 0) {
+        nomescampos <- sapply(campos, function(cc) {
+            if(attr(cc, "foreignkey")[[1]]) attr(cc, "foreignkey")[["proxy"]] else cc$nome
+        })
+
+        names(campos) <- nomescampos
+    }
+
     tabela <- list(nome = nome, campos = campos)
 
     attr(tabela, "conexao") <- conexao
