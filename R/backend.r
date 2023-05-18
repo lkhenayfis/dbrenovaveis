@@ -182,6 +182,7 @@ parseargs <- function(tabela, campos = NA, ...) {
         WHERE  <- lapply(names(subsets), function(campo) {
             parsearg(tabela$campos[[campo]], subsets[[campo]])
         })
+        names(WHERE) <- sapply(names(subsets), function(campo) tabela$campos[[campo]]$nome)
     }
 
     SELECT <- paste0(campos, collapse = ",")
