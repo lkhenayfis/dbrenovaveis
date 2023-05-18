@@ -1,3 +1,19 @@
+# genbackend
+
+## New features
+
+* Toda a representacao de tabelas e a forma como argumentos de query sao interpretados para composicao
+  das strings de query foi reformulada. Agora e possivel utilizar o backend de `dbrenovaveis` para
+  conexao com bancos de estrutura arbitraria. A seguir sao dados mais detalhes
+* Foram incluidas duas novas classes: `tabela` e `campo`
+  * `tabela`s sao representacoes simbolicas das tabelas no banco, sendo compostas por uma lista detalhando
+    quais colunas (campos) constam naquela tabela
+  * similarmente, `campo` e uma classe para detalhar as caracteristicas de cada coluna que compoe uma
+    tabela, incluindo a possibilidade de queries por chaves estrangeiras passando por proxys
+* O parse de argumentos para query foi reformulado para lidar com os objetos `campo` genericos
+* Uma nova funcao de baixo nivel `getfromtabela` foi introduzida, permitindo interface para leitura
+  com quaisquer tabelas em bancos arbitrarios
+
 # dbrenovaveis 0.5
 
 ## New features
