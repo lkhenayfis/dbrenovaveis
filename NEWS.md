@@ -1,3 +1,10 @@
+# master
+
+## Bug fixes
+
+* `conectabucket` dava erro em repos particionados pois a identificacao do tipo de arquivos 
+  olhava para o JSON, erroneamente. Isso foi corrigido
+
 # dbrenovaveis 0.5
 
 ## New features
