@@ -10,7 +10,8 @@ new_campo(
   foreignkey = FALSE,
   ref = NULL,
   camporef = NULL,
-  proxy = NULL
+  proxy = NULL,
+  alias = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ new_campo(
 \item{camporef}{nome do campo da chave estrangeira na tabela de referencia. Ver Detalhes}
 
 \item{proxy}{nome de um campo proxy para a busca de chave estrangeira. Ver Detalhes}
+
+\item{alias}{nome pelo qual sera feito o subset deste campo nas funcoes de query}
 }
 \value{
 Objeto da classe \code{campo} contendo especificacao de um campo qualquer

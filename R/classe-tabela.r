@@ -49,7 +49,7 @@ new_tabela <- function(nome, campos, conexao) {
 
     if(length(names(campos)) == 0) {
         nomescampos <- sapply(campos, function(cc) {
-            if(attr(cc, "foreignkey")[[1]]) attr(cc, "foreignkey")[["proxy"]] else cc$nome
+            if(attr(cc, "foreignkey")[[1]]) attr(cc, "foreignkey")[["alias"]] else cc$nome
         })
 
         names(campos) <- nomescampos
@@ -160,6 +160,7 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' @param ref objeto \code{tabela} na qual se encontra a chave estrangeira. Ver Detalhes
 #' @param camporef nome do campo da chave estrangeira na tabela de referencia. Ver Detalhes
 #' @param proxy nome de um campo proxy para a busca de chave estrangeira. Ver Detalhes
+#' @param alias nome pelo qual sera feito o subset deste campo nas funcoes de query
 #' 
 #' @examples 
 #' 
@@ -194,7 +195,8 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' 
 #' @export
 
-new_campo <- function(nome, tipo, foreignkey = FALSE, ref = NULL, camporef = NULL, proxy = NULL) {
+new_campo <- function(nome, tipo, foreignkey = FALSE,
+    ref = NULL, camporef = NULL, proxy = NULL, alias = NULL) {
 
     tipo <- switch(tipo,
         "inteiro" = "discreto",
@@ -210,8 +212,14 @@ new_campo <- function(nome, tipo, foreignkey = FALSE, ref = NULL, camporef = NUL
         if(is.null(proxy)) stop("nao foi passado argumento 'ref' indicando proxy na 'ref'")
     }
 
+    if(is.null(alias)) {
+        if(!is.null(nome)) alias <- nome
+        if(!is.null(proxy)) alias <- proxy
+    }
+
     out <- list(nome = nome)
-    attr(out, "foreignkey") <- list(has = foreignkey, ref = ref, camporef = camporef, proxy = proxy)
+    attr(out, "foreignkey") <- list(has = foreignkey, ref = ref, camporef = camporef, proxy = proxy,
+        alias = alias)
     class(out) <- c("campo", paste0("campo_", tipo))
 
     return(out)
