@@ -160,7 +160,9 @@ conectabucket <- function(bucket, prefixo, extensao) {
     }
 
     if(missing("extensao")) {
-        extensao <- aws.s3::get_bucket(bucket, prefixo)[[1]]$Key
+        extensao <- aws.s3::get_bucket(bucket, prefixo)
+        # pega o ultimo para evitar pegar metafiles ocultos que aparecem primeiro
+        extensao <- tail(extensao, 1)[[1]]$Key
         extensao <- tools::file_ext(extensao)
     }
 
