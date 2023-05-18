@@ -9,7 +9,7 @@ roda_query(conexao, query)
 \arguments{
 \item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}
 
-\item{query}{lista detalhando a query como retornado por \code{\link{parseargs}}}
+\item{query}{lista detalhando a query como retornado por \code{\link{parseargsOLD}}}
 }
 \value{
 dado recuperado do banco ou erro caso a query nao possa ser realizada

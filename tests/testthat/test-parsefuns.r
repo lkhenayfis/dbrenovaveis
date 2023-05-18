@@ -161,27 +161,27 @@ test_that(paste0(tipo, ": Interpretacao de arugmentos - HORIZONTES"), {
 
 test_that(paste0(tipo, ": Interpretacao de argumentos - CAMPOS/ORDERBY"), {
 
-    expect_error(parseargs(conn))
+    expect_error(parseargsOLD(conn))
 
     # Verificados --------------------------------------------------------
 
-    query <- parseargs(conn, "verificados", "BAEBAU")
+    query <- parseargsOLD(conn, "verificados", "BAEBAU")
     expect_equal(query$SELECT, "data_hora,vento,geracao")
     expect_equal(query[["ORDER BY"]], "data_hora")
 
-    query <- parseargs(conn, "verificados", "BAEBAU", datahoras = "2021-01-01")
+    query <- parseargsOLD(conn, "verificados", "BAEBAU", datahoras = "2021-01-01")
     expect_equal(query$SELECT, "data_hora,vento,geracao")
     expect_equal(query[["ORDER BY"]], "data_hora")
 
-    query <- parseargs(conn, "verificados", c("BAEBAU", "RNUEM3"), datahoras = "2021-01-01")
+    query <- parseargsOLD(conn, "verificados", c("BAEBAU", "RNUEM3"), datahoras = "2021-01-01")
     expect_equal(query$SELECT, "data_hora,vento,geracao,id_usina")
     expect_equal(query[["ORDER BY"]], "id_usina,data_hora")
 
-    query <- parseargs(conn, "verificados", "BAEBAU", datahoras = "2021-01-01", campos = "vento")
+    query <- parseargsOLD(conn, "verificados", "BAEBAU", datahoras = "2021-01-01", campos = "vento")
     expect_equal(query$SELECT, "data_hora,vento")
     expect_equal(query[["ORDER BY"]], "data_hora")
 
-    query <- parseargs(conn, "verificados", c("BAEBAU", "RNUEM3"), datahoras = "2021-01-01",
+    query <- parseargsOLD(conn, "verificados", c("BAEBAU", "RNUEM3"), datahoras = "2021-01-01",
         campos = "vento")
     expect_equal(query$SELECT, "data_hora,vento,id_usina")
     expect_equal(query[["ORDER BY"]], "id_usina,data_hora")
@@ -190,45 +190,45 @@ test_that(paste0(tipo, ": Interpretacao de argumentos - CAMPOS/ORDERBY"), {
 
     # Selecionando usinas
 
-    query <- parseargs(conn, "previstos", "BAEBAU")
+    query <- parseargsOLD(conn, "previstos", "BAEBAU")
     expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
     expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
 
-    query <- parseargs(conn, "previstos", "BAEBAU", datahoras = "2021-01-01")
+    query <- parseargsOLD(conn, "previstos", "BAEBAU", datahoras = "2021-01-01")
     expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
     expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
 
-    query <- parseargs(conn, "previstos", c("BAEBAU", "SCEAMO"), datahoras = "2021-01-01")
+    query <- parseargsOLD(conn, "previstos", c("BAEBAU", "SCEAMO"), datahoras = "2021-01-01")
     expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_usina,id_modelo")
     expect_equal(query[["ORDER BY"]], "id_usina,id_modelo,dia_previsao,data_hora_previsao")
 
     # Selecionando modelos
 
-    query <- parseargs(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", modelos = "GFS")
+    query <- parseargsOLD(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", modelos = "GFS")
     expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento")
     expect_equal(query[["ORDER BY"]], "dia_previsao,data_hora_previsao")
 
-    query <- parseargs(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", modelos = c("GFS", "ECMWF"))
+    query <- parseargsOLD(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", modelos = c("GFS", "ECMWF"))
     expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
     expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
 
     # Selecionando horizontes
 
-    query <- parseargs(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", horizontes = 1)
+    query <- parseargsOLD(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", horizontes = 1)
     expect_equal(query$SELECT, "data_hora_previsao,vento,id_modelo")
     expect_equal(query[["ORDER BY"]], "id_modelo,data_hora_previsao")
 
-    query <- parseargs(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", horizontes = seq(2))
+    query <- parseargsOLD(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", horizontes = seq(2))
     expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
     expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
 
     # Selecionando modelos e horizontes
 
-    query <- parseargs(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", modelos = "GFS", horizontes = 1)
+    query <- parseargsOLD(conn, "previstos", "BAEBAU", datahoras = "2021-01-01", modelos = "GFS", horizontes = 1)
     expect_equal(query$SELECT, "data_hora_previsao,vento")
     expect_equal(query[["ORDER BY"]], "data_hora_previsao")
 
-    query <- parseargs(conn, "previstos", "BAEBAU", datahoras = "2021-01-01",
+    query <- parseargsOLD(conn, "previstos", "BAEBAU", datahoras = "2021-01-01",
         modelos = c("GFS", "ECMWF"), horizontes = seq(3))
     expect_equal(query$SELECT, "data_hora_previsao,dia_previsao,vento,id_modelo")
     expect_equal(query[["ORDER BY"]], "id_modelo,dia_previsao,data_hora_previsao")
@@ -237,11 +237,11 @@ test_that(paste0(tipo, ": Interpretacao de argumentos - CAMPOS/ORDERBY"), {
 
     if(tipo == "LOCAL") {
 
-        query <- parseargs(conn, "reanalise_grade", longitudes = -50, latitudes = 4)
+        query <- parseargsOLD(conn, "reanalise_grade", longitudes = -50, latitudes = 4)
         expect_equal(query$SELECT, "data_hora,vento")
         expect_equal(query[["ORDER BY"]], "data_hora")
 
-        query <- parseargs(conn, "reanalise_grade", longitudes = c(-50, -40), latitudes = c(5, 4))
+        query <- parseargsOLD(conn, "reanalise_grade", longitudes = c(-50, -40), latitudes = c(5, 4))
         expect_equal(query$SELECT, "id_vertice,data_hora,vento")
         expect_equal(query[["ORDER BY"]], "id_vertice,data_hora")
     }

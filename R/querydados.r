@@ -105,7 +105,7 @@ NULL
 
 getverificado <- function(conexao, usinas = "*", datahoras = "*", campos = "vento") {
 
-    query <- parseargs(conexao, "verificados", usinas, NA, NA, datahoras, NA, NA, campos)
+    query <- parseargsOLD(conexao, "verificados", usinas, NA, NA, datahoras, NA, NA, campos)
     verif <- roda_query(conexao, query)
 
     return(verif)
@@ -118,7 +118,7 @@ getverificado <- function(conexao, usinas = "*", datahoras = "*", campos = "vent
 getprevisto <- function(conexao, usinas = "*", datahoras = "*", modelos = "*", horizontes = "*",
     campos = "vento") {
 
-    query <- parseargs(conexao, "previstos", usinas, NA, NA, datahoras, modelos, horizontes, campos)
+    query <- parseargsOLD(conexao, "previstos", usinas, NA, NA, datahoras, modelos, horizontes, campos)
     prev  <- roda_query(conexao, query)
 
     return(prev)
@@ -134,7 +134,7 @@ getreanalise <- function(conexao, usinas = "*", longitudes = "*", latitudes = "*
     modo <- match.arg(modo)
     tabela <- paste0("reanalise_", modo)
 
-    query <- parseargs(conexao, tabela, usinas, longitudes, latitudes, datahoras, NA, NA, campos)
+    query <- parseargsOLD(conexao, tabela, usinas, longitudes, latitudes, datahoras, NA, NA, campos)
     prev  <- roda_query(conexao, query)
 
     return(prev)

@@ -15,7 +15,7 @@
 #' e preciso modificar o atributo tzone da coluna de datas de volta para GMT
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
+#' @param query lista detalhando a query como retornado por \code{\link{parseargsOLD}}
 #' 
 #' @return dado recuperado do banco ou erro caso a query nao possa ser realizada
 
@@ -70,7 +70,7 @@ roda_query.mock <- function(conexao, query) {
 #' Avalia se uma tabela local corresponde a conjunto de particoes ou nao
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
+#' @param query lista detalhando a query como retornado por \code{\link{parseargsOLD}}
 #' 
 #' @return booleano indicando se a tabela e particionada ou nao
 
@@ -103,7 +103,7 @@ le_tabela_mock <- function(conexao, tabela, ...) {
 #' Realizam queries em bancos de dados locais, com ou sem particao
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
+#' @param query lista detalhando a query como retornado por \code{\link{parseargsOLD}}
 #' 
 #' @return dado recuperado do banco ou erro caso a query nao possa ser realizada
 #' 
@@ -193,7 +193,7 @@ proc_query_local_cpart <- function(conexao, query) {
 #' 
 #' @return lista contendo os trechos de query assoiados a cada argumento da funcao
 
-parseargs <- function(conexao, tabela, usinas = NA, longitudes = NA, latitudes = NA, datahoras = NA,
+parseargsOLD <- function(conexao, tabela, usinas = NA, longitudes = NA, latitudes = NA, datahoras = NA,
     modelos = NA, horizontes = NA, campos = NA) {
 
     extra <- ifelse(tabela == "previstos", "data_hora_previsao", "data_hora")

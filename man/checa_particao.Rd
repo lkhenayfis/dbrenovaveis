@@ -9,7 +9,7 @@ checa_particao(conexao, query)
 \arguments{
 \item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}
 
-\item{query}{lista detalhando a query como retornado por \code{\link{parseargs}}}
+\item{query}{lista detalhando a query como retornado por \code{\link{parseargsOLD}}}
 }
 \value{
 booleano indicando se a tabela e particionada ou nao
