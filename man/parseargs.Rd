@@ -2,63 +2,23 @@
 % Please edit documentation in R/backend.r
 \name{parseargs}
 \alias{parseargs}
-\title{Parse Argumentos Das \code{get_funs_quanti}}
+\title{Parse De Argumentos Para Query}
 \usage{
-parseargs(
-  conexao,
-  tabela,
-  usinas = NA,
-  longitudes = NA,
-  latitudes = NA,
-  datahoras = NA,
-  modelos = NA,
-  horizontes = NA,
-  campos = NA
-)
+parseargs(tabela, campos = NA, ...)
 }
 \arguments{
-\item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}
+\item{tabela}{objeto da classe \code{tabela} criado por \code{\link{new_tabela}}}
 
-\item{tabela}{um de "verificados" ou "previstos"}
+\item{campos}{os campos a reter apos a leitura. Por padrao traz todos}
 
-\item{usinas}{vetor de usinas buscadas. \code{"*"} busca todas; \code{NA} nenhuma}
-
-\item{longitudes}{vetor de longitudes buscadas. \code{"*"} busca todas; \code{NA} nenhuma}
-
-\item{latitudes}{vetor de latitudes buscadas. \code{"*"} busca todas; \code{NA} nenhuma}
-
-\item{datahoras}{string de janela de tempo buscada. \code{"*"} ou \code{NA} retorna todas}
-
-\item{modelos}{vetor de modelos buscados, so tem uso quando \code{tabela == "previstos"}.
-\code{"*"} retorna todos; \code{NA} nenhum}
-
-\item{horizontes}{vetor de horizontes de previsao buscados, so tem uso quando
-\code{tabela == "previstos"}. \code{"*"} retorna todos; \code{NA} nenhum}
-
-\item{campos}{vetor de campos da tabela buscados. \code{"*"} ou \code{NA} traz todos}
+\item{...}{subsets a serem aplicados. Veja Detalhes e Exemplos}
 }
 \value{
-lista contendo os trechos de query assoiados a cada argumento da funcao
+lista contendo os trechos de query para executar no banco
 }
 \description{
-Interpreta cada argumento, expandindo os vazios para todos os valores possiveis
+Interpreta argumentos para montar a string da query a ser executada no banco
 }
-\details{
-O comportamento padrao desta funcao e expandir todos os argumentos nao fornecidos (iguais a
-\code{NA}) para todas as possibilidades no banco. Por exemplo, se \code{usinas = NA}, este trecho
-da query retorna todas as usinas disponiveis.
-
-A exceção desta regra e o argumento \code{horizontes}. Este sera expandido para todos os
-horizontes disponiveis para o modelo mais limitado. Isto significa que se ha tres modelos no
-banco, indo ate D5, D6 e D7, \code{horizontes} sera expandido para \code{1:5}. A razao disso e
-que as funcoes \code{get} nao sao feitas para queries de multiplos modelos e horizontes
-simultaneamente, dado que este caso de uso e extremamente raro nas aplicacoes de renovaveis da
-PEM.
-
-O argumento \code{campos} tambem passa por um tratamento especial. Caso nao seja informado, mas
-\code{modelos} ou \code{horizontes} tenham e indiquem apenas um modelo ou um horizonte, sera
-removido de \code{campos} as colunas indexadoras dessas informacoes. Caso \code{campos} seja
-fornecido sem "id_modelo" ou "dia_previsao", mas o usuario tenha informado \code{modelos} ou
-\code{horizontes} de modo que mais de um seja requisitado, \code{campos} sera modificado para
-incluir as colunas indexadoras.
+\seealso{
+generica para parse de cada campo individualmente \code{\link{parsearg}};
 }
