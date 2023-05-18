@@ -52,3 +52,6 @@ tabverif <- new_tabela(
     conexao = conect)
 
 }
+\seealso{
+Funcao geral para acessar dados das tabelas \code{\link{getfromtabela}}
+}
