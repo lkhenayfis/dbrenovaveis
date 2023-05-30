@@ -298,10 +298,10 @@ parsearg.campo_discreto <- function(campo, valor, ...) {
 
     if(class(valor[1]) == "character") {
         valor_str <- paste0(valor, collapse = "','")
-        WHERE <- paste0(nome, " IN ('", valor, "')")
+        WHERE <- paste0(nome, " IN ('", valor_str, "')")
     } else {
         valor_str <- paste0(valor, collapse = ",")
-        WHERE <- paste0(nome, " IN (", valor, ")")
+        WHERE <- paste0(nome, " IN (", valor_str, ")")
     }
     attr(WHERE, "n") <- length(valor)
 
