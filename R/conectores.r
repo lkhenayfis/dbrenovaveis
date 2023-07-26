@@ -103,7 +103,7 @@ conectalocal <- function(diretorio, extensao) {
         particoes <- NULL
     }
 
-    if(missing("extensao")) extensao <- tools::file_ext(list.files(diretorio)[1])
+    if(missing("extensao")) extensao <- get_ext(list.files(diretorio)[1])
 
     if(extensao == "csv") {
         inner_reader <- fread
@@ -163,7 +163,7 @@ conectabucket <- function(bucket, prefixo, extensao) {
         extensao <- aws.s3::get_bucket(bucket, prefixo)
         # pega o ultimo para evitar pegar metafiles ocultos que aparecem primeiro
         extensao <- tail(extensao, 1)[[1]]$Key
-        extensao <- tools::file_ext(extensao)
+        extensao <- get_ext(extensao)
     }
 
     if(extensao == "csv") {
@@ -187,4 +187,23 @@ conectabucket <- function(bucket, prefixo, extensao) {
     class(out) <- c("bucketS3", "mock")
 
     return(out)
+}
+
+# HELPERS ------------------------------------------------------------------------------------------
+
+#' Extrai Extensao De Arquivo
+#' 
+#' Alternativa a \code{\link[tools]{file_ext}} que suporta extensoes com mais de um ponto
+#' 
+#' \code{\link[tools]{file_ext}} basicamente retorna o ultimo trecho do nome seguindo um ".". Para
+#' arquivos \code{parquet.gzip} isto gera um problema pois acaba retornando apenas \code{gzip}
+#' 
+#' @param x nome do arquivo do qual tirar extensao
+#' 
+#' @return extensao do arquivo
+
+get_ext <- function(x) {
+    x <- regmatches(x, regexpr("\\..*$", text = x))
+    x <- sub("^\\.", "", x)
+    return(x)
 }
