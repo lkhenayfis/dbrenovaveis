@@ -105,16 +105,7 @@ conectalocal <- function(diretorio, extensao) {
 
     if(missing("extensao")) extensao <- get_ext(list.files(diretorio)[1])
 
-    if(extensao == "csv") {
-        inner_reader <- fread
-    } else if(extensao == "parquet") {
-        if(!requireNamespace("arrow", quietly = TRUE)) {
-            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
-        }
-        inner_reader <- arrow::read_parquet
-    } else {
-        stop("arquivos locais de tipo nao suportado")
-    }
+    inner_reader <- parse_inner_reader(extensao)
 
     out <- diretorio
     attr(out, "extensao")   <- extensao
@@ -166,16 +157,7 @@ conectabucket <- function(bucket, prefixo, extensao) {
         extensao <- get_ext(extensao)
     }
 
-    if(extensao == "csv") {
-        inner_reader <- fread
-    } else if(extensao == "parquet") {
-        if(!requireNamespace("arrow", quietly = TRUE)) {
-            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
-        }
-        inner_reader <- arrow::read_parquet
-    } else {
-        stop("arquivos locais de tipo nao suportado")
-    }
+    inner_reader <- parse_inner_reader(extensao)
 
     reader_fun <- function(x, ...) aws.s3::s3read_using(FUN = inner_reader, object = x, ...)
 
@@ -206,4 +188,34 @@ get_ext <- function(x) {
     x <- regmatches(x, regexpr("\\..*$", text = x))
     x <- sub("^\\.", "", x)
     return(x)
+}
+
+#' Seletor De Inner Reader
+#' 
+#' Wrapper para decisao de qual funcao de leitura interna deve ser usada
+#' 
+#' Atualmente sao suportados apenas os seguintes tipos
+#' 
+#' \describe{
+#' \item{\code{csv}}{lido atraves de \code{\link[data.table]{fread}}}
+#' \item{\code{parquet|parquet.gzip}}{lido atraves de \code{\link[arrow]{read_parquet}}}
+#' }
+#' 
+#' @param extensao extensao dos arquivos no banco
+#' 
+#' @return funcao para leitura dos arquivos
+
+parse_inner_reader <- function(extensao) {
+    if(extensao == "csv") {
+        inner_reader <- fread
+    } else if(extensao == "parquet") {
+        if(!requireNamespace("arrow", quietly = TRUE)) {
+            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
+        }
+        inner_reader <- arrow::read_parquet
+    } else {
+        stop("arquivos locais de tipo nao suportado")
+    }
+
+    return(inner_reader)
 }
