@@ -208,7 +208,7 @@ get_ext <- function(x) {
 parse_inner_reader <- function(extensao) {
     if(extensao == "csv") {
         inner_reader <- fread
-    } else if(extensao == "parquet") {
+    } else if((extensao == "parquet") || (extensao == "parquet.gzip")) {
         if(!requireNamespace("arrow", quietly = TRUE)) {
             stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
         }
