@@ -156,44 +156,6 @@ proc_query_local_cpart <- function(conexao, query) {
     return(dat)
 }
 
-# INTERPRETACAO DE ARGUMENTOS ----------------------------------------------------------------------
-
-#' Parse De Argumentos Para Query
-#' 
-#' Interpreta argumentos para montar a string da query a ser executada no banco
-#' 
-#' @param tabela objeto da classe \code{tabela} criado por \code{\link{new_tabela}}
-#' @param campos os campos a reter apos a leitura. Por padrao traz todos
-#' @param ... subsets a serem aplicados. Veja Detalhes e Exemplos
-#' 
-#' @return lista contendo os trechos de query para executar no banco
-#' 
-#' @seealso generica para parse de cada campo individualmente \code{\link{parsearg}}; 
-
-parseargs <- function(tabela, campos = NA, ...) {
-
-    conexao <- attr(tabela, "conexao")
-
-    if((campos[1] == "*") || is.na(campos[1])) campos <- listacampos(conexao, tabela$nome)
-
-    subsets <- list(...)
-    if(length(subsets) == 0) {
-        WHERE <- NULL
-    } else {
-        WHERE  <- lapply(names(subsets), function(campo) {
-            parsearg(tabela$campos[[campo]], subsets[[campo]])
-        })
-        names(WHERE) <- sapply(names(subsets), function(campo) tabela$campos[[campo]]$nome)
-    }
-
-    SELECT <- paste0(campos, collapse = ",")
-    FROM   <- tabela$nome
-
-    out <- list(SELECT = SELECT, FROM = FROM, WHERE = WHERE)
-
-    return(out)
-}
-
 #' Parse Argumentos Das \code{get_funs_quanti}
 #' 
 #' Interpreta cada argumento, expandindo os vazios para todos os valores possiveis
