@@ -1,6 +1,11 @@
-# genbackend
+# dbrenovaveis 0.6
 
-## New features
+## Bug fixes
+
+* `conectabucket` dava erro em repos particionados pois a identificacao do tipo de arquivos 
+  olhava para o JSON, erroneamente. Isso foi corrigido
+
+## Misc
 
 * Toda a representacao de tabelas e a forma como argumentos de query sao interpretados para composicao
   das strings de query foi reformulada. Agora e possivel utilizar o backend de `dbrenovaveis` para
@@ -13,13 +18,6 @@
 * O parse de argumentos para query foi reformulado para lidar com os objetos `campo` genericos
 * Uma nova funcao de baixo nivel `getfromtabela` foi introduzida, permitindo interface para leitura
   com quaisquer tabelas em bancos arbitrarios
-
-# master
-
-## Bug fixes
-
-* `conectabucket` dava erro em repos particionados pois a identificacao do tipo de arquivos 
-  olhava para o JSON, erroneamente. Isso foi corrigido
 
 # dbrenovaveis 0.5
 
