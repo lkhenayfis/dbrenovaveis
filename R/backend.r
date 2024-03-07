@@ -156,139 +156,13 @@ proc_query_local_cpart <- function(conexao, query) {
     return(dat)
 }
 
-#' Parse Argumentos Das \code{get_funs_quanti}
+#' Auxiliar Para Correcao De Datetime
 #' 
-#' Interpreta cada argumento, expandindo os vazios para todos os valores possiveis
+#' Corrige o fuso horario de colunas de data em um data.table
 #' 
-#' O comportamento padrao desta funcao e expandir todos os argumentos nao fornecidos (iguais a 
-#' \code{NA}) para todas as possibilidades no banco. Por exemplo, se \code{usinas = NA}, este trecho
-#' da query retorna todas as usinas disponiveis. 
+#' @param dat data.table com colunas a corrigir corrigir
 #' 
-#' A exceção desta regra e o argumento \code{horizontes}. Este sera expandido para todos os 
-#' horizontes disponiveis para o modelo mais limitado. Isto significa que se ha tres modelos no 
-#' banco, indo ate D5, D6 e D7, \code{horizontes} sera expandido para \code{1:5}. A razao disso e
-#' que as funcoes \code{get} nao sao feitas para queries de multiplos modelos e horizontes 
-#' simultaneamente, dado que este caso de uso e extremamente raro nas aplicacoes de renovaveis da
-#' PEM.
-#' 
-#' O argumento \code{campos} tambem passa por um tratamento especial. Caso nao seja informado, mas
-#' \code{modelos} ou \code{horizontes} tenham e indiquem apenas um modelo ou um horizonte, sera
-#' removido de \code{campos} as colunas indexadoras dessas informacoes. Caso \code{campos} seja
-#' fornecido sem "id_modelo" ou "dia_previsao", mas o usuario tenha informado \code{modelos} ou 
-#' \code{horizontes} de modo que mais de um seja requisitado, \code{campos} sera modificado para
-#' incluir as colunas indexadoras.
-#' 
-#' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param tabela um de "verificados" ou "previstos"
-#' @param usinas vetor de usinas buscadas. \code{"*"} busca todas; \code{NA} nenhuma
-#' @param longitudes vetor de longitudes buscadas. \code{"*"} busca todas; \code{NA} nenhuma
-#' @param latitudes vetor de latitudes buscadas. \code{"*"} busca todas; \code{NA} nenhuma
-#' @param datahoras string de janela de tempo buscada. \code{"*"} ou \code{NA} retorna todas
-#' @param modelos vetor de modelos buscados, so tem uso quando \code{tabela == "previstos"}.
-#'     \code{"*"} retorna todos; \code{NA} nenhum
-#' @param horizontes vetor de horizontes de previsao buscados, so tem uso quando 
-#'     \code{tabela == "previstos"}. \code{"*"} retorna todos; \code{NA} nenhum
-#' @param campos vetor de campos da tabela buscados. \code{"*"} ou \code{NA} traz todos
-#' 
-#' @return lista contendo os trechos de query assoiados a cada argumento da funcao
-
-parseargsOLD <- function(conexao, tabela, usinas = NA, longitudes = NA, latitudes = NA, datahoras = NA,
-    modelos = NA, horizontes = NA, campos = NA) {
-
-    extra <- ifelse(tabela == "previstos", "data_hora_previsao", "data_hora")
-    if((campos[1] == "*") || is.na(campos[1])) campos <- listacampos(conexao, tabela)
-
-    q_usinas     <- parseargs_usinas(conexao, usinas)
-    q_vertices   <- parseargs_vertices(conexao, longitudes, latitudes)
-    q_datahoras  <- parseargs_datahoras(datahoras, extra)
-    q_modelos    <- parseargs_modelos(conexao, modelos)
-    q_horizontes <- parseargs_horizontes(conexao, horizontes)
-
-    ORDERBY <- c("id_usina", "id_vertice", "id_modelo", "dia_previsao", extra)
-
-    campos_full <- listacampos(conexao, tabela)
-    mantem <- c(extra, campos)
-
-    if(tabela == "previstos") {
-        mantem <- if(attr(q_modelos, "n") == 1) mantem[!(mantem %in% "id_modelo")] else c(mantem, "id_modelo")
-        mantem <- if(attr(q_horizontes, "n") == 1) mantem[!(mantem %in% "dia_previsao")] else c(mantem, "dia_previsao")
-    }
-
-    mantem <- if(attr(q_usinas, "n") == 1) mantem[!(mantem %in% "id_usina")] else c(mantem, "id_usina")
-    mantem <- if(attr(q_vertices, "n") == 1) mantem[!(mantem %in% "id_vertice")] else c(mantem, "id_vertice")
-    mantem <- mantem[!grepl("^id$", mantem)]
-    campos <- campos_full[campos_full %in% mantem]
-    q_campos <- paste0(campos, collapse = ",")
-
-    SELECT <- q_campos
-    FROM   <- tabela
-    WHERE  <- list(id_usina = q_usinas, id_vertice = q_vertices, id_modelo = q_modelos,
-        dia_previsao = q_horizontes, data_hora = q_datahoras)
-    WHERE  <- WHERE[!sapply(WHERE, is.na)]
-    ORDERBY <- ORDERBY[ORDERBY %in% campos]
-    ORDERBY <- paste0(ORDERBY, collapse = ",")
-
-    out <- list(SELECT = SELECT, FROM = FROM, WHERE = WHERE, "ORDER BY" = ORDERBY)
-
-    return(out)
-}
-
-# HELPERS ------------------------------------------------------------------------------------------
-
-parseargs_usinas <- function(conexao, usinas) {
-    if(is.na(usinas[1]) || usinas[1] == "*") return(structure(NA, "n" = 0))
-
-    usinas <- getusinas(conexao, usinas, campos = "id")[[1]]
-
-    q_usinas <- paste0("id_usina IN (", paste0(usinas, collapse = ", "), ")")
-    attr(q_usinas, "n") <- length(usinas)
-
-    return(q_usinas)
-}
-
-parseargs_datahoras <- function(datahoras, extra) {
-    if((datahoras[1] == "*") || is.na(datahoras[1])) datahoras <- "1000/3999"
-    q_datahoras <- parsedatas(datahoras, extra)
-    return(q_datahoras)
-}
-
-parseargs_modelos <- function(conexao, modelos) {
-    if(is.na(modelos[1]) || modelos[1] == "*") return(structure(NA, "n" = 0))
-
-    modelos <- getmodelos(conexao, modelos, campos = "id")[[1]]
-
-    q_modelos <- paste0("id_modelo IN (", paste0(modelos, collapse = ", "), ")")
-    attr(q_modelos, "n") <- length(modelos)
-
-    return(q_modelos)
-}
-
-parseargs_horizontes <- function(conexao, horizontes) {
-    if(is.na(horizontes[1]) || horizontes[1] == "*") return(structure(NA, "n" = 0))
-
-    horizontes <- sub("D|d", "", horizontes)
-    horizontes <- as.numeric(ifelse(horizontes == "", "0", horizontes))
-
-    q_horizontes <- paste0("dia_previsao IN (", paste0(horizontes, collapse = ", "), ")")
-    attr(q_horizontes, "n") <- length(horizontes)
-
-    return(q_horizontes)
-}
-
-parseargs_vertices <- function(conexao, longitudes, latitudes) {
-
-    temlon <- !(is.na(longitudes[1]) || (longitudes[1] == "*"))
-    temlat <- !(is.na(latitudes[1])  || (latitudes[1] == "*"))
-
-    if(!temlon && !temlat) return(structure(NA, "n" = 0))
-
-    vertices <- getvertices(conexao, longitudes, latitudes, campos = "id")[[1]]
-
-    q_vertices <- paste0("id_vertice IN (", paste0(vertices, collapse = ", "), ")")
-    attr(q_vertices, "n") <- length(vertices)
-
-    return(q_vertices)
-}
+#' @return Argumento \code{dat} com colunas POSIXct em fuso horario GMT
 
 corrigeposix <- function(dat) {
     coldt <- sapply(dat, function(x) "POSIXct" %in% class(x))
@@ -297,19 +171,4 @@ corrigeposix <- function(dat) {
     dat[, (coldt) := lapply(.SD, as.numeric), .SDcols = coldt]
     dat[, (coldt) := lapply(.SD, as.POSIXct, origin = "1970-01-01", tz = "GMT"), .SDcols = coldt]
     return(dat)
-}
-
-listacampos <- function(conexao, tabela) UseMethod("listacampos")
-listacampos.default <- function(conexao, tabela) DBI::dbListFields(conexao, tabela)
-listacampos.mock   <- function(conexao, tabela) {
-    tempart <- checa_particao(conexao, list(FROM = tabela))
-    if(!tempart) {
-        dat <- le_tabela_mock(conexao, tabela, nrow = 1)
-        colnames(dat)
-    } else {
-        mestre <- le_tabela_mock(conexao, tabela, nrow = 1)
-        tabela <- mestre$tabela[1]
-        dat    <- le_tabela_mock(conexao, tabela, nrow = 1)
-        colnames(dat)
-    }
 }
