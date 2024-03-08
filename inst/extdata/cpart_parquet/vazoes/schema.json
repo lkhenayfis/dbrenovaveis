@@ -1,0 +1,26 @@
+{
+  "name": "vazoes",
+  "description": "Dados de entrada de vazao observada",
+  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/vazoes",
+  "fileType": ".parquet.gzip",
+  "columns": [
+    {
+      "name": "data",
+      "type": "date"
+    },
+    {
+      "name": "codigo",
+      "type": "string"
+    },
+    {
+      "name": "vazao",
+      "type": "float"
+    }
+  ],
+  "partitions": [
+    {
+      "name": "codigo",
+      "type": "string"
+    }
+  ]
+}

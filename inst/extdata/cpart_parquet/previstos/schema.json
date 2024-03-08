@@ -1,0 +1,106 @@
+{
+  "name": "previstos",
+  "description": "Dados de saida da previsao realizada com o smapR",
+  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/previstos",
+  "fileType": ".parquet.gzip",
+  "columns": [
+    {
+      "name": "codigo",
+      "type": "string"
+    },
+    {
+      "name": "data_previsao",
+      "type": "date"
+    },
+    {
+      "name": "dia_previsao",
+      "type": "int"
+    },
+    {
+      "name": "qcalc",
+      "type": "float"
+    },
+    {
+      "name": "rsolo",
+      "type": "float"
+    },
+    {
+      "name": "rsup",
+      "type": "float"
+    },
+    {
+      "name": "rsup2",
+      "type": "float"
+    },
+    {
+      "name": "rsub",
+      "type": "float"
+    },
+    {
+      "name": "es",
+      "type": "float"
+    },
+    {
+      "name": "er",
+      "type": "float"
+    },
+    {
+      "name": "rec",
+      "type": "float"
+    },
+    {
+      "name": "marg",
+      "type": "float"
+    },
+    {
+      "name": "ed",
+      "type": "float"
+    },
+    {
+      "name": "ed2",
+      "type": "float"
+    },
+    {
+      "name": "ed3",
+      "type": "float"
+    },
+    {
+      "name": "eb",
+      "type": "float"
+    },
+    {
+      "name": "tu",
+      "type": "float"
+    },
+    {
+      "name": "qsup1",
+      "type": "float"
+    },
+    {
+      "name": "qsup2",
+      "type": "float"
+    },
+    {
+      "name": "qplan",
+      "type": "float"
+    },
+    {
+      "name": "qbase",
+      "type": "float"
+    },
+    {
+      "name": "precipitacao",
+      "type": "float"
+    }
+  ],
+  "partitions": [
+    {
+      "name": "codigo",
+      "type": "string"
+    },
+    {
+      "name": "dia_previsao",
+      "type": "int"
+    }
+  ]
+}

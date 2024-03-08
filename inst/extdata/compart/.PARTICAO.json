@@ -1,8 +1,0 @@
-{
-    "usinas": false,
-    "modelos_previsao": false,
-    "vertices": false,
-    "verificados": true,
-    "previstos": true,
-    "reanalise_grade": true
-}

@@ -1,0 +1,33 @@
+{
+  "application": "pos-processamento-smap",
+  "name": "banco-sintetico",
+  "description": "Previsoes retroativas com SMAP/ONS de 2011/2021 utilizando apenas dados historicos",
+  "version": "1.0",
+  "modifiedTime": "2024-02-21 19:11:39",
+  "tables": [
+    {
+      "name": "assimilacao",
+      "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/assimilacao"
+    },
+    {
+      "name": "parametros",
+      "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/parametros"
+    },
+    {
+      "name": "precipitacao_observada",
+      "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/precipitacao_observada"
+    },
+    {
+      "name": "previstos",
+      "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/previstos"
+    },
+    {
+      "name": "vazoes",
+      "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/vazoes"
+    },
+    {
+      "name": "subbacias",
+      "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/subbacias"
+    }
+  ]
+}

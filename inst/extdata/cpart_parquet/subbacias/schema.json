@@ -1,0 +1,73 @@
+{
+  "name": "subbacias",
+  "description": {},
+  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/subbacias",
+  "fileType": ".parquet.gzip",
+  "columns": [
+    {
+      "name": "posto",
+      "type": "int"
+    },
+    {
+      "name": "nome",
+      "type": "string"
+    },
+    {
+      "name": "codigo",
+      "type": "string"
+    },
+    {
+      "name": "bacia_smap",
+      "type": "string"
+    },
+    {
+      "name": "fator",
+      "type": "float"
+    },
+    {
+      "name": "posto_jusante",
+      "type": "int"
+    },
+    {
+      "name": "bacia",
+      "type": "string"
+    },
+    {
+      "name": "posto_jusante_gvp_art",
+      "type": "int"
+    },
+    {
+      "name": "posto_gvp_artificial",
+      "type": "int"
+    },
+    {
+      "name": "tv",
+      "type": "float"
+    },
+    {
+      "name": "n",
+      "type": "int"
+    },
+    {
+      "name": "c1",
+      "type": "float"
+    },
+    {
+      "name": "c2",
+      "type": "float"
+    },
+    {
+      "name": "c3",
+      "type": "float"
+    },
+    {
+      "name": "latitude",
+      "type": "float"
+    },
+    {
+      "name": "longitude",
+      "type": "float"
+    }
+  ],
+  "partitions": []
+}

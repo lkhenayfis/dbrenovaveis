@@ -1,0 +1,26 @@
+{
+  "name": "parametros",
+  "description": "Parametros utilizados para execucao do smap",
+  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/parametros",
+  "fileType": ".parquet.gzip",
+  "columns": [
+    {
+      "name": "parametro",
+      "type": "string"
+    },
+    {
+      "name": "valor",
+      "type": "float"
+    },
+    {
+      "name": "codigo",
+      "type": "string"
+    }
+  ],
+  "partitions": [
+    {
+      "name": "codigo",
+      "type": "string"
+    }
+  ]
+}
