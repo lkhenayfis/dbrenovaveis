@@ -36,18 +36,18 @@ conect <- conectalocal(dirloc)
 tabusi <- new_tabela(
     nome = "usinas",
     campos = list(
-        new_campo("id", "inteiro", FALSE),
-        new_campo("codigo", "string", FALSE)),
+        new_campo("id", "inteiro"),
+        new_campo("codigo", "string")),
     conexao = conect)
 
 # representacao da tabela de verificados
 tabverif <- new_tabela(
     nome = "verificados",
     campos = list(
-        new_campo("id_usina", "inteiro", TRUE, tabusi, "id", "codigo"),
-        new_campo("data_hora", "data", FALSE),
-        new_campo("vento", "float", FALSE),
-        new_campo("geracao", "float", FALSE)
+        new_campo("id_usina", "inteiro"),
+        new_campo("data_hora", "data"),
+        new_campo("vento", "float"),
+        new_campo("geracao", "float")
     ),
     conexao = conect)
 
