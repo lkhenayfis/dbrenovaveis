@@ -86,29 +86,27 @@ conectabanco <- function(usuario, banco) {
 #' funciona como particionamento.
 #' 
 #' @param diretorio diretorio contendo os arquivos representando o banco
-#' @param extensao extensao dos arquivos contidos no banco. Se omitido, sera lido do banco
 #' 
 #' @return objeto de conexao com o arquivamento local
 #' 
 #' @export
 
-conectalocal <- function(diretorio, extensao) {
+conectalocal <- function(diretorio) {
 
-    partfile   <- file.path(diretorio, ".PARTICAO.json")
-    tempartdict <- file.exists(partfile)
+    arq_schema <- file.path(diretorio, "schema.json")
+    schema <- jsonlite::read_json(arq_schema)
 
-    if(tempartdict) {
-        particoes <- unlist(jsonlite::read_json(partfile))
-    } else {
-        particoes <- NULL
-    }
+    tabelas <- lapply(schema$tables, function(tab) {
+        tab_schema <- file.path(tab$uri, "schema.json")
+        schema2tabela(tab_schema)
+    })
 
-    if(missing("extensao")) extensao <- tools::file_ext(list.files(diretorio)[1])
+    extensao <- sapply(tabelas, attr, "tipo_arquivo")[1]
 
-    if(extensao == "csv") {
+    if (extensao == ".csv") {
         inner_reader <- fread
-    } else if(extensao == "parquet") {
-        if(!requireNamespace("arrow", quietly = TRUE)) {
+    } else if (extensao %in% c(".parquet", ".parquet.gzip")) {
+        if (!requireNamespace("arrow", quietly = TRUE)) {
             stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
         }
         inner_reader <- arrow::read_parquet
@@ -116,11 +114,9 @@ conectalocal <- function(diretorio, extensao) {
         stop("arquivos locais de tipo nao suportado")
     }
 
-    out <- diretorio
+    out <- list(diretorio, tabelas)
     attr(out, "extensao")   <- extensao
     attr(out, "reader_fun") <- inner_reader
-    attr(out, "tempart")    <- tempartdict
-    attr(out, "particoes")  <- particoes
     class(out) <- c("local", "mock")
 
     return(out)
