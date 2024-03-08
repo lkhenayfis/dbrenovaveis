@@ -114,7 +114,7 @@ conectalocal <- function(diretorio) {
         stop("arquivos locais de tipo nao suportado")
     }
 
-    out <- list(diretorio, tabelas)
+    out <- list(uri = diretorio, tabelas = tabelas)
     attr(out, "extensao")   <- extensao
     attr(out, "reader_fun") <- inner_reader
     class(out) <- c("local", "mock")
