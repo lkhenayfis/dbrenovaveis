@@ -128,10 +128,11 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' o tipo de dados contido neste campo, podendo ser um de:
 #' 
 #' \itemize{
-#' \item{inteiro}
-#' \item{string}
+#' \item{int}
 #' \item{float}
-#' \item{data}
+#' \item{string}
+#' \item{date}
+#' \item{datetime}
 #' }
 #' 
 #' Cada tipo de dado gera um tipo especifico de query e possui funcionalidades proprias durante o
@@ -151,7 +152,7 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' tabusi <- new_tabela(
 #'     nome = "usinas",
 #'     campos = list(
-#'         new_campo("id", "inteiro"),
+#'         new_campo("id", "int"),
 #'         new_campo("codigo", "string")),
 #'     conexao = conect)
 #' 
@@ -163,8 +164,8 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' tabverif <- new_tabela(
 #'     nome = "verificados",
 #'     campos = list(
-#'         new_campo("id_usina", "inteiro"),
-#'         new_campo("data_hora", "data"),
+#'         new_campo("id_usina", "int"),
+#'         new_campo("data_hora", "date"),
 #'         new_campo("vento", "float"),
 #'         new_campo("geracao", "float")
 #'     ),
@@ -174,15 +175,14 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' 
 #' @export
 
-new_campo <- function(nome, tipo) {
+new_campo <- function(nome, tipo = c("int", "float", "sting", "date", "datetime")) {
 
-    tipo <- switch(tipo,
-        "inteiro" = "discreto",
-        "string" = "discreto",
-        "float" = "continuo",
-        "data" = "data")
-
-    if (is.null(tipo)) stop("'tipo' nao esta dentro dos valores permitidos -- Veja '?new_campo'")
+    tipo <- try(match.arg(tipo), TRUE)
+    if (inherits(tipo, "try-error")) {
+        msg <- paste0("Tipo do campo '", nome, "' nao permitido -- deve ser um de (",
+            paste0(formals(new_campo)$tipo[-1], collapse = ", "), ")")
+        stop(msg)
+    }
 
     out <- list(nome = nome)
     class(out) <- c("campo", paste0("campo_", tipo))
