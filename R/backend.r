@@ -89,7 +89,7 @@ roda_query.default <- function(conexao, query) {
 
     Sys.setenv("TZ" = oldtz)
 
-    if(class(out)[1] == "try-error") stop(out[1]) else return(out)
+    if (class(out)[1] == "try-error") stop(out[1]) else return(out)
 }
 
 roda_query.mock <- function(conexao, query) {
@@ -98,16 +98,16 @@ roda_query.mock <- function(conexao, query) {
     query$WHERE  <- lapply(query$WHERE, function(q) {
         q <- gsub(" IN ", " %in% ", q)
         q <- gsub("\\(", "c\\(", q)
-        if(grepl("AND", q)) paste0("(", sub(" AND ", ") & (", q), ")") else q
+        if (grepl("AND", q)) paste0("(", sub(" AND ", ") & (", q), ")") else q
     })
-    if(!is.null(query[["ORDER BY"]])) query[["ORDER BY"]] <- strsplit(query[["ORDER BY"]], ",")[[1]]
+    if (!is.null(query[["ORDER BY"]])) query[["ORDER BY"]] <- strsplit(query[["ORDER BY"]], ",")[[1]]
 
     oldtz <- Sys.getenv("TZ")
     Sys.setenv("TZ" = "GMT")
 
     tempart <- checa_particao(conexao, query)
 
-    if(!tempart) {
+    if (!tempart) {
         out <- try(proc_query_local_spart(conexao, query))
     } else {
         out <- try(proc_query_local_cpart(conexao, query))
@@ -116,7 +116,7 @@ roda_query.mock <- function(conexao, query) {
 
     Sys.setenv("TZ" = oldtz)
 
-    if(class(out)[1] == "try-error") stop(out[1]) else return(out)
+    if (class(out)[1] == "try-error") stop(out[1]) else return(out)
 }
 
 #' Checa Existencia De Particoes Locais
@@ -169,7 +169,7 @@ proc_query_local_spart <- function(conexao, query) {
 
     dat <- le_tabela_mock(conexao, query$FROM)
 
-    for(q in query$WHERE) {
+    for (q in query$WHERE) {
         vsubset <- eval(str2lang(q), envir = dat)
         dat <- dat[vsubset, ]
     }
@@ -178,7 +178,7 @@ proc_query_local_spart <- function(conexao, query) {
     dat <- dat[, ..cols]
 
     cc_order <- list(quote(setorder), quote(dat))
-    for(i in query[["ORDER BY"]]) cc_order <- c(cc_order, list(str2lang(i)))
+    for (i in query[["ORDER BY"]]) cc_order <- c(cc_order, list(str2lang(i)))
     eval(as.call(cc_order))
 
     return(dat)
@@ -194,7 +194,7 @@ proc_query_local_cpart <- function(conexao, query) {
 
     querymaster <- query[c("SELECT", "FROM", "WHERE")]
     querymaster$SELECT <- "tabela"
-    if(length(querymaster$WHERE) > 0) querymaster$WHERE <- querymaster$WHERE[colspart]
+    if (length(querymaster$WHERE) > 0) querymaster$WHERE <- querymaster$WHERE[colspart]
     querymaster$WHERE <- querymaster$WHERE[sapply(querymaster$WHERE, length) > 0]
 
     tabelas <- proc_query_local_spart(conexao, querymaster)$tabela
@@ -220,7 +220,7 @@ proc_query_local_cpart <- function(conexao, query) {
 
 corrigeposix <- function(dat) {
     coldt <- sapply(dat, function(x) "POSIXct" %in% class(x))
-    if(sum(coldt) == 0) return(dat)
+    if (sum(coldt) == 0) return(dat)
     coldt <- names(coldt)[coldt]
     dat[, (coldt) := lapply(.SD, as.numeric), .SDcols = coldt]
     dat[, (coldt) := lapply(.SD, as.POSIXct, origin = "1970-01-01", tz = "GMT"), .SDcols = coldt]

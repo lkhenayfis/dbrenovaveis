@@ -2,7 +2,7 @@
     cachedir <- file.path(Sys.getenv("HOME"), ".dbrenovaveis")
     Sys.setenv("dbrenovaveis-cachedir" = cachedir)
 
-    if(!dir.exists(cachedir)) dir.create(cachedir)
+    if (!dir.exists(cachedir)) dir.create(cachedir)
 }
 
 .onUnload <- function(libname, pkgname) {

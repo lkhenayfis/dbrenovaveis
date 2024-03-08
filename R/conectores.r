@@ -142,30 +142,30 @@ conectalocal <- function(diretorio) {
 
 conectabucket <- function(bucket, prefixo, extensao) {
 
-    if(!requireNamespace("aws.s3", quietly = TRUE)) {
+    if (!requireNamespace("aws.s3", quietly = TRUE)) {
         stop("Conexao com buckets demanda pacote 'aws.s3'")
     }
 
     partfile    <- file.path(bucket, prefixo, ".PARTICAO.json")
     tempartdict <- aws.s3::object_exists(partfile)
 
-    if(tempartdict) {
+    if (tempartdict) {
         particoes <- unlist(aws.s3::s3read_using(FUN = jsonlite::read_json, object = partfile))
     } else {
         particoes <- NULL
     }
 
-    if(missing("extensao")) {
+    if (missing("extensao")) {
         extensao <- aws.s3::get_bucket(bucket, prefixo)
         # pega o ultimo para evitar pegar metafiles ocultos que aparecem primeiro
         extensao <- tail(extensao, 1)[[1]]$Key
         extensao <- tools::file_ext(extensao)
     }
 
-    if(extensao == "csv") {
+    if (extensao == "csv") {
         inner_reader <- fread
-    } else if(extensao == "parquet") {
-        if(!requireNamespace("arrow", quietly = TRUE)) {
+    } else if (extensao == "parquet") {
+        if (!requireNamespace("arrow", quietly = TRUE)) {
             stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
         }
         inner_reader <- arrow::read_parquet
