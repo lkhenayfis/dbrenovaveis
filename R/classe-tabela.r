@@ -58,12 +58,11 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
         names(campos) <- sapply(campos, "[[", "nome")
     }
 
-    tabela <- list(nome = nome, campos = campos)
+    tabela <- list(nome = nome, campos = campos, particoes = particoes)
 
     class(tabela) <- "tabela"
     attr(tabela, "uri") <- uri
     attr(tabela, "tipo_arquivo") <- tipo_arquivo
-    attr(tabela, "particoes") <- particoes
     attr(tabela, "descricao") <- descricao
 
     return(tabela)
@@ -84,7 +83,7 @@ schema2tabela <- function(schema) {
     campos <- lapply(schema$columns, function(cc) new_campo(cc$name, cc$type))
 
     new <- new_tabela(schema$name, campos, schema$uri, schema$fileType,
-        unlist(schema$partitions), schema$description)
+        sapply(schema$partitions, "[[", "name"), schema$description)
 }
 
 # CAMPOS -------------------------------------------------------------------------------------------
