@@ -44,7 +44,7 @@
 #' 
 #' @return objeto descritivo de uma tabela
 #' 
-#' @seealso Funcao geral para acessar dados das tabelas \code{\link{getfromtabela}}
+#' @seealso Funcao geral para acessar dados das tabelas \code{\link{getfromdb}}
 #' 
 #' @export
 

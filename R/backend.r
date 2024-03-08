@@ -43,15 +43,15 @@
 #' 
 #' \dontrun{
 #' # note que nao se especifica "id_usina", mas sim o proxy "codigo"
-#' getfromtabela(tabverif, campos = "geracao", data_hora = "/2021-01-01 10:00:00", codigo = "BAEBAU")
+#' getfromdb(tabverif, campos = "geracao", data_hora = "/2021-01-01 10:00:00", codigo = "BAEBAU")
 #' }
 #' 
 #' @export
 
-getfromtabela <- function(tabela, campos = NA, ...) {
+getfromdb <- function(conexao, tabela, campos = NA, ...) {
 
     query <- parseargs(tabela, campos, ...)
-    out   <- roda_query(attr(tabela, "conexao"), query)
+    out   <- roda_query(conexao, query)
 
     return(out)
 }
