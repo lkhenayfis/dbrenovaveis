@@ -14,9 +14,7 @@
 
 parseargs <- function(tabela, campos = NA, ...) {
 
-    conexao <- attr(tabela, "conexao")
-
-    if ((campos[1] == "*") || is.na(campos[1])) campos <- listacampos(conexao, tabela$nome)
+    if ((campos[1] == "*") || is.na(campos[1])) campos <- names(tabela$campos)
 
     subsets <- list(...)
     if (length(subsets) == 0) {
@@ -88,34 +86,25 @@ parsearg <- function(campo, valor, ...) UseMethod("parsearg")
 
 #' @export
 
-parsearg.campo_discreto <- function(campo, valor, ...) {
-
+parsearg.campo_int <- function(campo, valor, ...) {
     if (is.na(valor[1]) || valor[1] == "*") return(structure(NA, "n" = 0))
 
-    nome <- campo$nome
-    foreignkey <- attr(campo, "foreignkey")
+    valor_str <- paste0(valor, collapse = ",")
+    WHERE     <- paste0(campo$nome, " IN (", valor_str, ")")
 
-    if (foreignkey[[1]]) {
+    attr(WHERE, "n") <- length(valor)
 
-        tabref <- foreignkey$ref
-        camporef   <- foreignkey$camporef
-        campoproxy <- foreignkey$proxy
+    return(WHERE)
+}
 
-        where_aux <- parsearg(tabref$campos[[campoproxy]], valor)
-        select_aux <- camporef
-        from_aux   <- tabref$nome
-        query_aux <- list(SELECT = select_aux, FROM = from_aux, WHERE = where_aux)
+#' @export
 
-        valor <- roda_query(attr(tabref, "conexao"), query_aux)[[camporef]]
-    }
+parsearg.campo_string <- function(campo, valor, ...) {
+    if (is.na(valor[1]) || valor[1] == "*") return(structure(NA, "n" = 0))
 
-    if (class(valor[1]) == "character") {
-        valor_str <- paste0(valor, collapse = "','")
-        WHERE <- paste0(nome, " IN ('", valor_str, "')")
-    } else {
-        valor_str <- paste0(valor, collapse = ",")
-        WHERE <- paste0(nome, " IN (", valor_str, ")")
-    }
+    valor_str <- paste0(valor, collapse = "','")
+    WHERE <- paste0(campo$nome, " IN ('", valor_str, "')")
+
     attr(WHERE, "n") <- length(valor)
 
     return(WHERE)
@@ -125,11 +114,11 @@ parsearg.campo_discreto <- function(campo, valor, ...) {
 
 # implementacao provisoria
 # ainda falta fazer os possiveis subsets por lista ou faixa
-parsearg.campo_continuo <- function(campo, valor, ...) parsearg.campo_discreto(campo, valor, ...)
+parsearg.campo_float <- function(campo, valor, ...) parsearg.campo_int(campo, valor, ...)
 
 #' @export
 
-parsearg.campo_data <- function(campo, valor, ...) {
+parsearg.campo_datetime <- function(campo, valor, ...) {
 
     nome <- campo$nome
 
@@ -138,6 +127,10 @@ parsearg.campo_data <- function(campo, valor, ...) {
 
     return(WHERE)
 }
+
+#' @export
+
+parsearg.campo_date <- function(campo, valor, ...) parsearg.campo_datetime(campo, valor)
 
 # HELPERS ------------------------------------------------------------------------------------------
 
