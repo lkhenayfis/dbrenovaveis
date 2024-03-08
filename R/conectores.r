@@ -100,6 +100,7 @@ conectalocal <- function(diretorio) {
         tab_schema <- file.path(tab$uri, "schema.json")
         schema2tabela(tab_schema)
     })
+    names(tabelas) <- sapply(tabelas, "[[", "nome")
 
     extensao <- sapply(tabelas, attr, "tipo_arquivo")[1]
 
