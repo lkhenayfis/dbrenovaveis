@@ -4,30 +4,12 @@
 \alias{new_campo}
 \title{Construtor Da Classe \code{campo}}
 \usage{
-new_campo(
-  nome,
-  tipo,
-  foreignkey = FALSE,
-  ref = NULL,
-  camporef = NULL,
-  proxy = NULL,
-  alias = NULL
-)
+new_campo(nome, tipo)
 }
 \arguments{
 \item{nome}{o nome do campo (nome da coluna na tabela)}
 
 \item{tipo}{o tipo de dado contido. Veja Detalhes para os tipos suportados e suas implicacoes}
-
-\item{foreignkey}{booleano indicando se este campo e uma chave estrangeira}
-
-\item{ref}{objeto \code{tabela} na qual se encontra a chave estrangeira. Ver Detalhes}
-
-\item{camporef}{nome do campo da chave estrangeira na tabela de referencia. Ver Detalhes}
-
-\item{proxy}{nome de um campo proxy para a busca de chave estrangeira. Ver Detalhes}
-
-\item{alias}{nome pelo qual sera feito o subset deste campo nas funcoes de query}
 }
 \value{
 Objeto da classe \code{campo} contendo especificacao de um campo qualquer
@@ -49,23 +31,6 @@ o tipo de dados contido neste campo, podendo ser um de:
 
 Cada tipo de dado gera um tipo especifico de query e possui funcionalidades proprias durante o
 processamento de argumentos numa execucao de funcao para formar a query.
-
-Todos os argumentos seguintes estao associados ao comportamento quando o campo especificado e uma
-chave estrangeira, isto e, uma coluna de indices atrelada a outra tabela. \code{foreignkey}
-permite informar se o campo e ou nao deste tipo. Caso seja \code{FALSE}, todos os arumentos
-restantes sao ignorados e nao precisam ser especificados.
-
-Do contrario, \code{ref} deve corresponder a um objeto da classe \code{tabela}, gerado por
-\code{\link{new_tabela}} indicando em que tabela se encontra o dado de referencia.
-\code{camporef} deve ser uma string indicando o nome do campo, na tabela de referencia, em que
-se encontra a informacao original.
-
-Por fim, \code{proxy} e um argumento especial utilizado para flexibilizacao de alguns
-comportamentos. E possivel que o usuario queria pesquisar em uma tabela, por exemplo de dados
-verificados, por usinas por seu codigo, apesar de estarem indexadas por indices inteiros simples.
-Atraves do arguemento \code{proxy}, pode ser especificada uma coluna na tabela \code{ref} na qual
-sera feita a pesquisa estrangeira, de modo que ainda se retornem os valores da coluna
-\code{camporef}, necessarios para o subset apropriado. Veja os Exemplos para mais detalhes
 }
 \examples{
 
@@ -77,8 +42,8 @@ conect <- conectalocal(dirloc)
 tabusi <- new_tabela(
     nome = "usinas",
     campos = list(
-        new_campo("id", "inteiro", FALSE),
-        new_campo("codigo", "string", FALSE)),
+        new_campo("id", "inteiro"),
+        new_campo("codigo", "string")),
     conexao = conect)
 
 # Similar ao exemplo da descricao, vemos que a tabela de verificados nao possui uma coluna 
@@ -89,10 +54,10 @@ tabusi <- new_tabela(
 tabverif <- new_tabela(
     nome = "verificados",
     campos = list(
-        new_campo("id_usina", "inteiro", TRUE, tabusi, "id", "codigo"),
-        new_campo("data_hora", "data", FALSE),
-        new_campo("vento", "float", FALSE),
-        new_campo("geracao", "float", FALSE)
+        new_campo("id_usina", "inteiro"),
+        new_campo("data_hora", "data"),
+        new_campo("vento", "float"),
+        new_campo("geracao", "float")
     ),
     conexao = conect)
 

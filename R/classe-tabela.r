@@ -137,30 +137,9 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' Cada tipo de dado gera um tipo especifico de query e possui funcionalidades proprias durante o
 #' processamento de argumentos numa execucao de funcao para formar a query.
 #' 
-#' Todos os argumentos seguintes estao associados ao comportamento quando o campo especificado e uma
-#' chave estrangeira, isto e, uma coluna de indices atrelada a outra tabela. \code{foreignkey}
-#' permite informar se o campo e ou nao deste tipo. Caso seja \code{FALSE}, todos os arumentos 
-#' restantes sao ignorados e nao precisam ser especificados.
-#' 
-#' Do contrario, \code{ref} deve corresponder a um objeto da classe \code{tabela}, gerado por
-#' \code{\link{new_tabela}} indicando em que tabela se encontra o dado de referencia. 
-#' \code{camporef} deve ser uma string indicando o nome do campo, na tabela de referencia, em que
-#' se encontra a informacao original.
-#' 
-#' Por fim, \code{proxy} e um argumento especial utilizado para flexibilizacao de alguns
-#' comportamentos. E possivel que o usuario queria pesquisar em uma tabela, por exemplo de dados
-#' verificados, por usinas por seu codigo, apesar de estarem indexadas por indices inteiros simples.
-#' Atraves do arguemento \code{proxy}, pode ser especificada uma coluna na tabela \code{ref} na qual
-#' sera feita a pesquisa estrangeira, de modo que ainda se retornem os valores da coluna 
-#' \code{camporef}, necessarios para o subset apropriado. Veja os Exemplos para mais detalhes
 #' 
 #' @param nome o nome do campo (nome da coluna na tabela)
 #' @param tipo o tipo de dado contido. Veja Detalhes para os tipos suportados e suas implicacoes
-#' @param foreignkey booleano indicando se este campo e uma chave estrangeira
-#' @param ref objeto \code{tabela} na qual se encontra a chave estrangeira. Ver Detalhes
-#' @param camporef nome do campo da chave estrangeira na tabela de referencia. Ver Detalhes
-#' @param proxy nome de um campo proxy para a busca de chave estrangeira. Ver Detalhes
-#' @param alias nome pelo qual sera feito o subset deste campo nas funcoes de query
 #' 
 #' @examples 
 #' 
@@ -172,8 +151,8 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' tabusi <- new_tabela(
 #'     nome = "usinas",
 #'     campos = list(
-#'         new_campo("id", "inteiro", FALSE),
-#'         new_campo("codigo", "string", FALSE)),
+#'         new_campo("id", "inteiro"),
+#'         new_campo("codigo", "string")),
 #'     conexao = conect)
 #' 
 #' # Similar ao exemplo da descricao, vemos que a tabela de verificados nao possui uma coluna 
@@ -184,10 +163,10 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' tabverif <- new_tabela(
 #'     nome = "verificados",
 #'     campos = list(
-#'         new_campo("id_usina", "inteiro", TRUE, tabusi, "id", "codigo"),
-#'         new_campo("data_hora", "data", FALSE),
-#'         new_campo("vento", "float", FALSE),
-#'         new_campo("geracao", "float", FALSE)
+#'         new_campo("id_usina", "inteiro"),
+#'         new_campo("data_hora", "data"),
+#'         new_campo("vento", "float"),
+#'         new_campo("geracao", "float")
 #'     ),
 #'     conexao = conect)
 #' 
@@ -195,8 +174,7 @@ getfromtabela <- function(tabela, campos = NA, ...) {
 #' 
 #' @export
 
-new_campo <- function(nome, tipo, foreignkey = FALSE,
-    ref = NULL, camporef = NULL, proxy = NULL, alias = NULL) {
+new_campo <- function(nome, tipo) {
 
     tipo <- switch(tipo,
         "inteiro" = "discreto",
@@ -204,22 +182,9 @@ new_campo <- function(nome, tipo, foreignkey = FALSE,
         "float" = "continuo",
         "data" = "data")
 
-    if(is.null(tipo)) stop("'tipo' nao esta dentro dos valores permitidos -- Veja '?new_campo'")
-
-    if(foreignkey) {
-        if(is.null(ref)) stop("nao foi passado argumento 'ref' indicando tabela referencia")
-        if(is.null(camporef)) stop("nao foi passado argumento 'camporef' indicando campo na 'ref'")
-        if(is.null(proxy)) stop("nao foi passado argumento 'ref' indicando proxy na 'ref'")
-    }
-
-    if(is.null(alias)) {
-        if(!is.null(nome)) alias <- nome
-        if(!is.null(proxy)) alias <- proxy
-    }
+    if (is.null(tipo)) stop("'tipo' nao esta dentro dos valores permitidos -- Veja '?new_campo'")
 
     out <- list(nome = nome)
-    attr(out, "foreignkey") <- list(has = foreignkey, ref = ref, camporef = camporef, proxy = proxy,
-        alias = alias)
     class(out) <- c("campo", paste0("campo_", tipo))
 
     return(out)
