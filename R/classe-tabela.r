@@ -10,8 +10,11 @@
 #' 
 #' @param nome string indicando o nome da tabela
 #' @param campos lista de objetos \code{campo}. Veja \code{\link{new_campos}} para mais detalhes
-#' @param conexao objeto de conexao ao banco em que esta a tabela retornado por 
-#'     \code{\link{conectabanco}}
+#' @param uri caminho completo do diretorio ou no bucket contendo o(s) arquivo(s) que compoe(m)
+#'     a tabela
+#' @param tipo_arquivo extensao do(s) arquivo(s) que compoe(m) a tabela
+#' @param particoes opcional, vetor de nomes dos campos pelos quais a tabela e particionada
+#' @param descricao opcional, breve descricao da tabela e o que contem
 #' 
 #' @examples 
 #' 
@@ -45,22 +48,43 @@
 #' 
 #' @export
 
-new_tabela <- function(nome, campos, conexao) {
+new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL) {
 
-    if(length(names(campos)) == 0) {
-        nomescampos <- sapply(campos, function(cc) {
-            if(attr(cc, "foreignkey")[[1]]) attr(cc, "foreignkey")[["alias"]] else cc$nome
-        })
+    if (missing("uri")) stop("Argumento 'uri' vazio")
+    if (missing("tipo_arquivo")) stop("Argumento 'tipo_arquivo' vazio")
 
-        names(campos) <- nomescampos
+    if (missing("campos")) stop("Argumento 'campos' vazio")
+    if (length(names(campos)) == 0) {
+        names(campos) <- sapply(campos, "[[", "nome")
     }
 
     tabela <- list(nome = nome, campos = campos)
 
-    attr(tabela, "conexao") <- conexao
     class(tabela) <- "tabela"
+    attr(tabela, "uri") <- uri
+    attr(tabela, "tipo_arquivo") <- tipo_arquivo
+    attr(tabela, "particoes") <- particoes
+    attr(tabela, "descricao") <- descricao
 
     return(tabela)
+}
+
+#' Construtor Externo
+#' 
+#' Gera objetos \code{tabela} a partir de um schema.json
+#' 
+#' @param schema ou uma lista de schema.json já lido ou o caminho do arquivo
+#' 
+#' @return objeto \code{tabela}
+
+schema2tabela <- function(schema) {
+
+    if (is.character(schema)) schema <- jsonlite::read_json(schema)
+
+    campos <- lapply(schema$columns, function(cc) new_campo(cc$name, cc$type))
+
+    new <- new_tabela(schema$name, campos, schema$uri, schema$fileType,
+        unlist(schema$partitions), schema$description)
 }
 
 # CAMPOS -------------------------------------------------------------------------------------------
@@ -121,7 +145,7 @@ new_tabela <- function(nome, campos, conexao) {
 #' 
 #' @export
 
-new_campo <- function(nome, tipo = c("int", "float", "sting", "date", "datetime")) {
+new_campo <- function(nome, tipo = c("int", "float", "string", "date", "datetime")) {
 
     tipo <- try(match.arg(tipo), TRUE)
     if (inherits(tipo, "try-error")) {
