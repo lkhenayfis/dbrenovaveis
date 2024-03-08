@@ -2,6 +2,60 @@
 
 # EXECUCAO DE QUERIES ------------------------------------------------------------------------------
 
+#' Acesso A Tabelas
+#' 
+#' Funcao generica para leitura de dados em objetos \code{tabela}
+#' 
+#' Atraves de \code{...} e possivel especificar subsets para a query. Argumentos extras passados por
+#' aqui devem ser nomeados igual ao campo da tabela, ou seu proxy, tomando valor igual ao que deve
+#' ser retido na query.
+#' 
+#' @param tabela objeto da classe \code{tabela} criado por \code{\link{new_tabela}}
+#' @param campos os campos a reter apos a leitura. Por padrao traz todos
+#' @param ... subsets a serem aplicados. Veja Detalhes e Exemplos
+#' 
+#' @return \code{data.table} dos dados lidos
+#' 
+#' @examples 
+#' 
+#' # lendo dados verificados
+#' dirloc <- system.file("extdata/sempart", package = "dbrenovaveis")
+#' conect <- conectalocal(dirloc)
+#' 
+#' # versao simplificada da tabela de usinas
+#' tabusi <- new_tabela(
+#'     nome = "usinas",
+#'     campos = list(
+#'         new_campo("id", "inteiro"),
+#'         new_campo("codigo", "string")),
+#'     conexao = conect)
+#' 
+#' # representacao da tabela de verificados
+#' tabverif <- new_tabela(
+#'     nome = "verificados",
+#'     campos = list(
+#'         new_campo("id_usina", "inteiro"),
+#'         new_campo("data_hora", "data"),
+#'         new_campo("vento", "float"),
+#'         new_campo("geracao", "float")
+#'     ),
+#'     conexao = conect)
+#' 
+#' \dontrun{
+#' # note que nao se especifica "id_usina", mas sim o proxy "codigo"
+#' getfromtabela(tabverif, campos = "geracao", data_hora = "/2021-01-01 10:00:00", codigo = "BAEBAU")
+#' }
+#' 
+#' @export
+
+getfromtabela <- function(tabela, campos = NA, ...) {
+
+    query <- parseargs(tabela, campos, ...)
+    out   <- roda_query(attr(tabela, "conexao"), query)
+
+    return(out)
+}
+
 #' Executa Queries
 #' 
 #' Funcao para execucao de queries nas \code{\link{get_funs_quant}}
