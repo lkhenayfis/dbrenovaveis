@@ -129,9 +129,9 @@ roda_query.mock <- function(conexao, query) {
 #' @return booleano indicando se a tabela e particionada ou nao
 
 checa_particao <- function(conexao, query) {
-
-    tempart <- attr(conexao, "tempart") && attr(conexao, "particoes")[[query$FROM]]
-
+    tabs <- conexao$tabelas
+    tabfrom <- tabs[sapply(tabs, "[[", "nome") == query$FROM][[1]]
+    tempart <- !is.null(tabfrom$particoes)
     return(tempart)
 }
 
