@@ -92,6 +92,7 @@ parsearg.campo_int <- function(campo, valor, ...) {
     valor_str <- paste0(valor, collapse = ",")
     WHERE     <- paste0(campo$nome, " IN (", valor_str, ")")
 
+    attr(WHERE, "valor") <- valor
     attr(WHERE, "n") <- length(valor)
 
     return(WHERE)
@@ -105,6 +106,7 @@ parsearg.campo_string <- function(campo, valor, ...) {
     valor_str <- paste0(valor, collapse = "','")
     WHERE <- paste0(campo$nome, " IN ('", valor_str, "')")
 
+    attr(WHERE, "valor") <- valor
     attr(WHERE, "n") <- length(valor)
 
     return(WHERE)
