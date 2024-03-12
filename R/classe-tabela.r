@@ -217,7 +217,13 @@ build_master_unit <- function(tabela) {
 }
 
 switch_reader_func <- function(extensao, s3 = FALSE) {
-    if (grepl("\\.?csv", extensao)) {
+    if (grepl("\\.?json", extensao)) {
+        if (s3) {
+            reader_func <- function(x, ...) aws.s3::s3read_using(FUN = jsonlite::read_json, object = x, ...)
+        } else {
+            reader_func <- jsonlite::read_json
+        }
+    } else if (grepl("\\.?csv", extensao)) {
         if (s3) {
             reader_func <- function(x, ...) aws.s3::s3read_using(FUN = data.table::fread, object = x, ...)
         } else {
