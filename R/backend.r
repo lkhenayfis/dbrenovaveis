@@ -148,7 +148,7 @@ le_tabela_mock <- function(conexao, tabela, ...) {
     radical  <- sub("-.*", "", tabela)
     entidade <- conexao$tabelas[[radical]]
     rf  <- attr(entidade, "reader_fun")
-    arq <- file.path(conexao$uri, radical, paste0(tabela, attr(entidade, "tipo_arquivo")))
+    arq <- file.path(attr(entidade, "uri"), paste0(tabela, attr(entidade, "tipo_arquivo")))
     dat <- rf(arq, ...)
     return(dat)
 }
