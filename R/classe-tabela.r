@@ -62,12 +62,12 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
 
     tabela <- list(nome = nome, campos = campos, particoes = particoes)
 
+    class(tabela) <- c(paste0("tabela_", source), "tabela")
     attr(tabela, "uri") <- uri
     attr(tabela, "tipo_arquivo") <- tipo_arquivo
     attr(tabela, "descricao") <- descricao
     attr(tabela, "reader_func") <- switch_reader_func(tipo_arquivo, source == "s3")
     attr(tabela, "master") <- build_master_unit(tabela)
-    class(tabela) <- c(paste0("tabela_", source), "tabela")
 
     return(tabela)
 }
@@ -177,6 +177,20 @@ new_campo <- function(nome, tipo = c("int", "float", "string", "date", "datetime
 
 # AUXILIARES ---------------------------------------------------------------------------------------
 
+lista_conteudo <- function(tabela) UseMethod("lista_conteudo")
+
+lista_conteudo.tabela_local <- function(tabela) list.files(attr(tabela, "uri"))
+
+lista_conteudo.tabela_s3 <- function(tabela) {
+    splitted <- strsplit(attr(tabela, "uri"), "/")[[1]]
+    bucket <- do.call(file.path, as.list(c(head(splitted, 3), "")))
+    prefix <- do.call(file.path, as.list(c(splitted[-seq(3)], "")))
+    out <- aws.s3::get_bucket(bucket, prefix)
+    out <- unname(sapply(out, "[[", "Key"))
+    out <- sub(prefix, "", out)
+    return(out)
+}
+
 #' Monta Tabela Mestra
 #' 
 #' Constroi uma tabela mestra associando particoes as entidades contendo aquele trecho
@@ -187,7 +201,7 @@ new_campo <- function(nome, tipo = c("int", "float", "string", "date", "datetime
 
 build_master_unit <- function(tabela) {
 
-    arqs <- list.files(attr(tabela, "uri"))
+    arqs <- lista_conteudo(tabela)
     arqs <- sub("\\..*", "", arqs)
     arqs <- arqs[arqs != "schema"]
 
