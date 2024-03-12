@@ -58,13 +58,15 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
         names(campos) <- sapply(campos, "[[", "nome")
     }
 
+    source <- ifelse(grepl("^s3://", uri), "s3", "local")
+
     tabela <- list(nome = nome, campos = campos, particoes = particoes)
 
-    class(tabela) <- "tabela"
     attr(tabela, "uri") <- uri
     attr(tabela, "tipo_arquivo") <- tipo_arquivo
     attr(tabela, "descricao") <- descricao
     attr(tabela, "master") <- build_master_unit(tabela)
+    class(tabela) <- c(paste0("tabela_", source), "tabela")
 
     return(tabela)
 }
