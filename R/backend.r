@@ -188,7 +188,7 @@ proc_query_local_spart <- function(conexao, query) {
 
 proc_query_local_cpart <- function(conexao, query) {
 
-    master <- le_tabela_mock(conexao, query$FROM)
+    master <- attr(conexao$tabelas[[query$FROM]], "master")
     colspart <- colnames(master)
     colspart <- colspart[colspart != "tabela"]
 
@@ -197,7 +197,12 @@ proc_query_local_cpart <- function(conexao, query) {
     if (length(querymaster$WHERE) > 0) querymaster$WHERE <- querymaster$WHERE[colspart]
     querymaster$WHERE <- querymaster$WHERE[sapply(querymaster$WHERE, length) > 0]
 
-    tabelas <- proc_query_local_spart(conexao, querymaster)$tabela
+    for (q in querymaster$WHERE) {
+        vsubset <- eval(str2lang(q), envir = master)
+        master <- master[vsubset, ]
+    }
+
+    tabelas <- master$tabela
 
     dat <- lapply(tabelas, function(tabela) {
         querytabela <- query
