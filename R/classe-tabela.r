@@ -64,6 +64,7 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
     attr(tabela, "uri") <- uri
     attr(tabela, "tipo_arquivo") <- tipo_arquivo
     attr(tabela, "descricao") <- descricao
+    attr(tabela, "master") <- build_master_unit(tabela)
 
     return(tabela)
 }
@@ -157,4 +158,31 @@ new_campo <- function(nome, tipo = c("int", "float", "string", "date", "datetime
     class(out) <- c(paste0("campo_", tipo), "campo")
 
     return(out)
+}
+
+# AUXILIARES ---------------------------------------------------------------------------------------
+
+#' Monta Tabela Mestra
+#' 
+#' Constroi uma tabela mestra associando particoes as entidades contendo aquele trecho
+#' 
+#' @param tabela a tabela particionada para qual construir uma mestra
+#' 
+#' @return tabela mestra
+
+build_master_unit <- function(tabela) {
+
+    arqs <- list.files(attr(tabela, "uri"))
+    arqs <- sub("\\..*", "", arqs)
+    arqs <- arqs[arqs != "schema"]
+
+    ll <- lapply(tabela$particoes, function(x) {
+        re <- regexpr(paste0("(?<=", x, "=)(.*?)(?=(-|\\Z))"), arqs, perl = TRUE)
+        regmatches(arqs, re)
+    })
+    names(ll) <- tabela$particoes
+
+    master <- cbind(as.data.table(ll), tabela = arqs)
+
+    return(master)
 }
