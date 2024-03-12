@@ -154,7 +154,7 @@ new_campo <- function(nome, tipo = c("int", "float", "string", "date", "datetime
     }
 
     out <- list(nome = nome)
-    class(out) <- c("campo", paste0("campo_", tipo))
+    class(out) <- c(paste0("campo_", tipo), "campo")
 
     return(out)
 }
