@@ -51,6 +51,8 @@
 new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL) {
 
     if (missing("uri")) stop("Argumento 'uri' vazio")
+    source <- ifelse(grepl("^s3://", uri), "s3", "local")
+
     if (missing("tipo_arquivo")) stop("Argumento 'tipo_arquivo' vazio")
 
     if (missing("campos")) stop("Argumento 'campos' vazio")
@@ -58,13 +60,12 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
         names(campos) <- sapply(campos, "[[", "nome")
     }
 
-    source <- ifelse(grepl("^s3://", uri), "s3", "local")
-
     tabela <- list(nome = nome, campos = campos, particoes = particoes)
 
     attr(tabela, "uri") <- uri
     attr(tabela, "tipo_arquivo") <- tipo_arquivo
     attr(tabela, "descricao") <- descricao
+    attr(tabela, "reader_func") <- switch_reader_func(tipo_arquivo, source == "s3")
     attr(tabela, "master") <- build_master_unit(tabela)
     class(tabela) <- c(paste0("tabela_", source), "tabela")
 
@@ -199,4 +200,28 @@ build_master_unit <- function(tabela) {
     master <- cbind(as.data.table(ll), tabela = arqs)
 
     return(master)
+}
+
+switch_reader_func <- function(extensao, s3 = FALSE) {
+    if (grepl("\\.?csv", extensao)) {
+        if (s3) {
+            reader_func <- function(x, ...) aws.s3::s3read_using(FUN = data.table::fread, object = x, ...)
+        } else {
+            reader_func <- data.table::fread
+        }
+    } else if (grepl("\\.?parquet", extensao)) {
+        if (!requireNamespace("arrow", quietly = TRUE)) {
+            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
+        }
+
+        if (s3) {
+            reader_func <- function(x, ...) aws.s3::s3read_using(FUN = arrow::read_parquet, object = x, ...)
+        } else {
+            reader_func <- arrow::read_parquet
+        }
+    } else {
+        stop("arquivos locais de tipo nao suportado")
+    }
+
+    return(reader_func)
 }

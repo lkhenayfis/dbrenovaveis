@@ -145,9 +145,10 @@ checa_particao <- function(conexao, query) {
 #' @return data.table contendo a tabela lida
 
 le_tabela_mock <- function(conexao, tabela, ...) {
-    tabela <- file.path(sub("-.*", "", tabela), paste0(tabela, attr(conexao, "extensao")))
-    rf  <- attr(conexao, "reader_fun")
-    arq <- file.path(conexao$uri, paste0(tabela))
+    radical  <- sub("-.*", "", tabela)
+    entidade <- conexao$tabelas[[radical]]
+    rf  <- attr(entidade, "reader_fun")
+    arq <- file.path(conexao$uri, radical, paste0(tabela, attr(entidade, "tipo_arquivo")))
     dat <- rf(arq, ...)
     return(dat)
 }
