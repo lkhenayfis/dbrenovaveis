@@ -89,6 +89,18 @@ schema2tabela <- function(schema) {
         sapply(schema$partitions, "[[", "name"), schema$description)
 }
 
+#' @export
+
+print.tabela <- function(x, ...) {
+    campos <- lapply(x$campos, function(x) {
+        paste0(x$nome, cli::col_grey(" <", sub("campo_", "", class(x)[1]), ">"))
+    })
+
+    cat("Tabela:", x$nome, "\n")
+    cat("- Conteudo:", attr(x, "descricao"), "\n")
+    cat("- Campos:", paste0(campos, collapse = ", "))
+}
+
 # CAMPOS -------------------------------------------------------------------------------------------
 
 #' Construtor Da Classe \code{campo}
