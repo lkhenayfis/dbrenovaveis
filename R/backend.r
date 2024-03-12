@@ -108,9 +108,9 @@ roda_query.mock <- function(conexao, query) {
     tempart <- checa_particao(conexao, query)
 
     if (!tempart) {
-        out <- try(proc_query_local_spart(conexao, query))
+        out <- try(proc_query_mock_spart(conexao, query))
     } else {
-        out <- try(proc_query_local_cpart(conexao, query))
+        out <- try(proc_query_mock_cpart(conexao, query))
     }
     out <- try(corrigeposix(out))
 
@@ -166,7 +166,7 @@ le_tabela_mock <- function(conexao, tabela, ...) {
 
 #' @rdname query_local
 
-proc_query_local_spart <- function(conexao, query) {
+proc_query_mock_spart <- function(conexao, query) {
 
     dat <- le_tabela_mock(conexao, query$FROM)
 
@@ -187,7 +187,7 @@ proc_query_local_spart <- function(conexao, query) {
 
 #' @rdname query_local
 
-proc_query_local_cpart <- function(conexao, query) {
+proc_query_mock_cpart <- function(conexao, query) {
 
     master <- attr(conexao$tabelas[[query$FROM]], "master")
     colspart <- colnames(master)
@@ -209,7 +209,7 @@ proc_query_local_cpart <- function(conexao, query) {
         querytabela <- query
         querytabela$FROM <- tabela
 
-        proc_query_local_spart(conexao, querytabela)
+        proc_query_mock_spart(conexao, querytabela)
     })
     dat <- rbindlist(dat)
 

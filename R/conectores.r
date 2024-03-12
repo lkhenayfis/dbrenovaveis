@@ -85,103 +85,29 @@ conectabanco <- function(usuario, banco) {
 #' Atualmente apenas particionamentos categoricos sao suportados, isto e, uma faixa de datas nao
 #' funciona como particionamento.
 #' 
-#' @param diretorio diretorio contendo os arquivos representando o banco
+#' @param schema lista contendo o schema do banco, correspondente aos conteudos de um arquivo
+#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo
 #' 
-#' @return objeto de conexao com o arquivamento local
+#' @return objeto de conexao com o mock banco
 #' 
 #' @export
 
-conectalocal <- function(diretorio) {
+conectamock <- function(schema) {
 
-    arq_schema <- file.path(diretorio, "schema.json")
-    schema <- jsonlite::read_json(arq_schema)
+    if (is.character(schema)) {
+        rf <- switch_reader_func("json", grepl("^s3", schema))
+        schema <- rf(schema)
+    }
 
     tabelas <- lapply(schema$tables, function(tab) {
         tab_schema <- file.path(tab$uri, "schema.json")
-        schema2tabela(tab_schema)
+        rf <- switch_reader_func("json", grepl("^s3", tab_schema))
+        schema2tabela(rf(tab_schema))
     })
     names(tabelas) <- sapply(tabelas, "[[", "nome")
 
-    extensao <- sapply(tabelas, attr, "tipo_arquivo")[1]
-
-    if (extensao == ".csv") {
-        inner_reader <- fread
-    } else if (extensao %in% c(".parquet", ".parquet.gzip")) {
-        if (!requireNamespace("arrow", quietly = TRUE)) {
-            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
-        }
-        inner_reader <- arrow::read_parquet
-    } else {
-        stop("arquivos locais de tipo nao suportado")
-    }
-
-    out <- list(uri = diretorio, tabelas = tabelas)
-    attr(out, "extensao")   <- extensao
-    attr(out, "reader_fun") <- inner_reader
-    class(out) <- c("local", "mock")
-
-    return(out)
-}
-
-#' Conexao Com Buckets S3
-#' 
-#' Gera a conexao com um mock banco, correspondente a um bucket S3 com arquivos a ler
-#' 
-#' A implementacao de bancos mock hospedados em buckets funciona exatamente como a de diretorios
-#' locais, descrita em \code{\link{conectalocal}}, incluindo questoes de particionamento.
-#' 
-#' Este tipo de conexao existe somente para lidar com os casos em que arquivos estao em buckets e 
-#' nao no Athena. Neste caso, a conexao deve ser feita como se fosse a um banco relacional comum.
-#' 
-#' @param bucket bucket de onde ler os dados
-#' @param prefixo opcional, prefixo dos arquivos a serem lidos
-#' @param extensao extensao dos arquivos contidos no banco. Se omitido, sera lido do banco
-#' 
-#' @return objeto de conexao com o arquivamento em bucket S3
-#' 
-#' @export
-
-conectabucket <- function(bucket, prefixo, extensao) {
-
-    if (!requireNamespace("aws.s3", quietly = TRUE)) {
-        stop("Conexao com buckets demanda pacote 'aws.s3'")
-    }
-
-    partfile    <- file.path(bucket, prefixo, ".PARTICAO.json")
-    tempartdict <- aws.s3::object_exists(partfile)
-
-    if (tempartdict) {
-        particoes <- unlist(aws.s3::s3read_using(FUN = jsonlite::read_json, object = partfile))
-    } else {
-        particoes <- NULL
-    }
-
-    if (missing("extensao")) {
-        extensao <- aws.s3::get_bucket(bucket, prefixo)
-        # pega o ultimo para evitar pegar metafiles ocultos que aparecem primeiro
-        extensao <- tail(extensao, 1)[[1]]$Key
-        extensao <- tools::file_ext(extensao)
-    }
-
-    if (extensao == "csv") {
-        inner_reader <- fread
-    } else if (extensao == "parquet") {
-        if (!requireNamespace("arrow", quietly = TRUE)) {
-            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
-        }
-        inner_reader <- arrow::read_parquet
-    } else {
-        stop("arquivos locais de tipo nao suportado")
-    }
-
-    reader_fun <- function(x, ...) aws.s3::s3read_using(FUN = inner_reader, object = x, ...)
-
-    out <- file.path(bucket, prefixo)
-    attr(out, "extensao")   <- extensao
-    attr(out, "reader_fun") <- reader_fun
-    attr(out, "tempart")    <- tempartdict
-    attr(out, "particoes")  <- particoes
-    class(out) <- c("bucketS3", "mock")
+    out <- list(tabelas = tabelas)
+    class(out) <- "mock"
 
     return(out)
 }
