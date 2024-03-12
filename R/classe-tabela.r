@@ -82,7 +82,10 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
 
 schema2tabela <- function(schema) {
 
-    if (is.character(schema)) schema <- jsonlite::read_json(schema)
+    if (is.character(schema)) {
+        rf <- switch_reader_func("json", grepl("^s3", schema))
+        schema <- rf(schema)
+    }
 
     campos <- lapply(schema$columns, function(cc) new_campo(cc$name, cc$type))
 
