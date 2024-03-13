@@ -61,10 +61,13 @@ conectabanco <- function(usuario, banco) {
 #' 
 #' A conexao com bancos mock possui apenas um argumento de entrada: `schema`. Este e ou o caminho a
 #' um arquivo json explicitando a estrutura geral do banco ou uma lista contendo o este json ja 
-#' lido (a estrutura de schema.json se encontra detalhada na vignette supracitada).
+#' lido (a estrutura de schema.json se encontra detalhada na vignette supracitada). O schema de 
+#' pode conter uma chave opcional \code{uri}. Ela e opcional pois so seria utilizada no caso das
+#' \code{uri} das tabelas serem caminhos relativos. Caso \code{schema} seja passado como um caminho
+#' e o json lido nao possua essa chave, sera adicionada como igual ao caminho \code{schema}.
 #' 
 #' @param schema lista contendo o schema do banco, correspondente aos conteudos de um arquivo
-#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo
+#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo. Veja Detalhes
 #' 
 #' @examples 
 #' 
@@ -89,9 +92,13 @@ conectabanco <- function(usuario, banco) {
 conectamock <- function(schema) {
 
     if (is.character(schema)) {
+        arq <- schema
         rf <- switch_reader_func("json", grepl("^s3", schema))
         schema <- rf(schema)
+        schema$uri <- sub("/schema.json", "", arq)
     }
+
+    schema <- valida_schema_banco(schema)
 
     tabelas <- lapply(schema$tables, function(tab) {
         tab_schema <- file.path(tab$uri, "schema.json")
