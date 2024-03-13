@@ -20,6 +20,8 @@ objeto de conexao ao banco. Veja \code{\link[DBI]{dbConnect}} para mais detalhes
 Gera a conexao com o banco \code{banco} utilizando as credenciais de \code{usuario}
 }
 \details{
+ESTA FUNCAO NAO VEM SENDO SUPORTADA HA ALGUMAS VERSOES
+
 Esta funcao e um simples wrapper para facilitacao da conexao com bancos de dados, utilizando
 as credenciais previamente registradas e salvas pelas funcoes apropriadas.
 }

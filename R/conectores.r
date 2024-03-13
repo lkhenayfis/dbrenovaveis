@@ -4,6 +4,8 @@
 #' 
 #' Gera a conexao com o banco \code{banco} utilizando as credenciais de \code{usuario}
 #' 
+#' ESTA FUNCAO NAO VEM SENDO SUPORTADA HA ALGUMAS VERSOES
+#' 
 #' Esta funcao e um simples wrapper para facilitacao da conexao com bancos de dados, utilizando
 #' as credenciais previamente registradas e salvas pelas funcoes apropriadas. 
 #' 
@@ -46,47 +48,39 @@ conectabanco <- function(usuario, banco) {
     return(conn)
 }
 
-#' Conexao Com Arquivos Locais
+#' Conexao Com Mock Bancos
 #' 
-#' Gera a conexao com um mock banco, correspondente a um diretorio local com arquivos a ler
+#' Gera a conexao com um mock banco, correspondente a um diretorio local ou s3
 #' 
-#' Os arquivamentos locais suportados por \code{dbrenovaveis} correspondem a diretorios contendo
-#' uma serie de arquivos csv correspondentes as tabelas do banco (algo como um dump de um banco
-#' relacional comum). Os arquivos devem ser nomeados tal qual os nomes de tabelas esperados no banco
-#' assim como os nomes e tipos de dado nas colunas de cada um.
+#' Os bancos mock de \code{dbrenovaveis} correspondem a arquivos de dados, em `csv` ou `parquet`, em
+#' diretorios locais ou buckets no s3 dentro. Para correto funcionamento desta implementacao se 
+#' espera uma certa estrutura de arquivos e diretorios de tal modo que o pacote consiga encontrar
+#' os dados relevantes. Recomenda-se ler a vignette
+#' `vignette("estrutura-mock", package = "dbrenovaveis")` para maiores detalhes a respeito desta
+#' estrutura de mock banco.
 #' 
-#' Particionamento de tabelas e suportado, de forma restrita. Inicialmente, para bancos locais 
-#' contendo uma ou mais tabelas particionadas, deve existir um arquivo .PARTICAO.json indicando 
-#' quais tabelas sao particionadas. Este arquivo tem estrutura muito simples, uma lista de apenas um
-#' nivel com valores booleanos (ver o exemplo em \code{extdata/compart}).
-#' 
-#' Os dados particionados devem seguir uma estrutura predefinida. Particoes de uma determinada
-#' tabela devem ser nomeadas \code{tabela_partA_partB_...} em que \code{partX} sao chaves 
-#' indicadoras apontando os multiplos niveis de particionamento. Por exemplo, particionando-se a 
-#' tabela de previstos por usina e modelo, teria-se: previstos_1_1, previstos_2_1, ... previstos_N_1, 
-#' previstos_1_2, ..., previstos_N_M, onde N e o maximo id de usinas e M o de modelos.
-#' 
-#' Nestes casos, a tabela original (previstos, no exemplo acima) deve ser uma tabela mestra contendo
-#' a associacao entre subtabelas e a particao a que correspondem. As tabelas mestras devem conter um
-#' coluna chamada \code{tabela}, e as demais devem ser as colunas pelas quais suas particoes sao
-#' separadas. Voltando ao exemplo de previstos
-#' 
-#' | tabela | id_usina | id_modelo |
-#' | ---- | ---- | ---- |
-#' | previstos_1_1 | 1 | 1 |
-#' | previstos_2_1 | 2 | 1 |
-#' | previstos_1_2 | 1 | 2 |
-#' 
-#' A ordem das colunas nao importa, bem como o numero de particoes e colunas pelas quais se 
-#' particiona nao precisam necessariamente ser estas do exemplo. As tabelas de particao devem ter
-#' \bold{EXATAMENTE A MESMA ESTRUTURA} da equivalente sem particao, isto e, devem manter as colunas
-#' pelas quais foram originalmente particionadas.
-#' 
-#' Atualmente apenas particionamentos categoricos sao suportados, isto e, uma faixa de datas nao
-#' funciona como particionamento.
+#' A conexao com bancos mock possui apenas um argumento de entrada: `schema`. Este e ou o caminho a
+#' um arquivo json explicitando a estrutura geral do banco ou uma lista contendo o este json ja 
+#' lido (a estrutura de schema.json se encontra detalhada na vignette supracitada).
 #' 
 #' @param schema lista contendo o schema do banco, correspondente aos conteudos de um arquivo
 #'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo
+#' 
+#' @examples 
+#' 
+#' # conexao com o mock banco exemplo do pacote
+#' 
+#' # passando o diretorio
+#' arq_schema <- system.file("extdata/cpart_parquet/schema.json", package = "dbrenovaveis")
+#' conn1 <- conectamock(arq_schema)
+#' 
+#' # passando o a lista de schema ja lido
+#' schema <- jsonlite::read_json(arq_schema)
+#' conn2 <- conectamock(schema)
+#' 
+#' \dontrun{
+#' identical(conn1, conn2)
+#' }
 #' 
 #' @return objeto de conexao com o mock banco
 #' 
