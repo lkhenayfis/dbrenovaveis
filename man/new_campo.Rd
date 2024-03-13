@@ -4,7 +4,7 @@
 \alias{new_campo}
 \title{Construtor Da Classe \code{campo}}
 \usage{
-new_campo(nome, tipo)
+new_campo(nome, tipo = c("int", "float", "string", "date", "datetime"))
 }
 \arguments{
 \item{nome}{o nome do campo (nome da coluna na tabela)}
@@ -23,42 +23,16 @@ Esta classe compoe o coracao da representacao simbolica de tabelas, utilizada de
 o tipo de dados contido neste campo, podendo ser um de:
 
 \itemize{
-\item{inteiro}
-\item{string}
+\item{int}
 \item{float}
-\item{data}
+\item{string}
+\item{date}
+\item{datetime}
 }
 
-Cada tipo de dado gera um tipo especifico de query e possui funcionalidades proprias durante o
-processamento de argumentos numa execucao de funcao para formar a query.
+Cada \code{tipo} de dado gera um tipo especifico de query e possui funcionalidades proprias
+durante o processamento de argumentos numa execucao de funcao para formar a query.
 }
-\examples{
-
-# Retomando os exemplos de 'new_tabela'
-
-dirloc <- system.file("extdata/sempart", package = "dbrenovaveis")
-conect <- conectalocal(dirloc)
-
-tabusi <- new_tabela(
-    nome = "usinas",
-    campos = list(
-        new_campo("id", "inteiro"),
-        new_campo("codigo", "string")),
-    conexao = conect)
-
-# Similar ao exemplo da descricao, vemos que a tabela de verificados nao possui uma coluna 
-# 'codigo' com a qual pesquisar por usinas, apenas o id inteiro arbitrario.
-# Ao especificar o campo 'id_usina' com proxy 'codigo' na tabela 'tabusi', o pacote sabera que
-# uma query sobre usinas na tabela de verificados pode ser feita na coluna 'codigo' de 'tabusi'
-
-tabverif <- new_tabela(
-    nome = "verificados",
-    campos = list(
-        new_campo("id_usina", "inteiro"),
-        new_campo("data_hora", "data"),
-        new_campo("vento", "float"),
-        new_campo("geracao", "float")
-    ),
-    conexao = conect)
-
+\seealso{
+Construtor de tabelas \code{\link{new_tabela}} para melhor entendimento de seu uso
 }

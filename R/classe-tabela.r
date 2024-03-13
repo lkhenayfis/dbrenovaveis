@@ -130,45 +130,15 @@ print.tabela <- function(x, ...) {
 #' \item{datetime}
 #' }
 #' 
-#' Cada tipo de dado gera um tipo especifico de query e possui funcionalidades proprias durante o
-#' processamento de argumentos numa execucao de funcao para formar a query.
-#' 
+#' Cada \code{tipo} de dado gera um tipo especifico de query e possui funcionalidades proprias 
+#' durante o processamento de argumentos numa execucao de funcao para formar a query.
 #' 
 #' @param nome o nome do campo (nome da coluna na tabela)
 #' @param tipo o tipo de dado contido. Veja Detalhes para os tipos suportados e suas implicacoes
 #' 
-#' @examples 
-#' 
-#' # Retomando os exemplos de 'new_tabela'
-#' 
-#' dirloc <- system.file("extdata/sempart", package = "dbrenovaveis")
-#' conect <- conectalocal(dirloc)
-#' 
-#' tabusi <- new_tabela(
-#'     nome = "usinas",
-#'     campos = list(
-#'         new_campo("id", "int"),
-#'         new_campo("codigo", "string")),
-#'     conexao = conect)
-#' 
-#' # Similar ao exemplo da descricao, vemos que a tabela de verificados nao possui uma coluna 
-#' # 'codigo' com a qual pesquisar por usinas, apenas o id inteiro arbitrario.
-#' # Ao especificar o campo 'id_usina' com proxy 'codigo' na tabela 'tabusi', o pacote sabera que
-#' # uma query sobre usinas na tabela de verificados pode ser feita na coluna 'codigo' de 'tabusi'
-#' 
-#' tabverif <- new_tabela(
-#'     nome = "verificados",
-#'     campos = list(
-#'         new_campo("id_usina", "int"),
-#'         new_campo("data_hora", "date"),
-#'         new_campo("vento", "float"),
-#'         new_campo("geracao", "float")
-#'     ),
-#'     conexao = conect)
-#' 
 #' @return Objeto da classe \code{campo} contendo especificacao de um campo qualquer
 #' 
-#' @export
+#' @seealso Construtor de tabelas \code{\link{new_tabela}} para melhor entendimento de seu uso
 
 new_campo <- function(nome, tipo = c("int", "float", "string", "date", "datetime")) {
 
