@@ -1,7 +1,7 @@
 {
   "name": "previstos",
   "description": "Dados de saida da previsao realizada com o smapR",
-  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/previstos",
+  "uri": "inst/extdata/cpart_parquet/previstos",
   "fileType": ".parquet.gzip",
   "columns": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "precipitacao_observada",
   "description": "Dados de entrada de precipitacao observada",
-  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/precipitacao_observada",
+  "uri": "inst/extdata/cpart_parquet/precipitacao_observada",
   "fileType": ".parquet.gzip",
   "columns": [
     {

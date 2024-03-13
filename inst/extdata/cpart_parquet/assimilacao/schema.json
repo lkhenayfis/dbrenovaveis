@@ -1,7 +1,7 @@
 {
   "name": "assimilacao",
   "description": "Dados de saida da assimilacao realizada com o smapR",
-  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/assimilacao",
+  "uri": "inst/extdata/cpart_parquet/assimilacao",
   "fileType": ".parquet.gzip",
   "columns": [
     {

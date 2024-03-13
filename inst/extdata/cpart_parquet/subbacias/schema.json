@@ -1,7 +1,7 @@
 {
   "name": "subbacias",
   "description": {},
-  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/subbacias",
+  "uri": "inst/extdata/cpart_parquet/subbacias",
   "fileType": ".parquet.gzip",
   "columns": [
     {

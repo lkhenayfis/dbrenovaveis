@@ -1,7 +1,7 @@
 {
   "name": "vazoes",
   "description": "Dados de entrada de vazao observada",
-  "uri": "/home/lkhenayfis/Documents/ONS/EOLICA/dbrenovaveis/inst/extdata/cpart_parquet/vazoes",
+  "uri": "inst/extdata/cpart_parquet/vazoes",
   "fileType": ".parquet.gzip",
   "columns": [
     {
