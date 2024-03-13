@@ -4,15 +4,20 @@
 \alias{new_tabela}
 \title{Construtor Da Classe \code{tabela}}
 \usage{
-new_tabela(nome, campos, conexao)
+new_tabela(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL)
 }
 \arguments{
 \item{nome}{string indicando o nome da tabela}
 
 \item{campos}{lista de objetos \code{campo}. Veja \code{\link{new_campos}} para mais detalhes}
 
-\item{conexao}{objeto de conexao ao banco em que esta a tabela retornado por
-\code{\link{conectabanco}}}
+\item{uri}{caminho do diretorio ou bucket contendo o(s) arquivo(s) que compoe(m) a tabela}
+
+\item{tipo_arquivo}{extensao do(s) arquivo(s) que compoe(m) a tabela}
+
+\item{particoes}{opcional, vetor de nomes dos campos pelos quais a tabela e particionada}
+
+\item{descricao}{opcional, breve descricao da tabela e o que contem}
 }
 \value{
 objeto descritivo de uma tabela
@@ -22,36 +27,40 @@ Funcao para geracao de objetos representativos das tabelas em um determinado ban
 }
 \details{
 Esta funcao faz parte do backend do pacote \code{dbrenovaveis}. Atraves dela e possivel
-especeficar a estrutura de qualquer tabela regular, definindo seus campos, tipo de dado por campo
-e uma conexao com o banco de dados onde ela se encontra.
+especificar a estrutura de qualquer tabela regular, definindo seus campos e correspondentes
+tipos, particoes e outros atributos.
 }
 \examples{
 
-# Para o banco local incluso como exemplo no pacote
-
-dirloc <- system.file("extdata/sempart", package = "dbrenovaveis")
-conect <- conectalocal(dirloc)
-
-# versao simplificada da tabela de usinas
-tabusi <- new_tabela(
-    nome = "usinas",
+# contruindo uma tabela nao particionada a partir do dado exemplo do pacote
+# utilizando um pequeno subset de suas colunas para simplificar o exemplo
+tab <- new_tabela(
+    nome = "subbacias",
     campos = list(
-        new_campo("id", "inteiro"),
-        new_campo("codigo", "string")),
-    conexao = conect)
-
-# representacao da tabela de verificados
-tabverif <- new_tabela(
-    nome = "verificados",
-    campos = list(
-        new_campo("id_usina", "inteiro"),
-        new_campo("data_hora", "data"),
-        new_campo("vento", "float"),
-        new_campo("geracao", "float")
+        new_campo("posto", "int"),
+        new_campo("nome", "string"),
+        new_campo("codigo", "string")
     ),
-    conexao = conect)
+    uri = system.file("extdata/cpart_parquet/subbacias/", package = "dbrenovaveis"),
+    tipo_arquivo = ".parquet.gzip"
+)
+
+# construindo uma tabela particionada
+tab <- new_tabela(
+    nome = "vazoes",
+    campos = list(
+        new_campo("data", "date"),
+        new_campo("codigo", "string"),
+        new_campo("vazao", "float")
+    ),
+    uri = system.file("extdata/cpart_parquet/vazoes/", package = "dbrenovaveis"),
+    particoes = c("codigo"),
+    tipo_arquivo = ".parquet.gzip",
+    descricao = "Dados de entrada de vazao observada"
+)
 
 }
 \seealso{
-Funcao geral para acessar dados das tabelas \code{\link{getfromtabela}}
+Construtor externo \code{\link{schema2tabela}}. Funcao geral para acessar dados das
+tabelas \code{\link{getfromdb}}
 }

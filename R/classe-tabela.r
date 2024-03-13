@@ -5,48 +5,49 @@
 #' Funcao para geracao de objetos representativos das tabelas em um determinado banco de dados
 #' 
 #' Esta funcao faz parte do backend do pacote \code{dbrenovaveis}. Atraves dela e possivel 
-#' especeficar a estrutura de qualquer tabela regular, definindo seus campos, tipo de dado por campo
-#' e uma conexao com o banco de dados onde ela se encontra.
+#' especificar a estrutura de qualquer tabela regular, definindo seus campos e correspondentes 
+#' tipos, particoes e outros atributos.
 #' 
 #' @param nome string indicando o nome da tabela
 #' @param campos lista de objetos \code{campo}. Veja \code{\link{new_campos}} para mais detalhes
-#' @param uri caminho completo do diretorio ou no bucket contendo o(s) arquivo(s) que compoe(m)
-#'     a tabela
+#' @param uri caminho do diretorio ou bucket contendo o(s) arquivo(s) que compoe(m) a tabela
 #' @param tipo_arquivo extensao do(s) arquivo(s) que compoe(m) a tabela
 #' @param particoes opcional, vetor de nomes dos campos pelos quais a tabela e particionada
 #' @param descricao opcional, breve descricao da tabela e o que contem
 #' 
 #' @examples 
 #' 
-#' # Para o banco local incluso como exemplo no pacote
-#' 
-#' dirloc <- system.file("extdata/sempart", package = "dbrenovaveis")
-#' conect <- conectalocal(dirloc)
-#' 
-#' # versao simplificada da tabela de usinas
-#' tabusi <- new_tabela(
-#'     nome = "usinas",
+#' # contruindo uma tabela nao particionada a partir do dado exemplo do pacote
+#' # utilizando um pequeno subset de suas colunas para simplificar o exemplo
+#' tab <- new_tabela(
+#'     nome = "subbacias",
 #'     campos = list(
-#'         new_campo("id", "inteiro"),
-#'         new_campo("codigo", "string")),
-#'     conexao = conect)
-#' 
-#' # representacao da tabela de verificados
-#' tabverif <- new_tabela(
-#'     nome = "verificados",
-#'     campos = list(
-#'         new_campo("id_usina", "inteiro"),
-#'         new_campo("data_hora", "data"),
-#'         new_campo("vento", "float"),
-#'         new_campo("geracao", "float")
+#'         new_campo("posto", "int"),
+#'         new_campo("nome", "string"),
+#'         new_campo("codigo", "string")
 #'     ),
-#'     conexao = conect)
+#'     uri = system.file("extdata/cpart_parquet/subbacias/", package = "dbrenovaveis"),
+#'     tipo_arquivo = ".parquet.gzip"
+#' )
+#' 
+#' # construindo uma tabela particionada
+#' tab <- new_tabela(
+#'     nome = "vazoes",
+#'     campos = list(
+#'         new_campo("data", "date"),
+#'         new_campo("codigo", "string"),
+#'         new_campo("vazao", "float")
+#'     ),
+#'     uri = system.file("extdata/cpart_parquet/vazoes/", package = "dbrenovaveis"),
+#'     particoes = c("codigo"),
+#'     tipo_arquivo = ".parquet.gzip",
+#'     descricao = "Dados de entrada de vazao observada"
+#' )
 #' 
 #' @return objeto descritivo de uma tabela
 #' 
-#' @seealso Funcao geral para acessar dados das tabelas \code{\link{getfromdb}}
-#' 
-#' @export
+#' @seealso Construtor externo \code{\link{schema2tabela}}. Funcao geral para acessar dados das 
+#'     tabelas \code{\link{getfromdb}}
 
 new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL) {
 
@@ -74,9 +75,15 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
 
 #' Construtor Externo
 #' 
-#' Gera objetos \code{tabela} a partir de um schema.json
+#' Gera objetos \code{tabela} a partir de um schema.json. Wrapper de \code{new_tabela}
 #' 
 #' @param schema ou uma lista de schema.json já lido ou o caminho do arquivo
+#' 
+#' @examples 
+#' 
+#' # Usando as mesmas tabelas exemplificadas na doc de `new_tabela`
+#' tab1 <- schema2tabela(system.file("extdata/cpart_parquet/subbacias/schema.json", package = "dbrenovaveis"))
+#' tab2 <- schema2tabela(system.file("extdata/cpart_parquet/vazoes/schema.json", package = "dbrenovaveis"))
 #' 
 #' @return objeto \code{tabela}
 
