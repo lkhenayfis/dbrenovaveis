@@ -157,9 +157,22 @@ new_campo <- function(nome, tipo = c("int", "float", "string", "date", "datetime
 
 # AUXILIARES ---------------------------------------------------------------------------------------
 
+#' Listagem De Arquivos Por Tabela
+#' 
+#' Generica e metodos para listar os arquivos que compoem uma tabela abstrata, local ou no s3
+#' 
+#' @param tabela objeto de classe \code{tabela} cujos arquivos componentes devem ser listados
+#' 
+#' @return vetor contendo a lista de caminhos completos, local ou s3, dos arquivos que compoem 
+#'     \code{tabela}
+
 lista_conteudo <- function(tabela) UseMethod("lista_conteudo")
 
+#' @rdname lista_conteudo
+
 lista_conteudo.tabela_local <- function(tabela) list.files(attr(tabela, "uri"))
+
+#' @rdname lista_conteudo
 
 lista_conteudo.tabela_s3 <- function(tabela) {
     splitted <- strsplit(attr(tabela, "uri"), "/")[[1]]
@@ -175,7 +188,33 @@ lista_conteudo.tabela_s3 <- function(tabela) {
 #' 
 #' Constroi uma tabela mestra associando particoes as entidades contendo aquele trecho
 #' 
-#' @param tabela a tabela particionada para qual construir uma mestra
+#' A tabela mestra nada mais e do que um data.table simples com duas ou mais colunas. Uma destas se
+#' chamara \code{tabela} e contera o nome de um arquivo que componha a tabela abstrata. As demais
+#' colunas sao nomeadas pelos campos de particionamento e conterao, a cada linha, o elemento daquele
+#' campo contido na particao associada
+#' 
+#' O uso de tabelas mestras nao e estritamente necessario. Pela nomenclatura de particionamento,
+#' seria possivel simplesmente procurar nos nomes de arquivos quais sao os que devem ser lidos. Isso
+#' funciona tranquilamente quando sao mocks locais, mas no s3 demandaria listagem dos buckets toda
+#' vez que uma leitura particionada ocorresse, o que nao e ideal.
+#' 
+#' @param tabela objeto de classe \code{tabela} para o qual construir uma mestra
+#' 
+#' @examples 
+#' 
+#' # para a tabela exemplo 'assimilacao' particionada por 'codigo' e 'dia_assimilacao'
+#' tab <- schema2tabela(system.file("extdata/cpart_parquet/assimilacao/schema.json", package = "dbrenovaveis"))
+#' 
+#' mestra <- build_master_unit(tab)
+#' 
+#' \dontrun{
+#' print(mestra)
+#' #>       codigo dia_assimilacao                                         tabela
+#' #> 1: AVERMELHA               1 assimilacao-codigo=AVERMELHA-dia_assimilacao=1
+#' #> 2: AVERMELHA               2 assimilacao-codigo=AVERMELHA-dia_assimilacao=2
+#' #> 3:   BAIXOIG               1   assimilacao-codigo=BAIXOIG-dia_assimilacao=1
+#' #> 4:   BAIXOIG               2   assimilacao-codigo=BAIXOIG-dia_assimilacao=2
+#' }
 #' 
 #' @return tabela mestra
 
@@ -195,6 +234,27 @@ build_master_unit <- function(tabela) {
 
     return(master)
 }
+
+#' Seleciona Funcao Leitora Por Tipo E Fonte De Arquivo
+#' 
+#' Para uma dada \code{extensao} de arquivo e sua origem (local ou s3) retorna uma funcao para 
+#' leitura do mesmo
+#' 
+#' @param extensao string indicando a extensao de arquivo, preferencialmente precedida de "."
+#' @param s3 booleano indidicano se o arquivo esta no s3 ou nao
+#' 
+#' @examples 
+#' 
+#' # para leitura de um json
+#' fun1 <- switch_reader_func("json", FALSE)
+#' identical(fun1, jsonlite::read_json)
+#' 
+#' # para leitura de um csv
+#' fun2 <- switch_reader_func(".csv", FALSE)
+#' identical(fun2, data.table::fread)
+#' 
+#' @return funcao cujo primeiro argumento e o caminho (local ou s3) do arquivo a ser lido e retorna
+#'     a leitura executada
 
 switch_reader_func <- function(extensao, s3 = FALSE) {
     if (grepl("\\.?json", extensao)) {
