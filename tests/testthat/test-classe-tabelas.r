@@ -93,12 +93,27 @@ test_that("Criacao de tabelas -- manual", {
     expect_equal(attr(tabela1, "master"), data.table::data.table(tabela = character(0)))
 })
 
+cria_temp_schema <- function(arq) {
+    tmp <- tempfile(fileext = ".json")
+    aux <- jsonlite::read_json(arq)
+    aux$uri <- sub("/schema.json", "", arq)
+    jsonlite::write_json(aux, tmp, auto_unbox = TRUE)
+    return(tmp)
+}
+
 test_that("Criacao de tabelas -- dado teste s/ particao", {
 
     # TESTE DE TABELA LOCAL ----------------------------------------------
 
     dir <- system.file("extdata/cpart_parquet/subbacias/", package = "dbrenovaveis")
     arq <- file.path(dir, "schema.json")
+
+    # para que os testes de composicao de banco funcionem apos instalacao do pacote em qualquer
+    # ambiente, as uris de tabelas precisaram ser flexibilizadas para caminhos relativos.
+    # O pacote consegue controlar isso ao compor o schema do banco completo, mas nao ao criar
+    # tabelas isoladas. A solucao para este teste rodar adequadamente e criar uma copia temporaria
+    # do arquivo de schema no qual uri e o caminho completo
+    arq <- cria_temp_schema(arq)
 
     tabela1 <- schema2tabela(arq)
 
@@ -110,6 +125,8 @@ test_that("Criacao de tabelas -- dado teste s/ particao", {
     master <- attr(tabela1, "master")
     expect_equal(nrow(master), 1)
     expect_equal(colnames(master), "tabela")
+
+    null <- file.remove(arq)
 })
 
 test_that("Criacao de tabelas -- dado teste c/ particao", {
@@ -118,6 +135,13 @@ test_that("Criacao de tabelas -- dado teste c/ particao", {
 
     dir <- system.file("extdata/cpart_parquet/vazoes/", package = "dbrenovaveis")
     arq <- file.path(dir, "schema.json")
+
+    # para que os testes de composicao de banco funcionem apos instalacao do pacote em qualquer
+    # ambiente, as uris de tabelas precisaram ser flexibilizadas para caminhos relativos.
+    # O pacote consegue controlar isso ao compor o schema do banco completo, mas nao ao criar
+    # tabelas isoladas. A solucao para este teste rodar adequadamente e criar uma copia temporaria
+    # do arquivo de schema no qual uri e o caminho completo
+    arq <- cria_temp_schema(arq)
 
     tabela1 <- schema2tabela(arq)
 
@@ -130,4 +154,6 @@ test_that("Criacao de tabelas -- dado teste c/ particao", {
     expect_equal(nrow(master), 2)
     expect_equal(colnames(master), c("codigo", "tabela"))
     expect_equal(master$codigo, c("AVERMELHA", "BAIXOIG"))
+
+    null <- file.remove(arq)
 })
