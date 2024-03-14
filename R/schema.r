@@ -1,18 +1,26 @@
 ################################### VALIDACAO DE JSONS DE SCHEMA ###################################
 
-compoe_schema <- function(arq_schema_banco) {
+compoe_schema <- function(arq_schema_banco, schema_banco = NULL) {
 
-    is_abs_path <- xfun::is_abs_path(arq_schema_banco)
+    arq_missing <- missing("arq_schema_banco")
+    schema_missing <- missing("schema_banco")
 
-    rf <- switch_reader_func("json", grepl("^s3", arq_schema_banco))
-    schema_banco <- rf(arq_schema_banco)
+    if (arq_missing == schema_missing) stop("Passe apenas un de 'arq_schema_banco' ou 'schema_banco'")
+
+    if (!arq_missing) {
+        is_abs_path <- xfun::is_abs_path(arq_schema_banco)
+
+        rf <- switch_reader_func("json", grepl("^s3", arq_schema_banco))
+        schema_banco <- rf(arq_schema_banco)
+    } else if (!schema_missing) {
+        is_abs_path <- FALSE
+    }
 
     tem_uri_root <- !is.null(schema_banco$uri)
     if (!tem_uri_root && is_abs_path) schema_banco$uri <- sub("/schema.json", "", arq_schema_banco)
 
     schema_banco <- valida_schema_banco(schema_banco)
 
-    nomes_tabs <- sapply(schema_banco$tables, "[[", "name")
     schema_banco$tables <- lapply(schema_banco$tables, function(s_t) {
         out <- rf(file.path(s_t$uri, "schema.json"))
 
