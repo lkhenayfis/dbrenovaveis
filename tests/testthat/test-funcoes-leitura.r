@@ -1,4 +1,21 @@
 
+test_that("Validadores de tipo de arquivo", {
+
+    # testes padrao ------------------------------------------------------
+
+    expect_equal(valida_tipo_arquivo("csv"), ".csv")
+    expect_equal(valida_tipo_arquivo("parquet"), ".parquet")
+    expect_equal(valida_tipo_arquivo("parquet.gzip"), ".parquet.gzip")
+    expect_equal(valida_tipo_arquivo("json"), ".json")
+
+    expect_equal(valida_tipo_arquivo("csv"), valida_tipo_arquivo(".csv"))
+    expect_equal(valida_tipo_arquivo("parquet"), valida_tipo_arquivo(".parquet"))
+    expect_equal(valida_tipo_arquivo("parquet.gzip"), valida_tipo_arquivo(".parquet.gzip"))
+    expect_equal(valida_tipo_arquivo("json"), valida_tipo_arquivo(".json"))
+
+    expect_error(valida_tipo_arquivo("tipo_qualquer"))
+})
+
 test_that("Selecao de reader_fun", {
 
     # CSV ----------------------------------------------------------------
@@ -56,5 +73,9 @@ test_that("Selecao de reader_fun", {
 
     ff <- switch_reader_func("json", TRUE)
     expect_equal(ff, outer_s3(inner_json))
-})
 
+    # ERROS --------------------------------------------------------------
+
+    expect_error(ff <- switch_reader_func("tipo_qualquer", FALSE))
+    expect_error(ff <- switch_reader_func("tipo_qualquer", TRUE))
+})
