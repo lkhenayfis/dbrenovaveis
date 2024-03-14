@@ -22,32 +22,9 @@
 #'     a leitura executada
 
 switch_reader_func <- function(extensao, s3 = FALSE) {
-    if (grepl("\\.?json", extensao)) {
-        if (s3) {
-            reader_func <- function(x, ...) aws.s3::s3read_using(FUN = jsonlite::read_json, object = x, ...)
-        } else {
-            reader_func <- jsonlite::read_json
-        }
-    } else if (grepl("\\.?csv", extensao)) {
-        if (s3) {
-            reader_func <- function(x, ...) aws.s3::s3read_using(FUN = data.table::fread, object = x, ...)
-        } else {
-            reader_func <- data.table::fread
-        }
-    } else if (grepl("\\.?parquet", extensao)) {
-        if (!requireNamespace("arrow", quietly = TRUE)) {
-            stop("Pacote 'arrow' e necessario para leitura de arquivos parquet")
-        }
-
-        if (s3) {
-            reader_func <- function(x, ...) aws.s3::s3read_using(FUN = arrow::read_parquet, object = x, ...)
-        } else {
-            reader_func <- arrow::read_parquet
-        }
-    } else {
-        stop("arquivos locais de tipo nao suportado")
-    }
-
+    extensao <- valida_tipo_arquivo(extensao)
+    inner_reader <- eval(parse(text = paste0("inner", gsub("\\.", "_", extensao))))
+    reader_func  <- ifelse(s3, outer_s3(inner_reader), outer_local(inner_reader))
     return(reader_func)
 }
 
@@ -74,6 +51,8 @@ inner_json <- function(x, ...) jsonlite::read_json(x, ...)
 inner_csv <- function(x, ...) data.table::fread(x, ...)
 
 inner_parquet <- function(x, ...) arrow::read_parquet(x, ...)
+
+inner_parquet_gzip <- function(x, ...) arrow::read_parquet(x, ...)
 
 # FUNCOES DE LEITURA EXTERNAS ----------------------------------------------------------------------
 
