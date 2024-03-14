@@ -25,3 +25,34 @@ valida_schema_banco <- function(schema) {
 
     return(schema)
 }
+
+valida_schema_tabela <- function(schema) {
+
+    # validacao de nome e uri --------------------------------------------
+
+    tem_nome <- !is.null(schema$name)
+    if (!tem_nome) stop("Schema nao possui chave 'name'")
+
+    tem_uri <- !is.null(schema$uri)
+    if (!tem_uri) stop("Schema nao possui chave 'uri'")
+    if (!grepl(paste0(schema$name, "/?$"), schema$uri)) stop("'uri' do schema nao termina em 'name'")
+
+    # validacao de tipo de arquivo ---------------------------------------
+
+    tipo_permitido <- valida_tipo_arquivo(schema$fileType)
+    schema <- tipo_permitido # substitui para o caso de schema$fileType nao iniciar com '.'
+
+    # validacoes de colunas ----------------------------------------------
+
+    nomes_cols <- lapply(schema$columns, "[[", "name")
+    cols_tem_nome <- sapply(nomes_cols, function(nc) !is.null(nc))
+    if (!all(cols_tem_nome)) stop("Coluna '", nomes_cols[!cols_tem_nome], "' nao tem chave 'name'")
+
+    cols_tipos_ok <- sapply(schema$columns, function(cc) {
+        aux <- try(valida_tipo_campo(cc$type), silent = TRUE)
+        !inherits(aux, "try-error")
+    })
+    if (!all(cols_tipos_ok)) stop("Coluna '", nomes_cols[!cols_tipos_ok], "' possui 'typo' nao permitido")
+
+    return(schema)
+}
