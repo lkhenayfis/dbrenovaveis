@@ -2,13 +2,13 @@
 % Please edit documentation in R/backend.r
 \name{query_local}
 \alias{query_local}
-\alias{proc_query_local_spart}
-\alias{proc_query_local_cpart}
+\alias{proc_query_mock_spart}
+\alias{proc_query_mock_cpart}
 \title{Executores Internos De Query Local}
 \usage{
-proc_query_local_spart(conexao, query)
+proc_query_mock_spart(conexao, query)
 
-proc_query_local_cpart(conexao, query)
+proc_query_mock_cpart(conexao, query)
 }
 \arguments{
 \item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}

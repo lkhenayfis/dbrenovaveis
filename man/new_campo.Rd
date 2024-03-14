@@ -4,7 +4,7 @@
 \alias{new_campo}
 \title{Construtor Da Classe \code{campo}}
 \usage{
-new_campo(nome, tipo = c("int", "float", "string", "date", "datetime"))
+new_campo(nome, tipo)
 }
 \arguments{
 \item{nome}{o nome do campo (nome da coluna na tabela)}
