@@ -1,5 +1,26 @@
 ################################### VALIDACAO DE JSONS DE SCHEMA ###################################
 
+#' Le E Interpreta Schema De Banco
+#' 
+#' Realiza a leitura de um \code{schema.json} para banco, valida e sanitariza seus conteudos se 
+#' necessario
+#' 
+#' Uma das principais sanitarizacoes que esta funcao realiza e o controle de caminhos relativos. O
+#' recomendado e que todas as chaves \code{uri} em arquivos schema sejam sempre caminhos absolutos.
+#' Por outro lado, para fins de testagem do pacote isto nao funciona pois nao e possivel saber de 
+#' antemao aonde o pacote sera instalado.
+#' 
+#' Quando a funcao e chamada com \code{arq_schema_banco}, e possivel identificar se caminhos 
+#' relativos existem e converte-los de acordo caso o argumento seja um caminho absoluto por si; do
+#' contrario nao sera possivel resolver os caminhos relativos. Caso seja chamada com 
+#' \code{schema_banco}  e esta lista nao contiver um elemento \code{uri}, nao sera possivel 
+#' sanitarizar caminhos relativos
+#' 
+#' @param arq_schema_banco caminho de um arquivo \code{schema.json} para ler
+#' @param schema_banco lista contendo um arquivo ja lido. Veja Detalhes
+#' 
+#' @return lista contendo o schema do banco processado
+
 compoe_schema <- function(arq_schema_banco, schema_banco = NULL) {
 
     arq_missing <- missing("arq_schema_banco")
@@ -36,6 +57,15 @@ compoe_schema <- function(arq_schema_banco, schema_banco = NULL) {
 
 # VALIDADORES --------------------------------------------------------------------------------------
 
+#' Validador De Schemas De Bancos
+#' 
+#' Valida conteudos de um schema de banco e corrige caminhos relativos de tabelas caso necessario
+#' 
+#' @param schema uma lista contendo um \code{schema.json} de banco lido
+#' 
+#' @return lista \code{schema} validada e corrigida, caso necessario, ou erro caso a validacao 
+#'     encontre problemas
+
 valida_schema_banco <- function(schema) {
 
     if (is.null(schema$tables)) {
@@ -63,6 +93,14 @@ valida_schema_banco <- function(schema) {
 
     return(schema)
 }
+
+#' Validador De Schemas De Tabelas
+#' 
+#' Valida conteudos de um \code{schema.json} de tabelas
+#' 
+#' @param schema uma lista contendo um \code{schema.json} de tabela lido
+#' 
+#' @return lista \code{schema} validada ou erro, caso a validacao encontre problemas
 
 valida_schema_tabela <- function(schema) {
 
