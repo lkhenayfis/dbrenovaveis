@@ -140,19 +140,22 @@ print.tabela <- function(x, ...) {
 #' 
 #' @seealso Construtor de tabelas \code{\link{new_tabela}} para melhor entendimento de seu uso
 
-new_campo <- function(nome, tipo = c("int", "float", "string", "date", "datetime")) {
+new_campo <- function(nome, tipo) {
 
-    tipo <- try(match.arg(tipo), TRUE)
-    if (inherits(tipo, "try-error")) {
-        msg <- paste0("Tipo do campo '", nome, "' nao permitido -- deve ser um de (",
-            paste0(formals(new_campo)$tipo[-1], collapse = ", "), ")")
-        stop(msg)
-    }
-
+    tipo <- valida_tipo_campo(tipo)
     out <- list(nome = nome)
     class(out) <- c(paste0("campo_", tipo), "campo")
 
     return(out)
+}
+
+valida_tipo_campo <- function(tipo) {
+    suport <- c("int", "float", "string", "date", "datetime")
+    if (!(tipo %in% suport)) {
+        msg <- paste0("Tipo nao permitido -- deve ser um de (", paste0(suport, collapse = ", "), ")")
+        stop(msg)
+    }
+    return(tipo)
 }
 
 # AUXILIARES ---------------------------------------------------------------------------------------
