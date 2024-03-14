@@ -1,7 +1,7 @@
 {
   "name": "precipitacao_observada",
   "description": "Dados de entrada de precipitacao observada",
-  "uri": "inst/extdata/cpart_parquet/precipitacao_observada",
+  "uri": "./precipitacao_observada",
   "fileType": ".parquet.gzip",
   "columns": [
     {

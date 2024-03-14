@@ -1,7 +1,7 @@
 {
   "name": "assimilacao",
   "description": "Dados de saida da assimilacao realizada com o smapR",
-  "uri": "inst/extdata/cpart_parquet/assimilacao",
+  "uri": "./assimilacao",
   "fileType": ".parquet.gzip",
   "columns": [
     {

@@ -7,27 +7,27 @@
   "tables": [
     {
       "name": "assimilacao",
-      "uri": "./inst/extdata/cpart_parquet/assimilacao"
+      "uri": "./assimilacao"
     },
     {
       "name": "parametros",
-      "uri": "./inst/extdata/cpart_parquet/parametros"
+      "uri": "./parametros"
     },
     {
       "name": "precipitacao_observada",
-      "uri": "./inst/extdata/cpart_parquet/precipitacao_observada"
+      "uri": "./precipitacao_observada"
     },
     {
       "name": "previstos",
-      "uri": "./inst/extdata/cpart_parquet/previstos"
+      "uri": "./previstos"
     },
     {
       "name": "vazoes",
-      "uri": "./inst/extdata/cpart_parquet/vazoes"
+      "uri": "./vazoes"
     },
     {
       "name": "subbacias",
-      "uri": "./inst/extdata/cpart_parquet/subbacias"
+      "uri": "./subbacias"
     }
   ]
 }

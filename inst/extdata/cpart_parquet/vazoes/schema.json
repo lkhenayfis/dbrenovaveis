@@ -1,7 +1,7 @@
 {
   "name": "vazoes",
   "description": "Dados de entrada de vazao observada",
-  "uri": "inst/extdata/cpart_parquet/vazoes",
+  "uri": "./vazoes",
   "fileType": ".parquet.gzip",
   "columns": [
     {

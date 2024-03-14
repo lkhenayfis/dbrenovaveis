@@ -1,7 +1,7 @@
 {
   "name": "parametros",
   "description": "Parametros utilizados para execucao do smap",
-  "uri": "inst/extdata/cpart_parquet/parametros",
+  "uri": "./parametros",
   "fileType": ".parquet.gzip",
   "columns": [
     {
