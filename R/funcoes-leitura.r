@@ -24,7 +24,16 @@
 switch_reader_func <- function(extensao, s3 = FALSE) {
     extensao <- valida_tipo_arquivo(extensao)
     inner_reader <- eval(parse(text = paste0("inner", gsub("\\.", "_", extensao))))
-    reader_func  <- ifelse(s3, outer_s3(inner_reader), outer_local(inner_reader))
+
+    if (s3) {
+        if (!requireNamespace("aws.s3", quietly = TRUE)) {
+            stop("Pacote 'aws.s3' e necessario para leitura de arquivos no s3")
+        }
+        reader_func <- outer_s3(inner_reader)
+    } else {
+        reader_func <- outer_local(inner_reader)
+    }
+
     return(reader_func)
 }
 
