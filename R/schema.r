@@ -75,7 +75,7 @@ valida_schema_banco <- function(schema) {
     # mesmo que algo parecido aconteca na funcao acima, e possivel que ainda chegue aqui sem ter uma
     # uri root. Por si so nao e um problema, mas vai ser se as tabelas nao tiverem uris absolutas
     tem_uri_root <- !is.null(schema$uri)
-    uri_root_abs <- tem_uri_root && xfun::is_abs_path(schema_banco$uri)
+    uri_root_abs <- tem_uri_root && xfun::is_abs_path(schema$uri)
     tab_uris <- sapply(schema$tables, "[[", "uri")
 
     is_rel_path <- xfun::is_rel_path(tab_uris)
