@@ -6,12 +6,13 @@ valida_schema_banco <- function(schema) {
         stop("Schema do banco nao contem lista de tabelas")
     }
 
-    has_root <- !is.null(schema$uri)
+    tem_uri_root <- !is.null(schema$uri)
+    uri_root_abs <- tem_uri_root && xfun::is_abs_path(schema_banco$uri)
     tab_uris <- sapply(schema$tables, "[[", "uri")
 
     is_rel_path <- xfun::is_rel_path(tab_uris)
     if (any(is_rel_path)) {
-        if (!has_root) {
+        if (!tem_uri_root) {
             stop("Algumas tabelas possuem 'uri' relativo, porem schema do banco nao possui uma 'uri' root")
         } else {
             tab_uris <- file.path(schema$uri, tab_uris)
