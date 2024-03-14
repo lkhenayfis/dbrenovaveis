@@ -91,20 +91,9 @@ conectabanco <- function(usuario, banco) {
 
 conectamock <- function(schema) {
 
-    if (is.character(schema)) {
-        arq <- schema
-        rf <- switch_reader_func("json", grepl("^s3", schema))
-        schema <- rf(schema)
-        schema$uri <- sub("/schema.json", "", arq)
-    }
+    schema <- compoe_schema(schema)
 
-    schema <- valida_schema_banco(schema)
-
-    tabelas <- lapply(schema$tables, function(tab) {
-        tab_schema <- file.path(tab$uri, "schema.json")
-        rf <- switch_reader_func("json", grepl("^s3", tab_schema))
-        schema2tabela(rf(tab_schema))
-    })
+    tabelas <- lapply(schema$tables, schema2tabela)
     names(tabelas) <- sapply(tabelas, "[[", "nome")
 
     out <- list(tabelas = tabelas)
