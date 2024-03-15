@@ -29,7 +29,7 @@ compoe_schema <- function(arq_schema_banco, schema_banco = NULL) {
     if (arq_missing == schema_missing) stop("Passe apenas un de 'arq_schema_banco' ou 'schema_banco'")
 
     if (!arq_missing) {
-        is_abs_path <- xfun::is_abs_path(arq_schema_banco)
+        is_abs_path <- is_abs_path2(arq_schema_banco)
 
         rf <- switch_reader_func("json", grepl("^s3", arq_schema_banco))
         schema_banco <- rf(arq_schema_banco)
@@ -76,10 +76,10 @@ valida_schema_banco <- function(schema) {
     # mesmo que algo parecido aconteca na funcao acima, e possivel que ainda chegue aqui sem ter uma
     # uri root. Por si so nao e um problema, mas vai ser se as tabelas nao tiverem uris absolutas
     tem_uri_root <- !is.null(schema$uri)
-    uri_root_abs <- tem_uri_root && xfun::is_abs_path(schema$uri)
+    uri_root_abs <- tem_uri_root && is_abs_path2(schema$uri)
     tab_uris <- sapply(schema$tables, "[[", "uri")
 
-    is_rel_path <- xfun::is_rel_path(tab_uris)
+    is_rel_path <- is_rel_path2(tab_uris)
     if (any(is_rel_path)) {
         if (!tem_uri_root) {
             stop("Algumas tabelas possuem 'uri' relativo, porem schema do banco nao possui uma 'uri' root")
@@ -132,4 +132,35 @@ valida_schema_tabela <- function(schema) {
     if (!all(cols_tipos_ok)) stop("Coluna '", nomes_cols[!cols_tipos_ok], "' possui 'typo' nao permitido")
 
     return(schema)
+}
+
+# AUXILIARES ---------------------------------------------------------------------------------------
+
+#' Checagem De Caminho Absoluto Ou Relativo
+#' 
+#' Estas funcoes identificam se um vetor de caminhos \code{x} e absoluto ou nao, incluindo caminhos
+#' no s3
+#' 
+#' @param x vetor de caminhos de arquivos
+#' 
+#' @return vetor booleano indicando se os elementos de \code{x} sao caminhos absolutos ou relativos
+#'     dependendo de qual funcao foi chamada
+#' 
+#' @name funs_check_caminho
+NULL
+
+#' @rdname funs_check_caminho
+
+is_abs_path2 <- function(x) {
+    is_s3  <- grepl("^s3://", x)
+    is_abs <- xfun::is_abs_path(x)
+    is_s3 | is_abs
+}
+
+#' @rdname funs_check_caminho
+
+is_rel_path2 <- function(x) {
+    not_s3 <- !grepl("^s3://", x)
+    is_rel <- xfun::is_rel_path(x)
+    mapply("&&", is_rel, not_s3)
 }
