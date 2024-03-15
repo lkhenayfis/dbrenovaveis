@@ -1,3 +1,17 @@
+# overhaul
+
+## Misc
+
+* Suporte a bancos relacionais padrao foi, por hora, deprecado
+* Funcoes antigas do pacote, tailor-made para o banco original, foram deprecadas e removidas
+* Modifica padrao de estrutura dos bancos mock. Agora e necessario respeitar determinada hierarquia
+  de diretorios e providenciar um arquivo schema.json especificando o banco e tabelas individuais
+* Tambem foi modificado o padrao de particionamento. Nao sera mais usada uma tabela mestra, como
+  anteriormente; esta informacao agora faz parte da chave `partitions` do schema.json da tabela
+* Conjunto de dados teste atualizado para o novo padrao
+* Essencialmente todo o backend do pacote foi reestruturado e reorganizado de maneira mais coerente
+* A testagem foi refeita inteiramente do zero, estando agora muito mais robusta e confiavel
+
 # dbrenovaveis 0.6
 
 ## Bug fixes
