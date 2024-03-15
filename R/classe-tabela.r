@@ -61,7 +61,7 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
         names(campos) <- sapply(campos, "[[", "nome")
     }
 
-    tabela <- list(nome = nome, campos = campos, particoes = particoes)
+    tabela <- list(nome = nome, campos = campos, particoes = unlist(particoes))
 
     class(tabela) <- c(paste0("tabela_", source), "tabela")
     attr(tabela, "uri") <- uri
