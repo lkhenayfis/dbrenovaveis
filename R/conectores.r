@@ -91,7 +91,7 @@ conectabanco <- function(usuario, banco) {
 
 conectamock <- function(schema) {
 
-    schema <- compoe_schema(schema)
+    if (is.character(schema)) schema <- compoe_schema(schema) else schema <- compoe_schema(, schema)
 
     tabelas <- lapply(schema$tables, schema2tabela)
     names(tabelas) <- sapply(tabelas, "[[", "nome")

@@ -43,6 +43,7 @@ compoe_schema <- function(arq_schema_banco, schema_banco = NULL) {
     schema_banco <- valida_schema_banco(schema_banco)
 
     schema_banco$tables <- lapply(schema_banco$tables, function(s_t) {
+        rf <- switch_reader_func("json", grepl("^s3", s_t$uri))
         out <- rf(file.path(s_t$uri, "schema.json"))
 
         # os schemas de tabelas individuais nao necessariamente vao ter as uris absolutas, ou mesmo
