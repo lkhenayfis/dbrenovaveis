@@ -1,6 +1,19 @@
 
 test_that("Testes de modificacao de query", {
 
+    # baseado em uma tabela fake
+    tabela1 <- new_tabela(
+        "tabela_teste",
+        list(
+            new_campo("codigo", "string"),
+            new_campo("id", "int"),
+            new_campo("data", "date"),
+            new_campo("valor", "float")
+        ),
+        "/qualquer/caminho/local/",
+        ".csv"
+    )
+
     parsed_2 <- query2subset(parseargs(tabela1, c("data", "valor"), data = "2000/"))
     expect_equal(parsed_2$SELECT, c("data", "valor"))
     expect_equal(parsed_2$FROM, "tabela_teste")
