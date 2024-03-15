@@ -94,13 +94,7 @@ roda_query.default <- function(conexao, query) {
 
 roda_query.mock <- function(conexao, query) {
 
-    query$SELECT <- strsplit(query$SELECT, ",")[[1]]
-    query$WHERE  <- lapply(query$WHERE, function(q) {
-        q <- gsub(" IN ", " %in% ", q)
-        q <- gsub("\\(", "c\\(", q)
-        if (grepl("AND", q)) paste0("(", sub(" AND ", ") & (", q), ")") else q
-    })
-    if (!is.null(query[["ORDER BY"]])) query[["ORDER BY"]] <- strsplit(query[["ORDER BY"]], ",")[[1]]
+    query <- query2subset(query)
 
     oldtz <- Sys.getenv("TZ")
     Sys.setenv("TZ" = "GMT")
@@ -117,6 +111,25 @@ roda_query.mock <- function(conexao, query) {
     Sys.setenv("TZ" = oldtz)
 
     if (class(out)[1] == "try-error") stop(out[1]) else return(out)
+}
+
+#' Transforma Query Em Expressoes De Subset
+#' 
+#' Auxiliar para conversao de strings de query em db para expressoes de subset em data.table
+#' 
+#' @param query lista contendo termos SELECT, WHERE e ORDERBY de uma query
+#' 
+#' @return mesma lista com os termos em questao convertidos para expressoes de subset
+
+query2subset <- function(query) {
+    query$SELECT <- strsplit(query$SELECT, ",")[[1]]
+    query$WHERE  <- lapply(query$WHERE, function(q) {
+        q <- gsub(" IN ", " %in% ", q)
+        q <- gsub("\\(", "c\\(", q)
+        if (grepl("AND", q)) paste0("(", sub(" AND ", ") & (", q), ")") else q
+    })
+    if (!is.null(query[["ORDER BY"]])) query[["ORDER BY"]] <- strsplit(query[["ORDER BY"]], ",")[[1]]
+    return(query)
 }
 
 #' Checa Existencia De Particoes Locais
