@@ -29,7 +29,7 @@ test_that("Testes de modificacao de query", {
     expect_equal(parsed_3$WHERE$codigo[1], "codigo %in% c('A','B')")
 })
 
-test_that("Leitura de dados mock", {
+test_that("Leitura de dados mock -- Local", {
 
     arq  <- system.file("extdata/cpart_parquet/schema.json", package = "dbrenovaveis")
     conn <- conectamock(arq)
@@ -50,6 +50,38 @@ test_that("Leitura de dados mock", {
 
     query <- parseargs(conn$tabelas$previstos, c("data_previsao", "codigo", "rsolo"),
         dia_previsao = 1, data_previsao = "2020-01-01", codigo = "AVERMELHA")
+    query <- query2subset(query)
+    dat1  <- proc_query_mock_cpart(conn, query)
+    expect_snapshot_value(unlist(dat1), style = "deparse")
+
+})
+
+test_that("Leitura de dados mock -- S3", {
+
+    # existe um problema de timeout ainda nao controlado nas conexoes com a aws, ainda mais em
+    # casos de bancos muito grandes
+    # para evitar isso aqui, e agilizar o teste, e feita uma simplificacao
+    schema <- aws.s3::s3read_using(jsonlite::read_json,
+        bucket = "s3://ons-pem-historico/", object = "hidro/rodadas-smap/sintetico/schema.json")
+    schema$tables <- schema$tables[c(5, 6)]
+    conn <- conectamock(schema)
+
+    # checagem de particionamento ----------------------------------------
+
+    expect_true(!checa_particao(conn, list(FROM = "subbacias")))
+    expect_true(checa_particao(conn, list(FROM = "vazoes")))
+
+    # leitura de tabela sem particao -------------------------------------
+
+    query <- parseargs(conn$tabelas$subbacias, c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG")
+    query <- query2subset(query)
+    dat1  <- proc_query_mock_spart(conn, query)
+    expect_snapshot_value(unlist(dat1), style = "deparse")
+
+    # leitura de tabela com particao -------------------------------------
+
+    query <- parseargs(conn$tabelas$vazoes, c("data", "codigo", "vazao"),
+        codigo = "AVERMELHA", data = "2020-01-01")
     query <- query2subset(query)
     dat1  <- proc_query_mock_cpart(conn, query)
     expect_snapshot_value(unlist(dat1), style = "deparse")
