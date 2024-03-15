@@ -10,7 +10,8 @@
 #' aqui devem ser nomeados igual ao campo da tabela, ou seu proxy, tomando valor igual ao que deve
 #' ser retido na query.
 #' 
-#' @param tabela objeto da classe \code{tabela} criado por \code{\link{new_tabela}}
+#' @param conexao objeto de conexao com um banco de dados
+#' @param tabela nome da tabela no banco \code{conexao}
 #' @param campos os campos a reter apos a leitura. Por padrao traz todos
 #' @param ... subsets a serem aplicados. Veja Detalhes e Exemplos
 #' 
@@ -50,7 +51,7 @@
 
 getfromdb <- function(conexao, tabela, campos = NA, ...) {
 
-    query <- parseargs(tabela, campos, ...)
+    query <- parseargs(conexao$tabelas[[tabela]], campos, ...)
     out   <- roda_query(conexao, query)
 
     return(out)
