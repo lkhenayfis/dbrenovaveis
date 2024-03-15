@@ -4,12 +4,12 @@
 \alias{le_tabela_mock}
 \title{Leitor De Tabelas Em Mock Bancos}
 \usage{
-le_tabela_mock(conexao, tabela, ...)
+le_tabela_mock(tabela, arquivo, ...)
 }
 \arguments{
-\item{conexao}{objeto de conexao ao banco retornado por \code{\link{conectabanco}}}
+\item{tabela}{objeto de classe \code{tabela} cujos arquivos componentes devem ser listados}
 
-\item{tabela}{tabela a ser lida, em formato csv ou parquet. Deve sempre ser uma tabela regular}
+\item{arquivo}{nome do arquivo componente de \code{tabela} a ser lido, sem extensao}
 
 \item{...}{demais argumentos que possam ser passados para o leitor interno}
 }

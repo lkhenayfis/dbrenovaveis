@@ -38,17 +38,15 @@ checa_particao <- function(conexao, query) {
 #' 
 #' Abstracao para leitura de arquivos csv ou parquet
 #' 
-#' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param tabela tabela a ser lida, em formato csv ou parquet. Deve sempre ser uma tabela regular
+#' @param tabela objeto de classe \code{tabela} cujos arquivos componentes devem ser listados
+#' @param arquivo nome do arquivo componente de \code{tabela} a ser lido, sem extensao
 #' @param ... demais argumentos que possam ser passados para o leitor interno
 #' 
 #' @return data.table contendo a tabela lida
 
-le_tabela_mock <- function(conexao, tabela, ...) {
-    radical  <- sub("-.*", "", tabela)
-    entidade <- conexao$tabelas[[radical]]
-    rf  <- attr(entidade, "reader_fun")
-    arq <- file.path(attr(entidade, "uri"), paste0(tabela, attr(entidade, "tipo_arquivo")))
+le_tabela_mock <- function(tabela, arquivo, ...) {
+    rf  <- attr(tabela, "reader_fun")
+    arq <- file.path(attr(tabela, "uri"), paste0(arquivo, attr(tabela, "tipo_arquivo")))
     dat <- rf(arq, ...)
     return(dat)
 }
@@ -68,7 +66,14 @@ le_tabela_mock <- function(conexao, tabela, ...) {
 
 proc_query_mock_spart <- function(conexao, query) {
 
-    dat <- le_tabela_mock(conexao, query$FROM)
+    # quando vem de proc_query_mock_cpart, FROM e um vetor de duas poscoes, indicando a tabela
+    # abstrata de onde ler na primeira e o arquivo componente na segunda
+    # a implementacao e feita com head e tail porque, no caso de tabelas nao particionadas, FROM tem
+    # somente uma posicao mesmo (com [1] e [2] causa erro)
+    dat <- le_tabela_mock(
+        conexao$tabelas[[head(query$FROM, 1)]],
+        tail(query$FROM, 1)
+    )
 
     for (q in query$WHERE) {
         vsubset <- eval(str2lang(q), envir = dat)
@@ -107,7 +112,7 @@ proc_query_mock_cpart <- function(conexao, query) {
 
     dat <- lapply(tabelas, function(tabela) {
         querytabela <- query
-        querytabela$FROM <- tabela
+        querytabela$FROM <- c(query$FROM, tabela)
 
         proc_query_mock_spart(conexao, querytabela)
     })
