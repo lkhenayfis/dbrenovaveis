@@ -208,7 +208,7 @@ lista_conteudo.tabela_s3 <- function(tabela) {
 #' @examples 
 #' 
 #' # para a tabela exemplo 'assimilacao' particionada por 'codigo' e 'dia_assimilacao'
-#' arq <- system.file("extdata/cpart_parquet/assimilacao/schema.json", package = "dbrenovaveis")
+#' arq <- system.file("extdata/cpart_parquet/ass/schema.json", package = "dbrenovaveis")
 #' tab <- dbrenovaveis:::schema2tabela(arq)
 #' 
 #' mestra <- dbrenovaveis:::build_master_unit(tab)

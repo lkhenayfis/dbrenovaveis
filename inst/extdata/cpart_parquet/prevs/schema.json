@@ -1,7 +1,7 @@
 {
   "name": "previstos",
   "description": "Dados de saida da previsao realizada com o smapR",
-  "uri": "./previstos",
+  "uri": "./prevs",
   "fileType": ".parquet.gzip",
   "columns": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "assimilacao",
   "description": "Dados de saida da assimilacao realizada com o smapR",
-  "uri": "./assimilacao",
+  "uri": "./ass",
   "fileType": ".parquet.gzip",
   "columns": [
     {

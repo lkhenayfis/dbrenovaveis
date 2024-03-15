@@ -1,7 +1,7 @@
 {
   "name": "precipitacao_observada",
   "description": "Dados de entrada de precipitacao observada",
-  "uri": "./precipitacao_observada",
+  "uri": "./precobs",
   "fileType": ".parquet.gzip",
   "columns": [
     {

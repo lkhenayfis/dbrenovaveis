@@ -7,7 +7,7 @@
   "tables": [
     {
       "name": "assimilacao",
-      "uri": "./assimilacao"
+      "uri": "./ass"
     },
     {
       "name": "parametros",
@@ -15,11 +15,11 @@
     },
     {
       "name": "precipitacao_observada",
-      "uri": "./precipitacao_observada"
+      "uri": "./precobs"
     },
     {
       "name": "previstos",
-      "uri": "./previstos"
+      "uri": "./prevs"
     },
     {
       "name": "vazoes",
