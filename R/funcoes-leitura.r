@@ -67,4 +67,11 @@ inner_parquet_gzip <- function(x, ...) arrow::read_parquet(x, ...)
 
 outer_local <- function(inner_fun, ...) inner_fun
 
-outer_s3 <- function(inner_fun, ...) function(x, ...) aws.s3::s3read_using(inner_fun, object = x, ...)
+outer_s3 <- function(inner_fun, ...) {
+    function(x, ...) {
+        x <- strsplit(x, "/")[[1]]
+        bucket <- do.call(file.path, as.list(c(head(x, 3), "")))
+        object <- do.call(file.path, as.list(c(x[-seq(3)])))
+        aws.s3::s3read_using(inner_fun, object = object, bucket = bucket, ...)
+    }
+}
