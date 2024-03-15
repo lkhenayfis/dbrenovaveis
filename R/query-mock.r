@@ -68,8 +68,6 @@ le_tabela_mock <- function(conexao, tabela, ...) {
 
 proc_query_mock_spart <- function(conexao, query) {
 
-    ..cols <- NULL
-
     dat <- le_tabela_mock(conexao, query$FROM)
 
     for (q in query$WHERE) {
@@ -78,7 +76,7 @@ proc_query_mock_spart <- function(conexao, query) {
     }
 
     cols <- query$SELECT
-    dat <- dat[, ..cols]
+    dat <- dat[, .SD, .SDcols = cols]
 
     cc_order <- list(quote(setorder), quote(dat))
     for (i in query[["ORDER BY"]]) cc_order <- c(cc_order, list(str2lang(i)))
