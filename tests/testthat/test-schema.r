@@ -13,10 +13,6 @@ test_that("Testes de validacao de schema_tabela", {
     expect_error(valida_schema_tabela(schema))
     schema$uri <- schema0$uri
 
-    schema$uri <- "nome_errado"
-    expect_error(valida_schema_tabela(schema))
-    schema$uri <- schema0$uri
-
     schema$fileType <- "tipo_errado"
     expect_error(valida_schema_tabela(schema))
     schema$fileType <- schema0$fileType
@@ -55,7 +51,7 @@ test_that("Testes de validacao de schema_banco", {
         c("assimilacao", "parametros", "precipitacao_observada", "previstos", "vazoes", "subbacias"))
     expect_equal(sapply(schema_valid$tables, "[[", "uri"),
         file.path(sub("/schema.json", "", arq), ".",
-            c("assimilacao", "parametros", "precipitacao_observada", "previstos", "vazoes", "subbacias"))
+            c("ass", "parametros", "precobs", "prevs", "vazoes", "subbacias"))
     )
 })
 
@@ -73,7 +69,7 @@ test_that("Testes de composicao de schema completo", {
     schema <- compoe_schema(arq)
 
     root <- system.file("extdata/cpart_parquet", package = "dbrenovaveis")
-    dirs <- file.path(root, sapply(schema$tables, "[[", "name"))
+    dirs <- file.path(root, c("ass", "parametros", "precobs", "prevs", "vazoes", "subbacias"))
 
     schemas_tabelas <- lapply(file.path(dirs, "schema.json"), jsonlite::read_json)
     compara <- mapply(schemas_tabelas, schema$tables, FUN = function(tab1, tab2) {
