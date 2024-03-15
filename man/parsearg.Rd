@@ -20,7 +20,7 @@ string contendo o trecho de WHERE relacionado ao campo em questao
 Funcao generica dos metodos de parse de argmumentos passados nas queries de tabela
 }
 \details{
-\code{parseargsOLD} e uma funcao generica para processar argumentos passados nas funcoes de query.
+\code{parseargs} e uma funcao generica para processar argumentos passados nas funcoes de query.
 Cada tipo de campo (data, inteiro, string e etc.) possui um metodo proprio que retorna uma parte
 do elemento WHERE da query associada ao campo passado.
 

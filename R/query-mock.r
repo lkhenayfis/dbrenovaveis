@@ -24,7 +24,7 @@ query2subset <- function(query) {
 #' Avalia se uma tabela local corresponde a conjunto de particoes ou nao
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param query lista detalhando a query como retornado por \code{\link{parseargsOLD}}
+#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
 #' 
 #' @return booleano indicando se a tabela e particionada ou nao
 
@@ -58,7 +58,7 @@ le_tabela_mock <- function(conexao, tabela, ...) {
 #' Realizam queries em bancos de dados locais, com ou sem particao
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param query lista detalhando a query como retornado por \code{\link{parseargsOLD}}
+#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
 #' 
 #' @return dado recuperado do banco ou erro caso a query nao possa ser realizada
 #' 
@@ -67,6 +67,8 @@ le_tabela_mock <- function(conexao, tabela, ...) {
 #' @rdname query_local
 
 proc_query_mock_spart <- function(conexao, query) {
+
+    ..cols <- NULL
 
     dat <- le_tabela_mock(conexao, query$FROM)
 

@@ -7,7 +7,7 @@
 parsedatas(datahoras, nome, query = TRUE)
 }
 \arguments{
-\item{datahoras}{uma string indicando faixa de tempo, como descrito em \code{\link{get_funs_quant}}}
+\item{datahoras}{uma string indicando faixa de tempo no padrao do pacote \code{xts}}
 
 \item{nome}{nome do campo para query}
 
@@ -21,8 +21,8 @@ contrario retorna apenas as datas expandidas
 Transforma \code{datahoras} passado as funcoes \code{get*} numa string de query
 }
 \details{
-Esta funcao e responsavel por traduzir as strings de janela temporal \code{datahora} das funcoes
-\code{\link{get_funs_quant}} em condicionais de WHERE para a query.
+Esta funcao e responsavel por traduzir as strings de janela temporal \code{datahora} em
+condicionais de WHERE para a query.
 
 Por padrao, todas as queries serao realizadas no padrao \code{data >= lim_1 AND data < lim_2},
 isto e, serao sempre buscados intervalos fechados no inicio e abertos no final. Desta forma todos

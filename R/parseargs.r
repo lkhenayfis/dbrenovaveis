@@ -40,7 +40,7 @@ parseargs <- function(tabela, campos = NA, ...) {
 #' 
 #' Funcao generica dos metodos de parse de argmumentos passados nas queries de tabela
 #' 
-#' \code{parseargsOLD} e uma funcao generica para processar argumentos passados nas funcoes de query.
+#' \code{parseargs} e uma funcao generica para processar argumentos passados nas funcoes de query.
 #' Cada tipo de campo (data, inteiro, string e etc.) possui um metodo proprio que retorna uma parte
 #' do elemento WHERE da query associada ao campo passado.
 #' 
@@ -140,14 +140,14 @@ parsearg.campo_date <- function(campo, valor, ...) parsearg.campo_datetime(campo
 #' 
 #' Transforma \code{datahoras} passado as funcoes \code{get*} numa string de query
 #' 
-#' Esta funcao e responsavel por traduzir as strings de janela temporal \code{datahora} das funcoes
-#' \code{\link{get_funs_quant}} em condicionais de WHERE para a query.
+#' Esta funcao e responsavel por traduzir as strings de janela temporal \code{datahora} em
+#' condicionais de WHERE para a query.
 #' 
 #' Por padrao, todas as queries serao realizadas no padrao \code{data >= lim_1 AND data < lim_2}, 
 #' isto e, serao sempre buscados intervalos fechados no inicio e abertos no final. Desta forma todos
 #' os padroes de janela podem ser representados da mesma forma, simplificando a funcao.
 #' 
-#' @param datahoras uma string indicando faixa de tempo, como descrito em \code{\link{get_funs_quant}}
+#' @param datahoras uma string indicando faixa de tempo no padrao do pacote \code{xts}
 #' @param nome nome do campo para query
 #' @param query booleano indicando se deve ser retornada a query ou apenas a expansao das datas
 #' 
@@ -187,9 +187,8 @@ parsedatas <- function(datahoras, nome, query = TRUE) {
 #' 
 #' Transforma as expressoes \code{datahoras} em limites POSIX correspondentes a janela 
 #' 
-#' Como descrito em \code{\link{get_funs_quant}}, existem diversas maneiras de especificar uma janela de
-#' tempo para acesso ao banco de dados. Esta funcao e responsavel por processar as strings de janela
-#' temporal passadas la.
+#' Existem diversas maneiras de especificar uma janela de tempo para acesso ao banco de dados. Esta
+#' funcao e responsavel por processar as strings de janela temporal passadas para subsets.
 #' 
 #' Antes de detalhar o processamento, e util apresentar a saida. \code{datahora} pode ser ou um 
 #' unico valor ou dois separados pela barra, mas de qualquer forma isto representa uma janela com 
@@ -208,8 +207,7 @@ parsedatas <- function(datahoras, nome, query = TRUE) {
 #' posiacao e, na segunda, o mesmo instante somado de um ano, mes ou dia respectivamente. Veja os
 #' Exemplos para mais detalhes.
 #' 
-#' @param datahora uma string indicando faixa de tempo simples, isto e, sem uso da contra barra,
-#'     como descrito em \code{\link{get_funs_quant}}
+#' @param datahora string indicando uma data ou data hora
 #' 
 #' @examples
 #' 

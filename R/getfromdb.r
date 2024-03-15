@@ -62,7 +62,7 @@ getfromdb <- function(conexao, tabela, campos = NA, ...) {
 
 #' Executa Queries
 #' 
-#' Funcao para execucao de queries nas \code{\link{get_funs_quant}}
+#' Generica para execucao de queries entre os diferentes tipos de conexao
 #' 
 #' Existe um problema na conversao de datas nas viradas de horario de verao, dando erro na query.
 #' Teoricamente isso pode ser resolvido passando tz = "GMT" para as.POSIXlt, porem o DBI nao da
@@ -73,7 +73,7 @@ getfromdb <- function(conexao, tabela, campos = NA, ...) {
 #' e preciso modificar o atributo tzone da coluna de datas de volta para GMT
 #' 
 #' @param conexao objeto de conexao ao banco retornado por \code{\link{conectabanco}}
-#' @param query lista detalhando a query como retornado por \code{\link{parseargsOLD}}
+#' @param query lista detalhando a query como retornado por \code{\link{parseargs}}
 #' 
 #' @return dado recuperado do banco ou erro caso a query nao possa ser realizada
 

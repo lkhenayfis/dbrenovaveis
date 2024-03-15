@@ -9,7 +9,7 @@ new_tabela(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL)
 \arguments{
 \item{nome}{string indicando o nome da tabela}
 
-\item{campos}{lista de objetos \code{campo}. Veja \code{\link{new_campos}} para mais detalhes}
+\item{campos}{lista de objetos \code{campo}. Veja \code{\link{new_campo}} para mais detalhes}
 
 \item{uri}{caminho do diretorio ou bucket contendo o(s) arquivo(s) que compoe(m) a tabela}
 

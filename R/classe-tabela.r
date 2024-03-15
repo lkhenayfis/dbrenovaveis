@@ -9,7 +9,7 @@
 #' tipos, particoes e outros atributos.
 #' 
 #' @param nome string indicando o nome da tabela
-#' @param campos lista de objetos \code{campo}. Veja \code{\link{new_campos}} para mais detalhes
+#' @param campos lista de objetos \code{campo}. Veja \code{\link{new_campo}} para mais detalhes
 #' @param uri caminho do diretorio ou bucket contendo o(s) arquivo(s) que compoe(m) a tabela
 #' @param tipo_arquivo extensao do(s) arquivo(s) que compoe(m) a tabela
 #' @param particoes opcional, vetor de nomes dos campos pelos quais a tabela e particionada
@@ -208,7 +208,8 @@ lista_conteudo.tabela_s3 <- function(tabela) {
 #' @examples 
 #' 
 #' # para a tabela exemplo 'assimilacao' particionada por 'codigo' e 'dia_assimilacao'
-#' tab <- dbrenovaveis:::schema2tabela(system.file("extdata/cpart_parquet/assimilacao/schema.json", package = "dbrenovaveis"))
+#' arq <- system.file("extdata/cpart_parquet/assimilacao/schema.json", package = "dbrenovaveis")
+#' tab <- dbrenovaveis:::schema2tabela(arq)
 #' 
 #' mestra <- dbrenovaveis:::build_master_unit(tab)
 #' 
