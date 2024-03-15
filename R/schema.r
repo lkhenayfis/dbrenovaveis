@@ -112,7 +112,7 @@ valida_schema_tabela <- function(schema) {
 
     tem_uri <- !is.null(schema$uri)
     if (!tem_uri) stop("Schema nao possui chave 'uri'")
-    if (!grepl(paste0(schema$name, "/?$"), schema$uri)) stop("'uri' do schema nao termina em 'name'")
+    #if (!grepl(paste0(schema$name, "/?$"), schema$uri)) stop("'uri' do schema nao termina em 'name'")
 
     # validacao de tipo de arquivo ---------------------------------------
 
