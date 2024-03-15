@@ -18,7 +18,9 @@ Gera objetos \code{tabela} a partir de um schema.json. Wrapper de \code{new_tabe
 \examples{
 
 # Usando as mesmas tabelas exemplificadas na doc de `new_tabela`
-tab1 <- schema2tabela(system.file("extdata/cpart_parquet/subbacias/schema.json", package = "dbrenovaveis"))
-tab2 <- schema2tabela(system.file("extdata/cpart_parquet/vazoes/schema.json", package = "dbrenovaveis"))
+arq1 <- system.file("extdata/cpart_parquet/subbacias/schema.json", package = "dbrenovaveis")
+tab1 <- dbrenovaveis:::schema2tabela(arq1)
+arq2 <- system.file("extdata/cpart_parquet/vazoes/schema.json", package = "dbrenovaveis")
+tab2 <- dbrenovaveis:::schema2tabela(arq2)
 
 }

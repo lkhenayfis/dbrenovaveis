@@ -19,32 +19,35 @@
 #' 
 #' @examples 
 #' 
-#' # lendo dados verificados
-#' dirloc <- system.file("extdata/sempart", package = "dbrenovaveis")
-#' conect <- conectalocal(dirloc)
+#' # usando banco mock de exemplo do pacote
+#' arq <- system.file("extdata/cpart_parquet/schema.json", package = "dbrenovaveis")
+#' conn <- conectamock(arq)
 #' 
-#' # versao simplificada da tabela de usinas
-#' tabusi <- new_tabela(
-#'     nome = "usinas",
-#'     campos = list(
-#'         new_campo("id", "inteiro"),
-#'         new_campo("codigo", "string")),
-#'     conexao = conect)
-#' 
-#' # representacao da tabela de verificados
-#' tabverif <- new_tabela(
-#'     nome = "verificados",
-#'     campos = list(
-#'         new_campo("id_usina", "inteiro"),
-#'         new_campo("data_hora", "data"),
-#'         new_campo("vento", "float"),
-#'         new_campo("geracao", "float")
-#'     ),
-#'     conexao = conect)
+#' subbacias <- getfromdb(conn, "subbacias", c("nome", "codigo", "bacia_smap"))
 #' 
 #' \dontrun{
-#' # note que nao se especifica "id_usina", mas sim o proxy "codigo"
-#' getfromdb(tabverif, campos = "geracao", data_hora = "/2021-01-01 10:00:00", codigo = "BAEBAU")
+#' head(subbacias)
+#' #>             nome     codigo bacia_smap
+#' #> 1: Agua Vermelha  AVERMELHA   GRD_PRNB
+#' #> 2:     B. Bonita    BBONITA  Paranazao
+#' #> 3:  Baixo Iguacu    BAIXOIG        SUL
+#' #> 4:      Capivara   CAPIVARA  Paranazao
+#' #> 5:       Colider    COLIDER      Norte
+#' #> 6:    Emborcacao EMBORCACAO   GRD_PRNB
+#' }
+#' 
+#' previstos <- getfromdb(conn, "previstos", c("data_previsao", "dia_previsao", "codigo", "qcalc"),
+#'     codigo = "AVERMELHA", dia_previsao = 1, data_previsao = "2020")
+#' 
+#' \dontrun{
+#' head(previstos)
+#' #>    data_previsao dia_previsao    codigo    qcalc
+#' #> 1:    2020-01-01            1 AVERMELHA 327.1693
+#' #> 2:    2020-01-02            1 AVERMELHA 299.5275
+#' #> 3:    2020-01-03            1 AVERMELHA 283.5529
+#' #> 4:    2020-01-04            1 AVERMELHA 283.1786
+#' #> 5:    2020-01-05            1 AVERMELHA 289.5164
+#' #> 6:    2020-01-06            1 AVERMELHA 326.9825
 #' }
 #' 
 #' @export

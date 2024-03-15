@@ -34,24 +34,24 @@ tipos, particoes e outros atributos.
 
 # contruindo uma tabela nao particionada a partir do dado exemplo do pacote
 # utilizando um pequeno subset de suas colunas para simplificar o exemplo
-tab <- new_tabela(
+tab <- dbrenovaveis:::new_tabela(
     nome = "subbacias",
     campos = list(
-        new_campo("posto", "int"),
-        new_campo("nome", "string"),
-        new_campo("codigo", "string")
+        dbrenovaveis:::new_campo("posto", "int"),
+        dbrenovaveis:::new_campo("nome", "string"),
+        dbrenovaveis:::new_campo("codigo", "string")
     ),
     uri = system.file("extdata/cpart_parquet/subbacias/", package = "dbrenovaveis"),
     tipo_arquivo = ".parquet.gzip"
 )
 
 # construindo uma tabela particionada
-tab <- new_tabela(
+tab <- dbrenovaveis:::new_tabela(
     nome = "vazoes",
     campos = list(
-        new_campo("data", "date"),
-        new_campo("codigo", "string"),
-        new_campo("vazao", "float")
+        dbrenovaveis:::new_campo("data", "date"),
+        dbrenovaveis:::new_campo("codigo", "string"),
+        dbrenovaveis:::new_campo("vazao", "float")
     ),
     uri = system.file("extdata/cpart_parquet/vazoes/", package = "dbrenovaveis"),
     particoes = c("codigo"),

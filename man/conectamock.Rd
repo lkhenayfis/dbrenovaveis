@@ -41,6 +41,7 @@ conn1 <- conectamock(arq_schema)
 
 # passando o a lista de schema ja lido
 schema <- jsonlite::read_json(arq_schema)
+schema$uri <- sub("/schema.json", "", arq_schema)
 conn2 <- conectamock(schema)
 
 \dontrun{

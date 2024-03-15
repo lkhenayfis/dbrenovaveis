@@ -54,29 +54,29 @@ parseargs <- function(tabela, campos = NA, ...) {
 #' 
 #' @examples
 #' 
-#' tabusi <- new_tabela(
-#'     nome = "usinas",
+#' tab <- dbrenovaveis:::new_tabela(
+#'     nome = "vazoes",
 #'     campos = list(
-#'         new_campo("id", "inteiro", FALSE),
-#'         new_campo("codigo", "string", FALSE)),
-#'     conexao = conect)
+#'         dbrenovaveis:::new_campo("data", "date"),
+#'         dbrenovaveis:::new_campo("codigo", "string"),
+#'         dbrenovaveis:::new_campo("valor", "string")
+#'     ),
+#'     uri = system.file("extdata/cpart_parquet/vazoes/", package = "dbrenovaveis"),
+#'     tipo_arquivo = ".parquet.gzip"
+#' )
 #' 
-#' # parse num campo sem proxy
+#' parsed_codigo <- parsearg(tab$campos$codigo, 1:3)
 #' \dontrun{
-#' parsearg(tabusi$campos[[1]], codigo = "RNUEM3")
+#' print(parsed_codigo[1])
+#' #> "codigo IN (1,2,3)"
 #' }
 #' 
+#' parsed_data <- parsearg(tab$campos$data, "2020/2021")
 #' \dontrun{
-#' # parse num campo com proxy
-#' campo <- new_campo("id_usina", "inteiro", TRUE, tabusi, "id", "codigo")
-#' parsearg(campo, valor = "BAEBAU")
+#' print(parsed_data[1])
+#' #> "data >= '2020-01-01 00:00:00' AND data < '2022-01-01 00:00:00'"
 #' }
 #' 
-#' \dontrun{
-#' # parse de datas
-#' campo <- new_campo("datahora", "data")
-#' parsearg(campo, valor = "2020-01-01/2021-02-13 13:40")
-#' }
 #' 
 #' @return string contendo o trecho de WHERE relacionado ao campo em questao
 #' 

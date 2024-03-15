@@ -22,11 +22,11 @@ leitura do mesmo
 \examples{
 
 # para leitura de um json
-fun1 <- switch_reader_func("json", FALSE)
-identical(fun1, jsonlite::read_json)
+fun1 <- dbrenovaveis:::switch_reader_func("json", FALSE)
+identical(body(fun1)[[1]], jsonlite::read_json)
 
 # para leitura de um csv
-fun2 <- switch_reader_func(".csv", FALSE)
-identical(fun2, data.table::fread)
+fun2 <- dbrenovaveis:::switch_reader_func(".csv", FALSE)
+identical(body(fun2)[[1]], data.table::fread)
 
 }

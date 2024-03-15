@@ -19,24 +19,24 @@
 #' 
 #' # contruindo uma tabela nao particionada a partir do dado exemplo do pacote
 #' # utilizando um pequeno subset de suas colunas para simplificar o exemplo
-#' tab <- new_tabela(
+#' tab <- dbrenovaveis:::new_tabela(
 #'     nome = "subbacias",
 #'     campos = list(
-#'         new_campo("posto", "int"),
-#'         new_campo("nome", "string"),
-#'         new_campo("codigo", "string")
+#'         dbrenovaveis:::new_campo("posto", "int"),
+#'         dbrenovaveis:::new_campo("nome", "string"),
+#'         dbrenovaveis:::new_campo("codigo", "string")
 #'     ),
 #'     uri = system.file("extdata/cpart_parquet/subbacias/", package = "dbrenovaveis"),
 #'     tipo_arquivo = ".parquet.gzip"
 #' )
 #' 
 #' # construindo uma tabela particionada
-#' tab <- new_tabela(
+#' tab <- dbrenovaveis:::new_tabela(
 #'     nome = "vazoes",
 #'     campos = list(
-#'         new_campo("data", "date"),
-#'         new_campo("codigo", "string"),
-#'         new_campo("vazao", "float")
+#'         dbrenovaveis:::new_campo("data", "date"),
+#'         dbrenovaveis:::new_campo("codigo", "string"),
+#'         dbrenovaveis:::new_campo("vazao", "float")
 #'     ),
 #'     uri = system.file("extdata/cpart_parquet/vazoes/", package = "dbrenovaveis"),
 #'     particoes = c("codigo"),
@@ -82,8 +82,10 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
 #' @examples 
 #' 
 #' # Usando as mesmas tabelas exemplificadas na doc de `new_tabela`
-#' tab1 <- schema2tabela(system.file("extdata/cpart_parquet/subbacias/schema.json", package = "dbrenovaveis"))
-#' tab2 <- schema2tabela(system.file("extdata/cpart_parquet/vazoes/schema.json", package = "dbrenovaveis"))
+#' arq1 <- system.file("extdata/cpart_parquet/subbacias/schema.json", package = "dbrenovaveis")
+#' tab1 <- dbrenovaveis:::schema2tabela(arq1)
+#' arq2 <- system.file("extdata/cpart_parquet/vazoes/schema.json", package = "dbrenovaveis")
+#' tab2 <- dbrenovaveis:::schema2tabela(arq2)
 #' 
 #' @return objeto \code{tabela}
 
@@ -206,9 +208,9 @@ lista_conteudo.tabela_s3 <- function(tabela) {
 #' @examples 
 #' 
 #' # para a tabela exemplo 'assimilacao' particionada por 'codigo' e 'dia_assimilacao'
-#' tab <- schema2tabela(system.file("extdata/cpart_parquet/assimilacao/schema.json", package = "dbrenovaveis"))
+#' tab <- dbrenovaveis:::schema2tabela(system.file("extdata/cpart_parquet/assimilacao/schema.json", package = "dbrenovaveis"))
 #' 
-#' mestra <- build_master_unit(tab)
+#' mestra <- dbrenovaveis:::build_master_unit(tab)
 #' 
 #' \dontrun{
 #' print(mestra)
