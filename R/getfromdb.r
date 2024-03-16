@@ -81,9 +81,7 @@ roda_query <- function(conexao, query) UseMethod("roda_query")
 
 roda_query.default <- function(conexao, query) {
 
-    query <- lapply(query, paste0, collapse = " AND ")
-    query <- sapply(names(query), function(p) paste(p, query[[p]]))
-    query <- paste(query, collapse = " ")
+    query <- collate_query(query)
 
     oldtz <- Sys.getenv("TZ")
     Sys.setenv("TZ" = "GMT")
@@ -134,4 +132,12 @@ corrigeposix <- function(dat) {
     dat[, (coldt) := lapply(.SD, as.numeric), .SDcols = coldt]
     dat[, (coldt) := lapply(.SD, as.POSIXct, origin = "1970-01-01", tz = "GMT"), .SDcols = coldt]
     return(dat)
+}
+
+collate_query <- function(query) {
+    query <- query[!sapply(query, is.null)]
+    query <- lapply(query, paste0, collapse = " AND ")
+    query <- sapply(names(query), function(p) paste(p, query[[p]]))
+    query <- paste(query, collapse = " ")
+    return(query)
 }
