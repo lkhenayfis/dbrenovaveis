@@ -78,3 +78,24 @@ test_that("Testes de composicao de schema completo", {
     })
     expect_true(all(compara))
 })
+
+test_that("Checagem de caminho abs ou rel", {
+
+    path_abs_1 <- "s3://teste/de/caminho"
+    path_abs_2 <- "~/teste/de/caminho"
+    path_abs_3 <- "/teste/de/caminho"
+    path_rel_1 <- "teste/de/caminho"
+    path_rel_2 <- "./teste/de/caminho"
+
+    expect_true(is_abs_path2(path_abs_1))
+    expect_true(is_abs_path2(path_abs_2))
+    expect_true(is_abs_path2(path_abs_3))
+    expect_true(!is_abs_path2(path_rel_1))
+    expect_true(!is_abs_path2(path_rel_2))
+
+    expect_true(!is_rel_path2(path_abs_1))
+    expect_true(!is_rel_path2(path_abs_2))
+    expect_true(!is_rel_path2(path_abs_3))
+    expect_true(is_rel_path2(path_rel_1))
+    expect_true(is_rel_path2(path_rel_2))
+})

@@ -87,24 +87,3 @@ test_that("Leitura de dados mock -- S3", {
     expect_snapshot_value(unlist(dat1), style = "deparse")
 
 })
-
-test_that("Checagem de caminho abs ou rel", {
-
-    path_abs_1 <- "s3://teste/de/caminho"
-    path_abs_2 <- "~/teste/de/caminho"
-    path_abs_3 <- "/teste/de/caminho"
-    path_rel_1 <- "teste/de/caminho"
-    path_rel_2 <- "./teste/de/caminho"
-
-    expect_true(is_abs_path2(path_abs_1))
-    expect_true(is_abs_path2(path_abs_2))
-    expect_true(is_abs_path2(path_abs_3))
-    expect_true(!is_abs_path2(path_rel_1))
-    expect_true(!is_abs_path2(path_rel_2))
-
-    expect_true(!is_rel_path2(path_abs_1))
-    expect_true(!is_rel_path2(path_abs_2))
-    expect_true(!is_rel_path2(path_abs_3))
-    expect_true(is_rel_path2(path_rel_1))
-    expect_true(is_rel_path2(path_rel_2))
-})
