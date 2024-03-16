@@ -95,11 +95,43 @@ conectamock <- function(schema) new_mock(schema)
 new_mock <- function(schema, morgana = FALSE) {
     if (is.character(schema)) schema <- compoe_schema(schema) else schema <- compoe_schema(, schema)
 
-    tabelas <- lapply(schema$tables, schema2tabela)
+    tabelas <- lapply(schema$tables, schema2tabela, no_master = morgana)
     names(tabelas) <- sapply(tabelas, "[[", "nome")
 
     out <- list(tabelas = tabelas)
     class(out) <- "mock"
+
+    return(out)
+}
+
+#' Conexao Com S3 Via Morgana
+#' 
+#' Gera uma conexao mock a um banco no s3, porem realizando queries atraves da engine morgana
+#' 
+#' A conexao com um banco S3 via morgana e essencialmente a mesma coisa que um mock banco no s3, com
+#' um unico elemento de diferenca sendo a necessidade de uma chave de API para uso das funcoes.
+#' 
+#' O argumento \code{x_api_key} existe para receber esta chave. Por padrao sera buscada uma variavel
+#' de ambiente \code{"X-API-KEY"} na secao para este argumento. Esta e a abordagem recomendada, de
+#' modo que informacoes pessoais e sensiveis nao ficam expostas hardcoded.
+#' 
+#' O objeto de saida e, para todos os efeitos, identico a uma conexao mock com o s3. Possui apenas 
+#' um atributo adicional que e a chave de api passada originalmente
+#' 
+#' @param schema lista contendo o schema do banco, correspondente aos conteudos de um arquivo
+#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo. Veja
+#'     \code{\link{conectamock}}
+#' @param x_api_key chave de api para uso das funcoes que compoem o morgana na aws. Veja Detalhes
+#' 
+#' @return objeto de conexao com o mock banco via morgana
+
+conectamorgana <- function(schema, x_api_key = Sys.getenv("X_API_KEY")) {
+
+    if (x_api_key == "") stop("Nao foi possivel encontrar uma chave de API -- veja '?conectamorgana'")
+
+    out <- new_mock(schema, TRUE)
+    class(out) <- c("morgana", class(out))
+    attr(out, "x_api_key") <- x_api_key
 
     return(out)
 }
