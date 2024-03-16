@@ -49,7 +49,8 @@
 #' @seealso Construtor externo \code{\link{schema2tabela}}. Funcao geral para acessar dados das 
 #'     tabelas \code{\link{getfromdb}}
 
-new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL) {
+new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL,
+    no_master = FALSE) {
 
     if (missing("uri")) stop("Argumento 'uri' vazio")
     source <- ifelse(grepl("^s3://", uri), "s3", "local")
@@ -68,7 +69,11 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
     attr(tabela, "tipo_arquivo") <- tipo_arquivo
     attr(tabela, "descricao") <- descricao
     attr(tabela, "reader_func") <- switch_reader_func(tipo_arquivo, source == "s3")
-    attr(tabela, "master") <- build_master_unit(tabela)
+    if (no_master) {
+        attr(tabela, "master") <- data.table()
+    } else {
+        attr(tabela, "master") <- build_master_unit(tabela)
+    }
 
     return(tabela)
 }
@@ -89,7 +94,7 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
 #' 
 #' @return objeto \code{tabela}
 
-schema2tabela <- function(schema) {
+schema2tabela <- function(schema, no_master = FALSE) {
 
     if (is.character(schema)) {
         rf <- switch_reader_func("json", grepl("^s3", schema))
@@ -99,7 +104,7 @@ schema2tabela <- function(schema) {
     campos <- lapply(schema$columns, function(cc) new_campo(cc$name, cc$type))
 
     new <- new_tabela(schema$name, campos, schema$uri, schema$fileType,
-        sapply(schema$partitions, "[[", "name"), schema$description)
+        sapply(schema$partitions, "[[", "name"), schema$description, no_master)
 }
 
 #' @export
