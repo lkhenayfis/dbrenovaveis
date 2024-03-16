@@ -90,8 +90,9 @@ conectabanco <- function(usuario, banco) {
 #' 
 #' @export
 
-conectamock <- function(schema) {
+conectamock <- function(schema) new_mock(schema)
 
+new_mock <- function(schema, morgana = FALSE) {
     if (is.character(schema)) schema <- compoe_schema(schema) else schema <- compoe_schema(, schema)
 
     tabelas <- lapply(schema$tables, schema2tabela)
