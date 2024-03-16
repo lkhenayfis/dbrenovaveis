@@ -152,12 +152,28 @@ corrigeposix <- function(dat) {
     return(dat)
 }
 
+#' \code{base46} -> \code{data.table}
+#' 
+#' Converte resposta de uma consulta a api para dado padronizado
+#' 
+#' @param x vetor de informarcao codificada em base64
+#' 
+#' @return \code{data.table} convertido
+
 decode_output <- function(x) {
     out <- jsonlite::base64_dec(x$body)
-    out <- read_parquet(out)
+    out <- arrow::read_parquet(out)
     out <- as.data.table(out)
     return(out)
 }
+
+#' Compoe Query Completa
+#' 
+#' Auxiliar para transformar a lista de query por trecho numa unica string
+#' 
+#' @param query lista de trechos SELECT, FROM e WHERE como retornado por \code{\link{parseargs}}
+#' 
+#' @return string com a query completa
 
 collate_query <- function(query) {
     query <- query[!sapply(query, is.null)]
