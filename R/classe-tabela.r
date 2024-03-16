@@ -226,6 +226,11 @@ lista_conteudo.tabela_s3 <- function(tabela) {
 
 build_master_unit <- function(tabela) {
 
+    if (is.null(tabela$particoes)) {
+        master <- data.table(tabela = tabela$nome)
+        return(master)
+    }
+
     arqs <- lista_conteudo(tabela)
     arqs <- sub("\\..*", "", arqs)
     arqs <- arqs[arqs != "schema"]

@@ -31,7 +31,7 @@ test_that("Criacao de tabelas -- manual", {
     expect_equal(attr(tabela1, "tipo_arquivo"), ".csv")
     expect_true(is.null(attr(tabela1, "descricao")))
     expect_equal(attr(tabela1, "reader_func"), inner_csv)
-    expect_equal(attr(tabela1, "master"), data.table::data.table(tabela = character(0)))
+    expect_equal(attr(tabela1, "master"), data.table::data.table(tabela = "tabela_teste"))
 })
 
 cria_temp_schema <- function(arq) {
