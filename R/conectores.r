@@ -127,6 +127,10 @@ new_mock <- function(schema, morgana = FALSE) {
 
 conectamorgana <- function(schema, x_api_key = Sys.getenv("X_API_KEY")) {
 
+    if (!requireNamespace("httr2", quietly = TRUE)) {
+        stop("Conexao como cliente do morgana exige pacote 'httr2'")
+    }
+
     if (x_api_key == "") stop("Nao foi possivel encontrar uma chave de API -- veja '?conectamorgana'")
 
     out <- new_mock(schema, TRUE)

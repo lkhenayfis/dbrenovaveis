@@ -21,6 +21,7 @@ Suggests:
     testthat (>= 3.0.0),
     arrow (>= 11.0.0),
     aws.s3 (>= 0.3),
+    httr2 (>= 0.2.3)
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
