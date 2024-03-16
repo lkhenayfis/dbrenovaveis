@@ -115,6 +115,24 @@ roda_query.mock <- function(conexao, query) {
     if (class(out)[1] == "try-error") stop(out[1]) else return(out)
 }
 
+roda_query.morgana <- function(conexao, query) {
+
+    body <- list(
+        database = attr(conexao$tabelas[[query$FROM]], "uri"),
+        query = collate_query(query)
+    )
+
+    req <- httr2::request("https://x1njnj8nxl.execute-api.us-east-1.amazonaws.com/dev/select/")
+    req <- httr2::req_body_json(req, body)
+    req <- httr2::req_headers(req, "x-api-key" = attr(conexao, "x_api_key"))
+
+    resp <- httr2::req_perform(req)
+    resp <- httr2::resp_body_json(resp)
+    resp <- decode_output(resp)
+
+    return(resp)
+}
+
 # AUXILIARES ---------------------------------------------------------------------------------------
 
 #' Auxiliar Para Correcao De Datetime
@@ -132,6 +150,13 @@ corrigeposix <- function(dat) {
     dat[, (coldt) := lapply(.SD, as.numeric), .SDcols = coldt]
     dat[, (coldt) := lapply(.SD, as.POSIXct, origin = "1970-01-01", tz = "GMT"), .SDcols = coldt]
     return(dat)
+}
+
+decode_output <- function(x) {
+    out <- jsonlite::base64_dec(x$body)
+    out <- read_parquet(out)
+    out <- as.data.table(out)
+    return(out)
 }
 
 collate_query <- function(query) {
