@@ -8,12 +8,19 @@
 #' especificar a estrutura de qualquer tabela regular, definindo seus campos e correspondentes 
 #' tipos, particoes e outros atributos.
 #' 
+#' \code{no_master} existe apenas para uso com o morgana. Neste caso, e necessario criar uma conexao
+#' mock para reutilizar parte da infraestrutura de composicao de queries, mas não existe necessidade
+#' de tabelas mestras. Ainda mais em bancos muito extensos em que sua construcao pode ser demorada e
+#' causar time-out da conexao.
+#' 
 #' @param nome string indicando o nome da tabela
 #' @param campos lista de objetos \code{campo}. Veja \code{\link{new_campo}} para mais detalhes
 #' @param uri caminho do diretorio ou bucket contendo o(s) arquivo(s) que compoe(m) a tabela
 #' @param tipo_arquivo extensao do(s) arquivo(s) que compoe(m) a tabela
 #' @param particoes opcional, vetor de nomes dos campos pelos quais a tabela e particionada
 #' @param descricao opcional, breve descricao da tabela e o que contem
+#' @param no_master booleano indicando se tabelas mestras devem ser construidas ou nao, mesmo que
+#'     haja particionamento de tabela. Veja Detalhes
 #' 
 #' @examples 
 #' 
@@ -83,6 +90,8 @@ new_tabela <- function(nome, campos, uri, tipo_arquivo, particoes = NULL, descri
 #' Gera objetos \code{tabela} a partir de um schema.json. Wrapper de \code{new_tabela}
 #' 
 #' @param schema ou uma lista de schema.json já lido ou o caminho do arquivo
+#' @param no_master booleano indicando se tabelas mestras devem ser construidas ou nao, mesmo que
+#'     haja particionamento de tabela. Veja Detalhes
 #' 
 #' @examples 
 #' 

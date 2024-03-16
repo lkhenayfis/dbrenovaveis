@@ -4,7 +4,15 @@
 \alias{new_tabela}
 \title{Construtor Da Classe \code{tabela}}
 \usage{
-new_tabela(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL)
+new_tabela(
+  nome,
+  campos,
+  uri,
+  tipo_arquivo,
+  particoes = NULL,
+  descricao = NULL,
+  no_master = FALSE
+)
 }
 \arguments{
 \item{nome}{string indicando o nome da tabela}
@@ -18,6 +26,9 @@ new_tabela(nome, campos, uri, tipo_arquivo, particoes = NULL, descricao = NULL)
 \item{particoes}{opcional, vetor de nomes dos campos pelos quais a tabela e particionada}
 
 \item{descricao}{opcional, breve descricao da tabela e o que contem}
+
+\item{no_master}{booleano indicando se tabelas mestras devem ser construidas ou nao, mesmo que
+haja particionamento de tabela. Veja Detalhes}
 }
 \value{
 objeto descritivo de uma tabela
@@ -29,6 +40,11 @@ Funcao para geracao de objetos representativos das tabelas em um determinado ban
 Esta funcao faz parte do backend do pacote \code{dbrenovaveis}. Atraves dela e possivel
 especificar a estrutura de qualquer tabela regular, definindo seus campos e correspondentes
 tipos, particoes e outros atributos.
+
+\code{no_master} existe apenas para uso com o morgana. Neste caso, e necessario criar uma conexao
+mock para reutilizar parte da infraestrutura de composicao de queries, mas não existe necessidade
+de tabelas mestras. Ainda mais em bancos muito extensos em que sua construcao pode ser demorada e
+causar time-out da conexao.
 }
 \examples{
 

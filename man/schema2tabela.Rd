@@ -4,10 +4,13 @@
 \alias{schema2tabela}
 \title{Construtor Externo}
 \usage{
-schema2tabela(schema)
+schema2tabela(schema, no_master = FALSE)
 }
 \arguments{
 \item{schema}{ou uma lista de schema.json já lido ou o caminho do arquivo}
+
+\item{no_master}{booleano indicando se tabelas mestras devem ser construidas ou nao, mesmo que
+haja particionamento de tabela. Veja Detalhes}
 }
 \value{
 objeto \code{tabela}
