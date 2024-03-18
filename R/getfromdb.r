@@ -118,7 +118,7 @@ roda_query.mock <- function(conexao, query) {
 roda_query.morgana <- function(conexao, query) {
 
     body <- list(
-        database = attr(conexao$tabelas[[query$FROM]], "uri"),
+        database = attr(conexao, "uri"),
         query = collate_query(query)
     )
 

@@ -100,6 +100,7 @@ new_mock <- function(schema, morgana = FALSE) {
 
     out <- list(tabelas = tabelas)
     class(out) <- "mock"
+    attr(out, "uri") <- schema$uri
 
     return(out)
 }
