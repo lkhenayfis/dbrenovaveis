@@ -38,7 +38,13 @@ compoe_schema <- function(arq_schema_banco, schema_banco = NULL) {
     }
 
     tem_uri_root <- !is.null(schema_banco$uri)
-    if (!tem_uri_root && is_abs_path) schema_banco$uri <- sub("/schema.json", "", arq_schema_banco)
+    if (!tem_uri_root) {
+        if (is_abs_path) {
+            schema_banco$uri <- sub("/schema.json", "", arq_schema_banco)
+        }
+    } else {
+        schema_banco$uri <- sub("/schema.json", "", schema_banco$uri)
+    }
 
     schema_banco <- valida_schema_banco(schema_banco)
 
@@ -78,6 +84,7 @@ valida_schema_banco <- function(schema) {
     tem_uri_root <- !is.null(schema$uri)
     uri_root_abs <- tem_uri_root && is_abs_path2(schema$uri)
     tab_uris <- sapply(schema$tables, "[[", "uri")
+    tab_uris <- sub("/schema.json$", "", tab_uris)
 
     is_rel_path <- is_rel_path2(tab_uris)
     if (any(is_rel_path)) {
