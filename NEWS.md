@@ -1,4 +1,9 @@
-# overhaul
+# dbrenovaveis 0.7
+
+## New features
+
+* Foi adicionada a opcao de conexao com mocks no S3 como cliente do morgana atraves do conector
+  `conectamorgana`
 
 ## Misc
 
