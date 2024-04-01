@@ -123,9 +123,9 @@ print.tabela <- function(x, ...) {
         paste0(x$nome, cli::col_grey(" <", sub("campo_", "", class(x)[1]), ">"))
     })
 
-    cat("Tabela:", x$nome, "\n")
+    cat(cli::style_bold("Tabela: ", x$nome, "\n"))
     cat("- Conteudo:", attr(x, "descricao"), "\n")
-    cat("- Campos:", paste0(campos, collapse = ", "))
+    cat("- Campos:", paste0(campos, collapse = ", "), "\n")
 }
 
 # CAMPOS -------------------------------------------------------------------------------------------

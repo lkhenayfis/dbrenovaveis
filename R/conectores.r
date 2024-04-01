@@ -92,19 +92,6 @@ conectabanco <- function(usuario, banco) {
 
 conectamock <- function(schema) new_mock(schema)
 
-new_mock <- function(schema, morgana = FALSE) {
-    if (is.character(schema)) schema <- compoe_schema(schema) else schema <- compoe_schema(, schema)
-
-    tabelas <- lapply(schema$tables, schema2tabela, no_master = morgana)
-    names(tabelas) <- sapply(tabelas, "[[", "nome")
-
-    out <- list(tabelas = tabelas)
-    class(out) <- "mock"
-    attr(out, "uri") <- schema$uri
-
-    return(out)
-}
-
 #' Conexao Com S3 Via Morgana
 #' 
 #' Gera uma conexao mock a um banco no s3, porem realizando queries atraves da engine morgana
@@ -139,4 +126,37 @@ conectamorgana <- function(schema, x_api_key = Sys.getenv("X_API_KEY")) {
     attr(out, "x_api_key") <- x_api_key
 
     return(out)
+}
+
+#' Construtor Interno De Mocks
+#' 
+#' Construtor utilizado para geracao de objetos conexao com mocks e morgana
+#' 
+#' @param schema lista contendo o schema do banco, correspondente aos conteudos de um arquivo
+#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo.
+#' @param morgana booleano indicando se a conexacao e via morgana ou nao
+#' 
+#' @return objeto da classe \code{mock}
+
+new_mock <- function(schema, morgana = FALSE) {
+    if (is.character(schema)) schema <- compoe_schema(schema) else schema <- compoe_schema(, schema)
+
+    tabelas <- lapply(schema$tables, schema2tabela, no_master = morgana)
+    names(tabelas) <- sapply(tabelas, "[[", "nome")
+
+    out <- list(tabelas = tabelas)
+    class(out) <- "mock"
+    attr(out, "uri") <- schema$uri
+
+    return(out)
+}
+
+#' @export 
+
+print.mock <- function(x, ...) {
+    cat("* Banco 'mock' com tabelas: \n\n")
+    for (t in x$tabelas) {
+        print(t)
+        cat("\n")
+    }
 }
