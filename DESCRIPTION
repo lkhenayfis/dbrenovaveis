@@ -1,6 +1,6 @@
 Package: dbrenovaveis
 Title: Acesso Aos Bancos De Dados PEM-Renovaveis
-Version: 0.6.0.9999
+Version: 0.7
 Authors@R: 
     person("Lucas", "Khenayfis", , "lucaskhenayfis@gmail.com", role = c("aut", "cre"))
 Description: Este pacote contem funcoes para facilitacao do acesso aos
