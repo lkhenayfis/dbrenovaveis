@@ -2,4 +2,5 @@
 ^informals$
 ^.Renviron$
 ^README\.Rmd$
+^codecov\.yml$
 ^\.github$
