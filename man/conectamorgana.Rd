@@ -24,7 +24,7 @@ A conexao com um banco S3 via morgana e essencialmente a mesma coisa que um mock
 um unico elemento de diferenca sendo a necessidade de uma chave de API para uso das funcoes.
 
 O argumento \code{x_api_key} existe para receber esta chave. Por padrao sera buscada uma variavel
-de ambiente \code{"X-API-KEY"} na secao para este argumento. Esta e a abordagem recomendada, de
+de ambiente \code{"X_API_KEY"} na secao para este argumento. Esta e a abordagem recomendada, de
 modo que informacoes pessoais e sensiveis nao ficam expostas hardcoded.
 
 O objeto de saida e, para todos os efeitos, identico a uma conexao mock com o s3. Possui apenas
