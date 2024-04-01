@@ -13,16 +13,20 @@ knitr::opts_chunk$set(
 )
 ```
 
+# dbrenovaveis
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/lkhenayfis/dbrenovaveis/workflows/R-CMD-check/badge.svg)](https://github.com/lkhenayfis/dbrenovaveis/actions)
 [![test-coverage](https://github.com/lkhenayfis/dbrenovaveis/workflows/test-coverage/badge.svg)](https://github.com/lkhenayfis/dbrenovaveis/actions)
+[![codecov](https://codecov.io/gh/lkhenayfis/dbrenovaveis/graph/badge.svg?token=2E8YI878Y4)](https://codecov.io/gh/lkhenayfis/dbrenovaveis)
 <!-- badges: end -->
 
-# dbrenovaveis
+## Visao geral
 
-Este pacote contem funcoes para facilitacao do acesso aos bancos de dados associados a area de 
-energias renovaveis da PEM. Isto inclui acesso, escrita e resgate de informacoes acerca dos bancos
-disponiveis.
+Este pacote fornece funcionalidade backend para interface com bancos localizados em um diretorio 
+local ou em um bucket S3. A versao atual suporta particionamento de dados, porem apenas operacoes de
+leitura estao implementadas. Criacao de novas tabelas e escrita nas existentes serao adicionadas em
+versoes futuras.
 
 ## Instalacao
 
@@ -37,61 +41,39 @@ remotes::install_github("lkhenayfis/dbrenovaveis@*release") # instalacao da ulti
 
 ## Exemplo de uso
 
-Antes de utilizar as funcoes disponibilizadas pelo pacote, o usuario deve primeiro registrar suas
-credenciais e parametros do banco a ser acessado pelos metodos apropriados.
+Neste exemplo de uso sera utilizado o banco exemplo contido no pacote. Para mais informacoes sobre
+como construir um banco proprio ou acessos a dados em um bucket S3, consulte a vignette e paginas de 
+documentacao pertinentes.
+
+O primeiro passo para acesso aos dados em um determinado banco e estabeler uma conexao com o mesmo. 
 
 ```{r,echo=FALSE}
 library(dbrenovaveis)
 ```
 
-```{r,eval=FALSE}
-library(dbrenovaveis)
-
-# registrando um banco chamado "dados", hospedado num servidor chamado "servidor-de-dados", 
-# acessado pela porta 1111, tageado pelo mnemonico "banco_do_jose"
-registra_banco(host = "servidor-de-dados", port = 1111, database = "dados", tag = "banco_do_jose")
-
-# registrando um usuario "jose", cuja senha de acesso ao banco "dados" e "senha_do_jose"
-registra_credenciais(usuario = "jose", senha = "senha_do_jose", tag = "usuario_jose")
+```{r}
+dir_banco_local <- system.file("extdata/cpart_parquet", package = "dbrenovaveis")
+conexao <- conectamock(dir_banco_local)
 ```
 
-A partir deste ponto, e possivel realizar a conexao com o banco e extracao dos dados. A conexao
-e feita atraves da funcao `conectabanco`, passando as `tag`s do usuario e banco registrados:
+Um `print` do objeto de conexao exibe as tabelas disponiveis, bem como suas colunas
 
-```r
-conn <- conectabanco("usuario_jose", "banco_do_jose")
+```{r}
+print(conexao)
 ```
 
-```{r,echo=FALSE}
-conn <- conectabanco("lucas", "banco_meta")
+A partir deste ponto e possivel acessar os dados do banco utilizando a funcao `getfromdb`
+
+```{r}
+# lendo tabela completa
+dat <- getfromdb(conexao, tabela = "subbacias")
+print(dat)
 ```
 
-Com a conexao feita, podemos utilizar as funcoes de extracao de dados. A tabela informativa de 
-usinas no banco pode ser recuperada com
+Subsets podem ser especificados no momento da leitura atraves de argumentos opcionais nomeados
+homonimos das colunas na tabela
 
-```r
-getusinas(conn)
+```{r}
+dat <- getfromdb(conexao, tabela = "subbacias", codigo = c("AVERMELHA", "BAIXOIG"))
+print(dat)
 ```
-
-Os quantitativos sao acessados por funcoes especificas. E possivel acessar apenas os verificados...
-
-```{r, results='as.is'}
-verif <- getverificado(conn, "BAEBAU", "2021-01-01")
-head(verif, 10)
-```
-
-previstos ...
-
-```{r, results='as.is'}
-prev <- getprevisto(conn, "BAEBAU", "2021-01-01", "GFS", "D1")
-head(prev, 10)
-```
-
-ou ambos combinados
-
-```{r, results='as.is'}
-dados <- getdados(conn, "BAEBAU", "2021-01-01", "ECMWF", "D1")
-head(dados, 10)
-```
-
-Ate o presente momento nao foram implementadas as funcoes de upload ao banco.
