@@ -13,8 +13,6 @@ test_that("Criacao de objetos 'campo'", {
 
 test_that("Criacao de tabelas -- manual", {
 
-    # TESTE DE TABELA LOCAL ----------------------------------------------
-
     tabela1 <- new_tabela(
         "tabela_teste",
         list(
@@ -32,6 +30,17 @@ test_that("Criacao de tabelas -- manual", {
     expect_true(is.null(attr(tabela1, "descricao")))
     expect_equal(attr(tabela1, "reader_func"), inner_csv)
     expect_equal(attr(tabela1, "master"), data.table::data.table(tabela = "tabela_teste"))
+
+    # print de tabela
+
+    output <- capture.output(print(tabela1))
+    expect_snapshot_value(output, style = "deparse")
+
+    # forcando erros de omissao de args obrigatorios
+
+    expect_error(new_tabela("teste", uri = "teste", tipo = "teste"))
+    expect_error(new_tabela("teste", uri = "teste", campos = "teste"))
+    expect_error(new_tabela("teste", campos = "teste", tipo = ".csv"))
 })
 
 cria_temp_schema <- function(arq) {
