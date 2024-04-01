@@ -126,9 +126,16 @@ roda_query.morgana <- function(conexao, query) {
     req <- httr2::req_body_json(req, body)
     req <- httr2::req_headers(req, "x-api-key" = attr(conexao, "x_api_key"))
 
+    oldtz <- Sys.getenv("TZ")
+    Sys.setenv("TZ" = "GMT")
+
     resp <- httr2::req_perform(req)
     resp <- httr2::resp_body_json(resp)
     resp <- decode_output(resp)
+
+    resp <- try(corrigeposix(resp))
+
+    Sys.setenv("TZ" = oldtz)
 
     return(resp)
 }
