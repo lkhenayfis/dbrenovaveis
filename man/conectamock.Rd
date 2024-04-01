@@ -8,7 +8,8 @@ conectamock(schema)
 }
 \arguments{
 \item{schema}{lista contendo o schema do banco, correspondente aos conteudos de um arquivo
-\code{schema.json} para banco, ou o caminho de um arquivo deste tipo. Veja Detalhes}
+\code{schema.json} para banco, ou o caminho de um arquivo deste tipo ou diretorio que o
+contenha. Veja Detalhes}
 }
 \value{
 objeto de conexao com o mock banco

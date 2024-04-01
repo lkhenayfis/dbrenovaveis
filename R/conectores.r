@@ -67,7 +67,8 @@ conectabanco <- function(usuario, banco) {
 #' e o json lido nao possua essa chave, sera adicionada como igual ao caminho \code{schema}.
 #' 
 #' @param schema lista contendo o schema do banco, correspondente aos conteudos de um arquivo
-#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo. Veja Detalhes
+#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo ou diretorio que o 
+#'     contenha. Veja Detalhes
 #' 
 #' @examples 
 #' 
@@ -107,8 +108,8 @@ conectamock <- function(schema) new_mock(schema)
 #' um atributo adicional que e a chave de api passada originalmente
 #' 
 #' @param schema lista contendo o schema do banco, correspondente aos conteudos de um arquivo
-#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo. Veja
-#'     \code{\link{conectamock}}
+#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo ou diretorio que o 
+#'     contenha. Veja \code{\link{conectamock}}
 #' @param x_api_key chave de api para uso das funcoes que compoem o morgana na aws. Veja Detalhes
 #' 
 #' @return objeto de conexao com o mock banco via morgana
@@ -133,13 +134,19 @@ conectamorgana <- function(schema, x_api_key = Sys.getenv("X_API_KEY")) {
 #' Construtor utilizado para geracao de objetos conexao com mocks e morgana
 #' 
 #' @param schema lista contendo o schema do banco, correspondente aos conteudos de um arquivo
-#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo.
+#'     \code{schema.json} para banco, ou o caminho de um arquivo deste tipo ou diretorio que o 
+#'     contenha.
 #' @param morgana booleano indicando se a conexacao e via morgana ou nao
 #' 
 #' @return objeto da classe \code{mock}
 
 new_mock <- function(schema, morgana = FALSE) {
-    if (is.character(schema)) schema <- compoe_schema(schema) else schema <- compoe_schema(, schema)
+
+    is_char <- is.character(schema)
+    is_file <- is_char && grepl("schema\\.json$", schema)
+
+    if (is_char && !is_file) schema <- file.path(schema, "schema.json")
+    if (is_char) schema <- compoe_schema(schema) else schema <- compoe_schema(, schema)
 
     tabelas <- lapply(schema$tables, schema2tabela, no_master = morgana)
     names(tabelas) <- sapply(tabelas, "[[", "nome")

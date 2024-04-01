@@ -8,8 +8,8 @@ conectamorgana(schema, x_api_key = Sys.getenv("X_API_KEY"))
 }
 \arguments{
 \item{schema}{lista contendo o schema do banco, correspondente aos conteudos de um arquivo
-\code{schema.json} para banco, ou o caminho de um arquivo deste tipo. Veja
-\code{\link{conectamock}}}
+\code{schema.json} para banco, ou o caminho de um arquivo deste tipo ou diretorio que o
+contenha. Veja \code{\link{conectamock}}}
 
 \item{x_api_key}{chave de api para uso das funcoes que compoem o morgana na aws. Veja Detalhes}
 }

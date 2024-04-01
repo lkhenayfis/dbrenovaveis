@@ -8,7 +8,8 @@ new_mock(schema, morgana = FALSE)
 }
 \arguments{
 \item{schema}{lista contendo o schema do banco, correspondente aos conteudos de um arquivo
-\code{schema.json} para banco, ou o caminho de um arquivo deste tipo.}
+\code{schema.json} para banco, ou o caminho de um arquivo deste tipo ou diretorio que o
+contenha.}
 
 \item{morgana}{booleano indicando se a conexacao e via morgana ou nao}
 }
