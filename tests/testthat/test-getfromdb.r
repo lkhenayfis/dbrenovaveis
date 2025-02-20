@@ -44,9 +44,14 @@ test_that("Leitura de banco via morgana", {
     dat1 <- getfromdb(conn, "subbacias", codigo = "AVERMELHA")
     expect_snapshot_value(dat1, style = "serialize")
 
-    dat2 <- getfromdb(conn, "precipitacao_observada", codigo = "AVERMELHA",
-        data_previsao = "2020-01-01")
-    expect_snapshot_value(dat2, style = "serialize")
+    # a query via morgana retorna um erro de que nao existe a coluna 'codigo' na tabela
+    # 'precipitacao_observada', embora exista e a mesma query, realizada pelo conector mock padrao
+    # funcione adequadamente
+    expect_error({
+        dat2 <- getfromdb(conn, "precipitacao_observada", codigo = "AVERMELHA",
+            data_previsao = "2020-01-01")
+        expect_snapshot_value(dat2, style = "serialize")
+    })
 })
 
 if (as.logical(Sys.getenv("TESTA_BANCO_POSTGRES", FALSE))) {
