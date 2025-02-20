@@ -25,6 +25,18 @@ test_that("Leitura de banco mock", {
     expect_snapshot_value(unlist(dat1), style = "deparse")
 })
 
+test_that("Leitura de banco S3 padrao", {
+    arq <- "s3://ons-pem-historico/hidro/rodadas-smap/sintetico/schema.json"
+    conn <- conectamock(arq)
+
+    dat1 <- getfromdb(conn, "subbacias", codigo = "AVERMELHA")
+    expect_snapshot_value(dat1, style = "serialize")
+
+    dat2 <- getfromdb(conn, "precipitacao_observada", codigo = "AVERMELHA",
+        data_previsao = "2020-01-01")
+    expect_snapshot_value(dat2, style = "serialize")
+})
+
 test_that("Leitura de banco via morgana", {
     arq <- "s3://ons-pem-historico/hidro/rodadas-smap/sintetico/schema.json"
     conn <- conectamorgana(arq)
