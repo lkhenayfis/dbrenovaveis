@@ -8,7 +8,6 @@
 #' disponiveis.
 #' 
 #' @name dbrenovaveis
-#' @docType package
 #' 
 #' @import DBI data.table utils
-NULL
+"_PACKAGE"

@@ -2,6 +2,7 @@
 % Please edit documentation in R/dbrenovaveis.r
 \docType{package}
 \name{dbrenovaveis}
+\alias{dbrenovaveis-package}
 \alias{dbrenovaveis}
 \title{Pacote \code{dbrenovaveis}}
 \description{
@@ -12,4 +13,8 @@ Este pacote contem funcoes para facilitacao do acesso aos
 bancos de dados associados a area de energias renovaveis da PEM. Isto
 inclui acesso, escrita e resgate de informacoes acerca dos bancos
 disponiveis.
+}
+\author{
+\strong{Maintainer}: Lucas Khenayfis \email{lucaskhenayfis@gmail.com}
+
 }
