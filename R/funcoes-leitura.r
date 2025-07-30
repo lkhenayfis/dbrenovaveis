@@ -59,9 +59,9 @@ inner_json <- function(x, ...) jsonlite::read_json(x, ...)
 
 inner_csv <- function(x, ...) data.table::fread(x, ...)
 
-inner_parquet <- function(x, ...) arrow::read_parquet(x, ...)
+inner_parquet <- function(x, ...) arrow::read_parquet(x, as_data_frame = FALSE, ...)
 
-inner_parquet_gzip <- function(x, ...) arrow::read_parquet(x, ...)
+inner_parquet_gzip <- function(x, ...) arrow::read_parquet(x, as_data_frame = FALSE, ...)
 
 # FUNCOES DE LEITURA EXTERNAS ----------------------------------------------------------------------
 
