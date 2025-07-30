@@ -19,14 +19,15 @@ test_that("Testes de modificacao de query", {
     expect_equal(parsed_2$FROM, "tabela_teste")
     expect_true(is.list(parsed_2$WHERE))
     expect_equal(names(parsed_2$WHERE), "data")
-    expect_equal(parsed_2$WHERE$data, "(data >= '2000-01-01 00:00:00') & (data < '3999-01-01 00:00:01')")
+    expect_equal(parsed_2$WHERE$data,
+        str2lang("(data >= '2000-01-01 00:00:00') & (data < '3999-01-01 00:00:01')"))
 
     parsed_3 <- query2subset(parseargs(tabela1, c("codigo", "data", "valor"), codigo = c("A", "B")))
     expect_equal(parsed_3$SELECT, c("codigo", "data", "valor"))
     expect_equal(parsed_3$FROM, "tabela_teste")
     expect_true(is.list(parsed_3$WHERE))
     expect_equal(names(parsed_3$WHERE), "codigo")
-    expect_equal(parsed_3$WHERE$codigo[1], "codigo %in% c('A','B')")
+    expect_equal(parsed_3$WHERE$codigo, str2lang("codigo == 'A' | codigo == 'B'"))
 })
 
 test_that("Leitura de dados mock -- Local", {
@@ -43,10 +44,10 @@ test_that("Leitura de dados mock -- Local", {
 
     query <- parseargs(conn$tabelas$subbacias, c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG")
     query <- query2subset(query)
-    dat1  <- proc_query_mock_spart(conn, query)
+    dat1  <- suppressWarnings(proc_query_mock_spart(conn, query))
     expect_snapshot_value(unlist(dat1), style = "deparse")
 
-    dat1.1 <- getfromdb(conn, "subbacias", c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG")
+    dat1.1 <- suppressWarnings(getfromdb(conn, "subbacias", c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG"))
     expect_identical(dat1, dat1.1)
 
     # leitura de tabela com particao -------------------------------------
@@ -54,11 +55,11 @@ test_that("Leitura de dados mock -- Local", {
     query <- parseargs(conn$tabelas$previstos, c("data_previsao", "codigo", "rsolo"),
         dia_previsao = 1, data_previsao = "2020-01-01", codigo = "AVERMELHA")
     query <- query2subset(query)
-    dat1  <- proc_query_mock_cpart(conn, query)
+    dat1  <- suppressWarnings(proc_query_mock_cpart(conn, query))
     expect_snapshot_value(unlist(dat1), style = "deparse")
 
-    dat1.1 <- getfromdb(conn, "previstos", c("data_previsao", "codigo", "rsolo"),
-        dia_previsao = 1, data_previsao = "2020-01-01", codigo = "AVERMELHA")
+    dat1.1 <- suppressWarnings(getfromdb(conn, "previstos", c("data_previsao", "codigo", "rsolo"),
+        dia_previsao = 1, data_previsao = "2020-01-01", codigo = "AVERMELHA"))
     expect_identical(dat1, dat1.1)
 
 })
@@ -82,10 +83,10 @@ test_that("Leitura de dados mock -- S3", {
 
     query <- parseargs(conn$tabelas$subbacias, c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG")
     query <- query2subset(query)
-    dat1  <- proc_query_mock_spart(conn, query)
+    dat1  <- suppressWarnings(proc_query_mock_spart(conn, query))
     expect_snapshot_value(unlist(dat1), style = "deparse")
 
-    dat1.1 <- getfromdb(conn, "subbacias", c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG")
+    dat1.1 <- suppressWarnings(getfromdb(conn, "subbacias", c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG"))
     expect_identical(dat1, dat1.1)
 
     # leitura de tabela com particao -------------------------------------
@@ -93,11 +94,11 @@ test_that("Leitura de dados mock -- S3", {
     query <- parseargs(conn$tabelas$vazoes, c("data", "codigo", "vazao"),
         codigo = "AVERMELHA", data = "2020-01-01")
     query <- query2subset(query)
-    dat1  <- proc_query_mock_cpart(conn, query)
+    dat1  <- suppressWarnings(proc_query_mock_cpart(conn, query))
     expect_snapshot_value(unlist(dat1), style = "deparse")
 
-    dat1.1 <- getfromdb(conn, "vazoes", c("data", "codigo", "vazao"),
-        codigo = "AVERMELHA", data = "2020-01-01")
+    dat1.1 <- suppressWarnings(getfromdb(conn, "vazoes", c("data", "codigo", "vazao"),
+        codigo = "AVERMELHA", data = "2020-01-01"))
     expect_identical(dat1, dat1.1)
 
 })
