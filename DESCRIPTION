@@ -14,6 +14,7 @@ Imports:
     DBI (>= 1.0),
     RPostgreSQL (>= 0.7),
     data.table (>= 1.14),
+    dplyr (>= 1.1.4),
     jsonlite (>= 1.7),
     xfun (>= 0.39),
     cli (>= 3.6)
