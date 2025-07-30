@@ -10,13 +10,33 @@
 
 query2subset <- function(query) {
     query$SELECT <- strsplit(query$SELECT, ",")[[1]]
-    query$WHERE  <- lapply(query$WHERE, function(q) {
-        q <- gsub(" IN ", " %in% ", q)
-        q <- gsub("\\(", "c\\(", q)
-        if (grepl("AND", q)) paste0("(", sub(" AND ", ") & (", q), ")") else q
-    })
+    query$WHERE  <- lapply(query$WHERE, parse_where)
     if (!is.null(query[["ORDER BY"]])) query[["ORDER BY"]] <- strsplit(query[["ORDER BY"]], ",")[[1]]
     return(query)
+}
+
+parse_where <- function(str) {
+
+    if (grepl(" IN ", str)) {
+        str <- strsplit(str, " IN ")[[1]]
+
+        var <- str[[1]]
+
+        whats <- gsub("\\(", "", str[[2]])
+        whats <- gsub("\\)", "", whats)
+        whats <- strsplit(whats, ",")[[1]]
+        whats <- gsub("'", "", whats)
+
+        exprs <- lapply(whats, function(w) paste0(var, "=='", w, "'"))
+        exprs <- paste0(exprs, collapse = " | ")
+        exprs <- str2lang(exprs)
+    } else if (grepl(" AND ", str)) {
+        str <- paste0("(", str, ")")
+        str <- sub(" AND ", ") & (", str)
+        exprs <- str2lang(str)
+    }
+
+    return(exprs)
 }
 
 #' Checa Existencia De Particoes Locais
@@ -75,10 +95,8 @@ proc_query_mock_spart <- function(conexao, query) {
         tail(query$FROM, 1)
     )
 
-    for (q in query$WHERE) {
-        vsubset <- eval(str2lang(q), envir = dat)
-        dat <- dat[vsubset, ]
-    }
+    for (q in query$WHERE) dat <- apply_where(dat, q)
+    dat <- dplyr::collect(dat)
 
     cols <- query$SELECT
     dat <- dat[, .SD, .SDcols = cols]
@@ -103,10 +121,8 @@ proc_query_mock_cpart <- function(conexao, query) {
     if (length(querymaster$WHERE) > 0) querymaster$WHERE <- querymaster$WHERE[colspart]
     querymaster$WHERE <- querymaster$WHERE[sapply(querymaster$WHERE, length) > 0]
 
-    for (q in querymaster$WHERE) {
-        vsubset <- eval(str2lang(q), envir = master)
-        master <- master[vsubset, ]
-    }
+    for (q in querymaster$WHERE) master <- apply_where(master, q)
+    master <- dplyr::collect(master)
 
     tabelas <- master$tabela
 
@@ -119,4 +135,10 @@ proc_query_mock_cpart <- function(conexao, query) {
     dat <- rbindlist(dat)
 
     return(dat)
+}
+
+apply_where <- function(dt, wheres) {
+    cc <- list(quote(dplyr::filter), substitute(dt), wheres)
+    cc <- as.call(cc)
+    eval(cc, parent.frame(), parent.frame())
 }
