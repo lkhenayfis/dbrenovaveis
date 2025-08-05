@@ -1,3 +1,10 @@
+# lazy
+
+## New features 
+
+* Leitura de tabelas mock em `parquet.gzip` agora e realizada por *lazy loading*, economizando tempo
+  e memoria na manipulacao de grandes datasets nao particionados
+
 # dbrenovaveis 0.7
 
 ## New features
