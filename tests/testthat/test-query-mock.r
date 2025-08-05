@@ -20,13 +20,14 @@ test_that("Testes de modificacao de query", {
     expect_true(is.list(parsed_2$WHERE))
     expect_equal(names(parsed_2$WHERE), "data")
     expect_equal(parsed_2$WHERE$data,
-        str2lang("(data >= '2000-01-01 00:00:00') & (data < '3999-01-01 00:00:01')"))
+        str2lang("(data >= as.POSIXct('2000-01-01 00:00:00')) & (data < as.POSIXct('3999-01-01 00:00:01'))"))
 
     parsed_3 <- query2subset(parseargs(tabela1, c("codigo", "data", "valor"), codigo = c("A", "B")))
     expect_equal(parsed_3$SELECT, c("codigo", "data", "valor"))
     expect_equal(parsed_3$FROM, "tabela_teste")
     expect_true(is.list(parsed_3$WHERE))
     expect_equal(names(parsed_3$WHERE), "codigo")
+    attributes(parsed_3$WHERE$codigo) <- NULL
     expect_equal(parsed_3$WHERE$codigo, str2lang("codigo == 'A' | codigo == 'B'"))
 })
 
@@ -42,7 +43,10 @@ test_that("Leitura de dados mock -- Local", {
 
     # leitura de tabela sem particao -------------------------------------
 
-    query <- parseargs(conn$tabelas$subbacias, c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG")
+    query <- parseargs(
+        conn$tabelas$subbacias, c("codigo", "nome", "bacia_smap"),
+        codigo = "BAIXOIG",
+        is_mock = TRUE)
     query <- query2subset(query)
     dat1  <- suppressWarnings(proc_query_mock_spart(conn, query))
     expect_snapshot_value(unlist(dat1), style = "deparse")
@@ -81,7 +85,8 @@ test_that("Leitura de dados mock -- S3", {
 
     # leitura de tabela sem particao -------------------------------------
 
-    query <- parseargs(conn$tabelas$subbacias, c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG")
+    query <- parseargs(conn$tabelas$subbacias, c("codigo", "nome", "bacia_smap"), codigo = "BAIXOIG",
+        is_mock = TRUE)
     query <- query2subset(query)
     dat1  <- suppressWarnings(proc_query_mock_spart(conn, query))
     expect_snapshot_value(unlist(dat1), style = "deparse")

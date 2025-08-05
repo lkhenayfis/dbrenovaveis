@@ -1,4 +1,9 @@
 
+# arrow fica emitindo um aviso que não dá pra controlar diretamente. mesmo desligando pelas opcoes
+# do pacote ele continua saindo
+w <- options()$warn
+options(warn = -1)
+
 test_that("Correcao de POSIX", {
 
     oldtz <- Sys.getenv("TZ")
@@ -38,6 +43,9 @@ test_that("Leitura de banco S3 padrao", {
 })
 
 test_that("Leitura de banco via morgana", {
+
+    skip("morgana em manutencao")
+
     arq <- "s3://ons-pem-historico/hidro/rodadas-smap/sintetico/schema.json"
     conn <- conectamorgana(arq)
 
@@ -61,3 +69,5 @@ if (as.logical(Sys.getenv("TESTA_BANCO_POSTGRES", FALSE))) {
     })
 
 }
+
+options(warn = w)
