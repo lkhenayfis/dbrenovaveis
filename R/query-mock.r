@@ -10,33 +10,8 @@
 
 query2subset <- function(query) {
     query$SELECT <- strsplit(query$SELECT, ",")[[1]]
-    query$WHERE  <- lapply(query$WHERE, parse_where)
     if (!is.null(query[["ORDER BY"]])) query[["ORDER BY"]] <- strsplit(query[["ORDER BY"]], ",")[[1]]
     return(query)
-}
-
-parse_where <- function(str) {
-
-    if (grepl(" IN ", str)) {
-        str <- strsplit(str, " IN ")[[1]]
-
-        var <- str[[1]]
-
-        whats <- gsub("\\(", "", str[[2]])
-        whats <- gsub("\\)", "", whats)
-        whats <- strsplit(whats, ",")[[1]]
-        whats <- gsub("'", "", whats)
-
-        exprs <- lapply(whats, function(w) paste0(var, "=='", w, "'"))
-        exprs <- paste0(exprs, collapse = " | ")
-        exprs <- str2lang(exprs)
-    } else if (grepl(" AND ", str)) {
-        str <- paste0("(", str, ")")
-        str <- sub(" AND ", ") & (", str)
-        exprs <- str2lang(str)
-    }
-
-    return(exprs)
 }
 
 #' Checa Existencia De Particoes Locais

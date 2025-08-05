@@ -12,7 +12,7 @@
 #' 
 #' @seealso generica para parse de cada campo individualmente \code{\link{parsearg}}; 
 
-parseargs <- function(tabela, campos = NA, ...) {
+parseargs <- function(tabela, campos = NA, ..., is_mock = TRUE) {
 
     if ((campos[1] == "*") || is.na(campos[1])) campos <- names(tabela$campos)
 
@@ -21,7 +21,7 @@ parseargs <- function(tabela, campos = NA, ...) {
         WHERE <- NULL
     } else {
         WHERE  <- lapply(names(subsets), function(campo) {
-            parsearg(tabela$campos[[campo]], subsets[[campo]])
+            parsearg(tabela$campos[[campo]], subsets[[campo]], is_mock = is_mock)
         })
         names(WHERE) <- sapply(names(subsets), function(campo) tabela$campos[[campo]]$nome)
     }
@@ -82,15 +82,16 @@ parseargs <- function(tabela, campos = NA, ...) {
 #' 
 #' @export
 
-parsearg <- function(campo, valor, ...) UseMethod("parsearg")
+parsearg <- function(campo, valor, is_mock = TRUE, ...) UseMethod("parsearg")
 
 #' @export
 
-parsearg.campo_int <- function(campo, valor, ...) {
+parsearg.campo_int <- function(campo, valor, is_mock = TRUE, ...) {
     if (is.na(valor[1]) || valor[1] == "*") return(structure(NA, "n" = 0))
 
     valor_str <- paste0(valor, collapse = ",")
     WHERE     <- paste0(campo$nome, " IN (", valor_str, ")")
+    if (is_mock) WHERE <- str2mock(WHERE)
 
     attr(WHERE, "valor") <- valor
     attr(WHERE, "n") <- length(valor)
@@ -100,11 +101,12 @@ parsearg.campo_int <- function(campo, valor, ...) {
 
 #' @export
 
-parsearg.campo_string <- function(campo, valor, ...) {
+parsearg.campo_string <- function(campo, valor, is_mock = TRUE, ...) {
     if (is.na(valor[1]) || valor[1] == "*") return(structure(NA, "n" = 0))
 
     valor_str <- paste0(valor, collapse = "','")
     WHERE <- paste0(campo$nome, " IN ('", valor_str, "')")
+    if (is_mock) WHERE <- str2mock(WHERE)
 
     attr(WHERE, "valor") <- valor
     attr(WHERE, "n") <- length(valor)
@@ -116,23 +118,23 @@ parsearg.campo_string <- function(campo, valor, ...) {
 
 # implementacao provisoria
 # ainda falta fazer os possiveis subsets por lista ou faixa
-parsearg.campo_float <- function(campo, valor, ...) parsearg.campo_int(campo, valor, ...)
+parsearg.campo_float <- function(campo, valor, is_mock = TRUE, ...) parsearg.campo_int(campo, valor, is_mock, ...)
 
 #' @export
 
-parsearg.campo_datetime <- function(campo, valor, ...) {
+parsearg.campo_datetime <- function(campo, valor, is_mock = TRUE, ...) {
 
     nome <- campo$nome
 
     if ((valor[1] == "*") || is.na(valor[1])) valor <- "1000/3999"
-    WHERE <- parsedatas(valor, nome)
+    WHERE <- parsedatas(valor, nome, is_mock = is_mock)
 
     return(WHERE)
 }
 
 #' @export
 
-parsearg.campo_date <- function(campo, valor, ...) parsearg.campo_datetime(campo, valor)
+parsearg.campo_date <- function(campo, valor, is_mock = TRUE, ...) parsearg.campo_datetime(campo, valor, is_mock)
 
 # HELPERS ------------------------------------------------------------------------------------------
 
@@ -166,7 +168,7 @@ parsearg.campo_date <- function(campo, valor, ...) parsearg.campo_datetime(campo
 #' @return se \code{query = TRUE} string contendo a condicao de busca associada a datas na query, do
 #'    contrario retorna apenas as datas expandidas
 
-parsedatas <- function(datahoras, nome, query = TRUE) {
+parsedatas <- function(datahoras, nome, query = TRUE, is_mock = TRUE) {
 
     if (!grepl("/", datahoras)) datahoras <- paste0(rep(datahoras, 2), collapse = "/")
     if (grepl("^/", datahoras)) datahoras <- paste0("1000-01-01 00:00:00", datahoras)
@@ -178,7 +180,14 @@ parsedatas <- function(datahoras, nome, query = TRUE) {
     if (!query) return(datahoras)
 
     datahoras  <- sapply(1:2, function(i) datahoras[[i]][i])
-    querydatas <- paste0(nome, " >= '", datahoras[1], "' AND ", nome, " < '", datahoras[2], "'")
+
+    if (!is_mock) {
+        querydatas <- paste0(nome, " >= '", datahoras[1], "' AND ", nome, " < '", datahoras[2], "'")
+    } else {
+        partes <- paste0("as.POSIXct('", datahoras, "')")
+        querydatas <- paste0("(", nome, " >= ", partes[1], ") & (", nome, " < ", partes[2], ")")
+        querydatas <- str2lang(querydatas)
+    }
 
     return(querydatas)
 }
@@ -254,4 +263,23 @@ expandedatahora <- function(datahora) {
     }
 
     return(out)
+}
+
+#' Converte String De WHERE Para Expressao
+
+str2mock <- function(str) {
+
+    str <- strsplit(str, " IN ")[[1]]
+
+    var <- str[[1]]
+
+    whats <- gsub("\\(", "", str[[2]])
+    whats <- gsub("\\)", "", whats)
+    whats <- strsplit(whats, ",")[[1]]
+
+    exprs <- lapply(whats, function(w) paste0(var, "==", w))
+    exprs <- paste0(exprs, collapse = " | ")
+    exprs <- str2lang(exprs)
+
+    return(exprs)
 }
