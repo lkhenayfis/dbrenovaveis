@@ -4,7 +4,7 @@
 \alias{parseargs}
 \title{Wrapper De Parses Para Queries}
 \usage{
-parseargs(tabela, campos = NA, ...)
+parseargs(tabela, campos = NA, ..., is_mock = TRUE)
 }
 \arguments{
 \item{tabela}{objeto da classe \code{tabela} criado por \code{\link{new_tabela}}}
@@ -12,6 +12,9 @@ parseargs(tabela, campos = NA, ...)
 \item{campos}{os campos a reter apos a leitura. Por padrao traz todos}
 
 \item{...}{subsets a serem aplicados. Veja Detalhes e Exemplos}
+
+\item{is_mock}{booleano indicando se o parse de argumentos esta sendo feito para query num banco
+mock ou relacional}
 }
 \value{
 lista contendo os trechos de query para executar no banco

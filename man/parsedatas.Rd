@@ -4,7 +4,7 @@
 \alias{parsedatas}
 \title{Parse De Tipo Data(Hora)}
 \usage{
-parsedatas(datahoras, nome, query = TRUE)
+parsedatas(datahoras, nome, query = TRUE, is_mock = TRUE)
 }
 \arguments{
 \item{datahoras}{uma string indicando faixa de tempo no padrao do pacote \code{xts}}
@@ -12,6 +12,9 @@ parsedatas(datahoras, nome, query = TRUE)
 \item{nome}{nome do campo para query}
 
 \item{query}{booleano indicando se deve ser retornada a query ou apenas a expansao das datas}
+
+\item{is_mock}{booleano indicando se o parse de argumentos esta sendo feito para query num banco
+mock ou relacional}
 }
 \value{
 se \code{query = TRUE} string contendo a condicao de busca associada a datas na query, do

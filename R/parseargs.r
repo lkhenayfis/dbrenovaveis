@@ -7,6 +7,8 @@
 #' @param tabela objeto da classe \code{tabela} criado por \code{\link{new_tabela}}
 #' @param campos os campos a reter apos a leitura. Por padrao traz todos
 #' @param ... subsets a serem aplicados. Veja Detalhes e Exemplos
+#' @param is_mock booleano indicando se o parse de argumentos esta sendo feito para query num banco
+#'     mock ou relacional
 #' 
 #' @return lista contendo os trechos de query para executar no banco
 #' 
@@ -50,6 +52,8 @@ parseargs <- function(tabela, campos = NA, ..., is_mock = TRUE) {
 #' 
 #' @param campo objeto da classe \code{campo} gerado por \code{\link{new_campo}}
 #' @param valor o valor buscado na tabela para montar a query
+#' @param is_mock booleano indicando se o parse de argumentos esta sendo feito para query num banco
+#'     mock ou relacional
 #' @param ... demais argumentos que possam existir nos metodos de cada tipo de dado
 #' 
 #' @examples
@@ -152,6 +156,8 @@ parsearg.campo_date <- function(campo, valor, is_mock = TRUE, ...) parsearg.camp
 #' @param datahoras uma string indicando faixa de tempo no padrao do pacote \code{xts}
 #' @param nome nome do campo para query
 #' @param query booleano indicando se deve ser retornada a query ou apenas a expansao das datas
+#' @param is_mock booleano indicando se o parse de argumentos esta sendo feito para query num banco
+#'     mock ou relacional
 #' 
 #' @examples 
 #' 
@@ -266,6 +272,12 @@ expandedatahora <- function(datahora) {
 }
 
 #' Converte String De WHERE Para Expressao
+#' 
+#' Transforma uma string de WHERE para expressao de subset coerente com `data.table`s
+#' 
+#' @param str string de subset gerada por uma das funcoes de parse de argumentos
+#' 
+#' @return expressao do subset a ser avaliado
 
 str2mock <- function(str) {
 

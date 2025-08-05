@@ -4,12 +4,15 @@
 \alias{parsearg}
 \title{Generica Para Parse De Argumentos Unicos}
 \usage{
-parsearg(campo, valor, ...)
+parsearg(campo, valor, is_mock = TRUE, ...)
 }
 \arguments{
 \item{campo}{objeto da classe \code{campo} gerado por \code{\link{new_campo}}}
 
 \item{valor}{o valor buscado na tabela para montar a query}
+
+\item{is_mock}{booleano indicando se o parse de argumentos esta sendo feito para query num banco
+mock ou relacional}
 
 \item{...}{demais argumentos que possam existir nos metodos de cada tipo de dado}
 }
