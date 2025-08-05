@@ -54,7 +54,8 @@
 
 getfromdb <- function(conexao, tabela, campos = NA, ...) {
 
-    query <- parseargs(conexao$tabelas[[tabela]], campos, ...)
+    is_mock <- inherits(conexao, "mock")
+    query <- parseargs(conexao$tabelas[[tabela]], campos, is_mock = is_mock, ...)
     out   <- roda_query(conexao, query)
 
     return(out)
