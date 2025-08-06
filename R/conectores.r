@@ -31,16 +31,21 @@
 #' 
 #' @return objeto de conexao ao banco. Veja \code{\link[DBI]{dbConnect}} para mais detalhes
 #' 
-#' @import DBI RPostgreSQL
-#' 
 #' @export
 
 conectabanco <- function(usuario, banco) {
+
+    has_DBI <- requireNamespace("DBI", quietly = TRUE)
+    has_RPOSTGRE <- requireNamespace("RPostgreSQL", quietly = TRUE)
+    if (!has_DBI || !has_RPOSTGRE) {
+        stop("Pacotes 'DBI' e 'RPostgreSQL' sao necessarios para interface com banco relacional")
+    }
+
     usuario <- readRDS(file.path(Sys.getenv("dbrenovaveis-cachedir"), paste0("user_", usuario, ".rds")))
     banco   <- readRDS(file.path(Sys.getenv("dbrenovaveis-cachedir"), paste0("db_", banco, ".rds")))
 
-    conn <- dbConnect(
-        drv = dbDriver("PostgreSQL"),
+    conn <- DBI::dbConnect(
+        drv = DBI::dbDriver("PostgreSQL"),
         user = usuario[[1]], password = usuario[[2]],
         host = banco[[1]], port = banco[[2]], dbname = banco[[3]]
     )

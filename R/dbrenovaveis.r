@@ -9,5 +9,5 @@
 #' 
 #' @name dbrenovaveis
 #' 
-#' @import DBI data.table utils
+#' @import data.table utils
 "_PACKAGE"

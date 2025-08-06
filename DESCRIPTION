@@ -1,6 +1,6 @@
 Package: dbrenovaveis
 Title: Acesso Aos Bancos De Dados PEM-Renovaveis
-Version: 0.8
+Version: 0.8.0.9999
 Authors@R: 
     person("Lucas", "Khenayfis", , "lucaskhenayfis@gmail.com", role = c("aut", "cre"))
 Description: Este pacote contem funcoes para facilitacao do acesso aos
@@ -11,14 +11,14 @@ License: MIT + file LICENSE
 Depends:
     R (>= 4.0)
 Imports:
-    DBI (>= 1.0),
-    RPostgreSQL (>= 0.7),
     data.table (>= 1.14),
     dplyr (>= 1.1.4),
     jsonlite (>= 1.7),
     xfun (>= 0.39),
     cli (>= 3.6)
 Suggests: 
+    DBI (>= 1.0),
+    RPostgreSQL (>= 0.7),
     testthat (>= 3.0.0),
     arrow (>= 11.0.0),
     aws.s3 (>= 0.3),

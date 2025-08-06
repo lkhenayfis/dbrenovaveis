@@ -82,12 +82,18 @@ roda_query <- function(conexao, query) UseMethod("roda_query")
 
 roda_query.default <- function(conexao, query) {
 
+    has_DBI <- requireNamespace("DBI", quietly = TRUE)
+    has_RPOSTGRE <- requireNamespace("RPostgreSQL", quietly = TRUE)
+    if (!has_DBI || !has_RPOSTGRE) {
+        stop("Pacotes 'DBI' e 'RPostgreSQL' sao necessarios para interface com banco relacional")
+    }
+
     query <- collate_query(query)
 
     oldtz <- Sys.getenv("TZ")
     Sys.setenv("TZ" = "GMT")
 
-    out <- as.data.table(try(dbGetQuery(conexao, query), silent = TRUE))
+    out <- as.data.table(try(DBI::dbGetQuery(conexao, query), silent = TRUE))
     out <- corrigeposix(out)
 
     Sys.setenv("TZ" = oldtz)
