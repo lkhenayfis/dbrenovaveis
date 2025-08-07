@@ -26,6 +26,7 @@ parseargs <- function(tabela, campos = NA, ..., is_mock = TRUE) {
             parsearg(tabela$campos[[campo]], subsets[[campo]], is_mock = is_mock)
         })
         names(WHERE) <- sapply(names(subsets), function(campo) tabela$campos[[campo]]$nome)
+        WHERE <- WHERE[!sapply(WHERE, is.null)]
     }
 
     SELECT <- paste0(campos, collapse = ",")
@@ -87,6 +88,10 @@ parseargs <- function(tabela, campos = NA, ..., is_mock = TRUE) {
 #' @export
 
 parsearg <- function(campo, valor, is_mock = TRUE, ...) UseMethod("parsearg")
+
+#' @export 
+
+parsearg.NULL <- function(campo, valor, is_mock = TRUE, ...) return(NULL)
 
 #' @export
 
