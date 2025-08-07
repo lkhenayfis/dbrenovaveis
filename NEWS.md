@@ -1,3 +1,13 @@
+# master
+
+## Misc
+
+* Tira checks de CI para Windows e Mac; só se testa Ubuntu agora
+* Dependencias para conexao com banco relacional passam para `Suggests`; toda essa parte da
+  funcionalidade agora e opcional
+* Argumentos de subset em `getfromdb` que nao correspondem a campos tabela sendo acessada nao mais
+  causam erro. Estes agora sao ignorados no processamento de `parseargs`
+
 # dbrenovaveis 0.8
 
 ## New features 
